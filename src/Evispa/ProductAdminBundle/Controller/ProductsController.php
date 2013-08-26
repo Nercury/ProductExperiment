@@ -18,8 +18,6 @@ class ProductsController extends Controller
      */
     public function getProductAction($slug)
     {
-        $this->getRequest()->setFormat('yaml', 'text/yaml');
-
         $data = new \Evispa\Component\MultipartResource\Data\CombinedData();
         $data["name"] = "Pavadinimas";
         $data["attributes"] = array(
