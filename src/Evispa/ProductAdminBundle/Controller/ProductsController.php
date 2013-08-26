@@ -12,7 +12,8 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 class ProductsController extends Controller
 {
     /**
-     * @Route(requirements={"_format"="json|xml"})
+     * Get a product by its identifier.
+     *
      * @ApiDoc
      */
     public function getProductAction($slug)
@@ -29,6 +30,7 @@ class ProductsController extends Controller
     }
 
     /**
+     * Get list of all products.
      *
      * @ApiDoc
      */
@@ -45,24 +47,32 @@ class ProductsController extends Controller
     }
 
     /**
+     * Create a new product.
      *
      * @ApiDoc
      */
-    public function postProductsAction() {
+    public function postProductsAction(\Symfony\Component\HttpFoundation\Request $request) {
         $data = new \Evispa\Component\MultipartResource\Data\CombinedData();
         $data["name"] = "Pavadinimas";
-        $data["attributes"] = array(
-            new \Evispa\ProductAdminBundle\Attr(),
-        );
 
-        $form = $this->createFormBuilder($data);
-        $form->add('name', 'text');
-        $form->add('attributes', 'collection', array(
-            'class' => "\Evispa\ProductAdminBundle\Attr"
+        $fb = $this->createFormBuilder(null, array(
+            'csrf_protection' => false
+        ));
+        $fb->add('name', 'text', array(
+            'property_path' => '[name]'
         ));
 
-        return \FOS\RestBundle\View\View::create(array(
-            $data
-        ));
+        $form = $fb->getForm();
+        $form->setData($data);
+
+        if (false !== $request->request->get('form', false)) {
+            $form->submit($request);
+            $data = $form->getData();
+            if ($form->isValid()) {
+                return new \Symfony\Component\HttpFoundation\Response($this->get('serializer')->serialize($data, 'json'));
+            }
+        }
+
+        return \FOS\RestBundle\View\View::create($form, 400);
     }
 }
