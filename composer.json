@@ -21,7 +21,9 @@
         "incenteev/composer-parameter-handler": "~2.0",
         "friendsofsymfony/rest-bundle": "0.13.1",
         "jms/serializer-bundle": "0.12.0",
-        "nelmio/api-doc-bundle": "dev-master"
+        "nelmio/api-doc-bundle": "dev-master",
+        "fsc/hateoas-bundle": "<0.5",
+        "pagerfanta/pagerfanta": "v1.0.0"
     },
     "config": {
         "bin-dir": "bin"
