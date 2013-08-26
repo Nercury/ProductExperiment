@@ -9,7 +9,8 @@
     "homepage": "http://dev.evispa.lt/projects/verskis/wiki/evispa-productadminbundle",
     "require": {
         "php": ">=5.3.2",
-        "evispa/productresource-bundle" : "*"
+        "evispa/productresource-bundle" : "*",
+        "fsc/hateoas-bundle": "<0.5"
     },
     "target-dir": "Evispa/ProductAdminBundle",
     "type": "symfony-bundle",
