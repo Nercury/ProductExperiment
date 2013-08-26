@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Evispa\Component\MultipartResource\Annotations\Resource;
 
 class ProductsController extends Controller
 {
@@ -48,6 +49,7 @@ class ProductsController extends Controller
      * Create a new product.
      *
      * @ApiDoc
+     * @Resource("product", action="create")
      */
     public function postProductsAction(\Symfony\Component\HttpFoundation\Request $request) {
         $data = new \Evispa\Component\MultipartResource\Data\CombinedData();
