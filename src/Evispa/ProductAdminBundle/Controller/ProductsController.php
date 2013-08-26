@@ -7,11 +7,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 class ProductsController extends Controller
 {
     /**
      * @Route(requirements={"_format"="json|xml"})
+     * @ApiDoc
      */
     public function getProductAction($slug)
     {
@@ -26,6 +28,10 @@ class ProductsController extends Controller
         return \FOS\RestBundle\View\View::create($data);
     }
 
+    /**
+     *
+     * @ApiDoc
+     */
     public function getProductsAction() {
         $data = new \Evispa\Component\MultipartResource\Data\CombinedData();
         $data["name"] = "Pavadinimas";
@@ -38,6 +44,10 @@ class ProductsController extends Controller
         ));
     }
 
+    /**
+     *
+     * @ApiDoc
+     */
     public function postProductsAction() {
         $data = new \Evispa\Component\MultipartResource\Data\CombinedData();
         $data["name"] = "Pavadinimas";
@@ -48,7 +58,7 @@ class ProductsController extends Controller
         $form = $this->createFormBuilder($data);
         $form->add('name', 'text');
         $form->add('attributes', 'collection', array(
-            'class' => \Evispa\ProductAdminBundle\Attr::class
+            'class' => "\Evispa\ProductAdminBundle\Attr"
         ));
 
         return \FOS\RestBundle\View\View::create(array(

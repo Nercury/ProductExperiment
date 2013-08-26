@@ -76,3 +76,5 @@ fos_rest:
         view_response_listener: force
     format_listener:
         prefer_extension: true
+
+nelmio_api_doc: ~
