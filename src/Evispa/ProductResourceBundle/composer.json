@@ -1,0 +1,22 @@
+{
+    "name": "evispa/productresource-bundle",
+    "license": "Evispa Library License",
+    "authors": [
+        {
+            "name": "UAB Evispa"
+        }
+    ],
+    "homepage": "http://dev.evispa.lt/projects/verskis/wiki/evispa-productresourcebundle",
+    "require": {
+        "php": ">=5.3.2",
+        "evispa/resource-bundle" : "*"
+    },
+    "target-dir": "Evispa/ProductResourceBundle",
+    "type": "symfony-bundle",
+    "autoload": {
+        "psr-0": {
+            "Evispa\\ProductResourceBundle": ""
+        }
+    },
+    "description": "Bundle defines public core API for Product."
+}

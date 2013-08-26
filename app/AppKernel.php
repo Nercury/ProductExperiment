@@ -23,6 +23,7 @@ class AppKernel extends Kernel
             new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
             new Evispa\ResourceApiDocBundle\EvispaResourceApiDocBundle(),
             new Evispa\ResourceBundle\EvispaResourceBundle(),
+            new FSC\HateoasBundle\FSCHateoasBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

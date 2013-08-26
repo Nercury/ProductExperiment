@@ -9,12 +9,16 @@ use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConve
 use FOS\RestBundle\Controller\Annotations\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Evispa\Component\MultipartResource\Annotations\Resource;
+use FSC\HateoasBundle\Annotation as Rest;
 
 class ProductsController extends Controller
 {
     /**
      * Get a product by its identifier.
      *
+     * @Rest\Relation("self", href=@Rest\Route("api_product_get", parameters={"slug"=".slug"}))
+     *
+     * @Route(name="api_product_get")
      * @ApiDoc
      * @View(templateVar="product")
      */
