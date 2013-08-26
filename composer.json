@@ -20,7 +20,8 @@
         "sensio/generator-bundle": "~2.3",
         "incenteev/composer-parameter-handler": "~2.0",
         "friendsofsymfony/rest-bundle": "0.13.1",
-        "jms/serializer-bundle": "0.12.0"
+        "jms/serializer-bundle": "0.12.0",
+        "nelmio/api-doc-bundle": "dev-master"
     },
     "config": {
         "bin-dir": "bin"

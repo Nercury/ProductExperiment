@@ -11,7 +11,7 @@ use FOS\RestBundle\Controller\Annotations\View;
 class ProductsController extends Controller
 {
     /**
-     * @View
+     * @Route(requirements={"_format"="json|xml"})
      */
     public function getProductAction($slug)
     {
@@ -32,6 +32,24 @@ class ProductsController extends Controller
         $data["attributes"] = array(
             new \Evispa\ProductAdminBundle\Attr(),
         );
+
+        return \FOS\RestBundle\View\View::create(array(
+            $data
+        ));
+    }
+
+    public function postProductsAction() {
+        $data = new \Evispa\Component\MultipartResource\Data\CombinedData();
+        $data["name"] = "Pavadinimas";
+        $data["attributes"] = array(
+            new \Evispa\ProductAdminBundle\Attr(),
+        );
+
+        $form = $this->createFormBuilder($data);
+        $form->add('name', 'text');
+        $form->add('attributes', 'collection', array(
+            'class' => \Evispa\ProductAdminBundle\Attr::class
+        ));
 
         return \FOS\RestBundle\View\View::create(array(
             $data
