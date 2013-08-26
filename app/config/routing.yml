@@ -1,0 +1,6 @@
+evispa_product_admin:
+    type: rest
+    resource: "@EvispaProductAdminBundle/Resources/config/products_routes.xml"
+    prefix:   /admin
+
+
