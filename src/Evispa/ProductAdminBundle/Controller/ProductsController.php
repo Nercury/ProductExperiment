@@ -26,7 +26,15 @@ class ProductsController extends Controller
         return \FOS\RestBundle\View\View::create($data);
     }
 
-    public function doSomethingElseWithProductAction($slug) {
-        
+    public function getProductsAction() {
+        $data = new \Evispa\Component\MultipartResource\Data\CombinedData();
+        $data["name"] = "Pavadinimas";
+        $data["attributes"] = array(
+            new \Evispa\ProductAdminBundle\Attr(),
+        );
+
+        return \FOS\RestBundle\View\View::create(array(
+            $data
+        ));
     }
 }
