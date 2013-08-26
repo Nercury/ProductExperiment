@@ -1,16 +1,11 @@
+{% extends 'EvispaProductAdminBundle::layout.html.twig' %}
+
+{% block contents %}
 <div>
-    Product:
+    Product {{ slug }}:
 
-    {{ dump() }}
-
-    {#<div>
-        a: {{ product.a }}
-    </div>
     <div>
-        b: {{ product.b }}
+        name: {{ product.name }}
     </div>
-    <div>
-        c: {{ product.c }}
-    </div>#}
-
 </div>
+{% endblock %}

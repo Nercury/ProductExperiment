@@ -22,6 +22,7 @@ class AppKernel extends Kernel
             new FOS\RestBundle\FOSRestBundle(),
             new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
             new Evispa\ResourceApiDocBundle\EvispaResourceApiDocBundle(),
+            new Evispa\ResourceBundle\EvispaResourceBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
