@@ -75,7 +75,13 @@ class ProductsController extends Controller
         $form = $fb->getForm();
         $form->setData($data);
 
-        if (false !== $request->request->get('form', false)) {
+        $view = \FOS\RestBundle\View\View::create();
+
+        if (false === $request->request->get('form', false)) {
+            if ('html' !== $view->getFormat()) {
+                $form->addError(new \Symfony\Component\Form\FormError('Submit form data based on specified parameters.'));
+            }
+        } else {
             $form->submit($request);
             $data = $form->getData();
             if ($form->isValid()) {
@@ -83,7 +89,10 @@ class ProductsController extends Controller
             }
         }
 
-        return \FOS\RestBundle\View\View::create($form, 400);
+        $view->setData($form);
+        $view->setStatusCode(400);
+
+        return $view;
     }
 
     /**
