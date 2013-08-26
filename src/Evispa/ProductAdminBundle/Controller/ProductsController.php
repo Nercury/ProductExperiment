@@ -16,7 +16,6 @@ class ProductsController extends Controller
     /**
      * Get a product by its identifier.
      *
-     * @Rest\Relation("self", href=@Rest\Route("api_product_get", parameters={"slug"=".slug"}))
      *
      * @Route(name="api_product_get")
      * @ApiDoc
