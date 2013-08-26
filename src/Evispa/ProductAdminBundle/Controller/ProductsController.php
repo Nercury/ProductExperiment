@@ -11,7 +11,6 @@ use FOS\RestBundle\Controller\Annotations\View;
 class ProductsController extends Controller
 {
     /**
-     * @Route("/products/{slug}.{_format}", defaults={"_format": null})
      * @View
      */
     public function getProductAction($slug)
@@ -25,5 +24,9 @@ class ProductsController extends Controller
         );
 
         return \FOS\RestBundle\View\View::create($data);
+    }
+
+    public function doSomethingElseWithProductAction($slug) {
+        
     }
 }
