@@ -16,14 +16,14 @@ class AppKernel extends Kernel
             new Symfony\Bundle\AsseticBundle\AsseticBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
-            new Evispa\ProductResourceBundle\EvispaProductResourceBundle(),
-            new Evispa\ProductAdminBundle\EvispaProductAdminBundle(),
             new JMS\SerializerBundle\JMSSerializerBundle(),
             new FOS\RestBundle\FOSRestBundle(),
             new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
-            new Evispa\ResourceApiDocBundle\EvispaResourceApiDocBundle(),
-            new Evispa\ResourceBundle\EvispaResourceBundle(),
             new FSC\HateoasBundle\FSCHateoasBundle(),
+            new Evispa\Resource\Core\ApiDocBundle\EvispaResourceApiDocBundle(),
+            new Evispa\Resource\Core\ConfigBundle\EvispaResourceConfigBundle(),
+            new Evispa\Resource\Api\ProductResourceBundle\EvispaProductResourceBundle(),
+            new Evispa\Resource\Backend\SqlProductBundle\EvispaSqlProductBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

@@ -2,9 +2,9 @@ NelmioApiDocBundle:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
     prefix:   /api/doc
 
-evispa_product_admin:
+evispa_product_resource:
     type: rest
-    resource: "@EvispaProductAdminBundle/Resources/config/products_routes.xml"
+    resource: "@EvispaProductResourceBundle/Resources/config/products_routes.xml"
     prefix:   /admin
 
 
