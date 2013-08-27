@@ -75,4 +75,9 @@ fos_rest:
     format_listener:
         prefer_extension: true
 
+fsc_hateoas:
+    json:
+        links_key: _links
+        relations_key: _embedded
+
 nelmio_api_doc: ~

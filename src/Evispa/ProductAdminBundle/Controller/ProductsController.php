@@ -16,14 +16,13 @@ class ProductsController extends Controller
     /**
      * Get a product by its identifier.
      *
-     *
-     * @Route(name="api_product_get")
      * @ApiDoc
      * @View(templateVar="product")
      */
     public function getProductAction($slug)
     {
-        $data = new \Evispa\Component\MultipartResource\Data\CombinedData();
+        $data = new \Evispa\ProductAdminBundle\Rest\ProductData();
+        $data->setSlug('pav1');
         $data["name"] = "Pavadinimas";
         $data["attributes"] = array(
             new \Evispa\ProductAdminBundle\Attr(),
@@ -39,13 +38,15 @@ class ProductsController extends Controller
      * @View(templateVar="products")
      */
     public function getProductsAction() {
-        $data = new \Evispa\Component\MultipartResource\Data\CombinedData();
+        $data = new \Evispa\ProductAdminBundle\Rest\ProductData();
+        $data->setSlug('pav1');
         $data["name"] = "Pavadinimas";
         $data["attributes"] = array(
             new \Evispa\ProductAdminBundle\Attr(),
         );
 
-        $data2 = new \Evispa\Component\MultipartResource\Data\CombinedData();
+        $data2 = new \Evispa\ProductAdminBundle\Rest\ProductData();
+        $data2->setSlug('pav2');
         $data2["name"] = "Pavadinimas 2";
         $data2["attributes"] = array(
             new \Evispa\ProductAdminBundle\Attr(),
@@ -65,7 +66,8 @@ class ProductsController extends Controller
      * @Resource("product", action="create")
      */
     public function postProductsAction(\Symfony\Component\HttpFoundation\Request $request) {
-        $data = new \Evispa\Component\MultipartResource\Data\CombinedData();
+        $data = new \Evispa\ProductAdminBundle\Rest\ProductData();
+        $data->setSlug('pav1');
         $data["name"] = "Pavadinimas";
 
         $fb = $this->createFormBuilder(null, array(
@@ -105,7 +107,8 @@ class ProductsController extends Controller
      * @Resource("product", action="update")
      */
     public function putProductAction(\Symfony\Component\HttpFoundation\Request $request, $slug) {
-        $data = new \Evispa\Component\MultipartResource\Data\CombinedData();
+        $data = new \Evispa\ProductAdminBundle\Rest\ProductData();
+        $data->setSlug('pav1');
         $data["name"] = "Pavadinimas";
 
         $fb = $this->createFormBuilder(null, array(

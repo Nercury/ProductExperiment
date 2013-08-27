@@ -10,6 +10,7 @@
     "require": {
         "php": ">=5.3.2",
         "evispa/productresource-bundle" : "*",
+        "jms/serializer-bundle": "*",
         "fsc/hateoas-bundle": "<0.5"
     },
     "target-dir": "Evispa/ProductAdminBundle",

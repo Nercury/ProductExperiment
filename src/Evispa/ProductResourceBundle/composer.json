@@ -9,9 +9,7 @@
     "homepage": "http://dev.evispa.lt/projects/verskis/wiki/evispa-productresourcebundle",
     "require": {
         "php": ">=5.3.2",
-        "evispa/resource-bundle" : "*",
-        "fsc/hateoas-bundle": "<0.5",
-        "jms/serializer-bundle": "*"
+        "evispa/resource-bundle" : "*"
     },
     "target-dir": "Evispa/ProductResourceBundle",
     "type": "symfony-bundle",
