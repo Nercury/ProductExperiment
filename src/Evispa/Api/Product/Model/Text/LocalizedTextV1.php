@@ -34,7 +34,7 @@ use JMS\Serializer\Annotation\XmlKeyValuePairs;
 use Evispa\ObjectMigration\Annotations as Api;
 
 /**
- * @Api\Version("vnd.evispa.product.localized.text.v1")
+ * @Api\Version("vnd.evispa.product.l11n.text.v1")
  */
 class LocalizedTextV1
 {
