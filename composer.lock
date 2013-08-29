@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "6041710c7a1ef4483f271c312ca8ed75",
+    "hash": "208a09ba7b327edc4b6ab2f6d70f7204",
     "packages": [
         {
             "name": "adrienbrault/form-serializer",
@@ -652,12 +652,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/doctrine2.git",
-                "reference": "f634ba343cb0b8524490ba0700f0d19fe85459da"
+                "reference": "fc7719d5fae069dad3915cc5330dcfb421439170"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/f634ba343cb0b8524490ba0700f0d19fe85459da",
-                "reference": "f634ba343cb0b8524490ba0700f0d19fe85459da",
+                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/fc7719d5fae069dad3915cc5330dcfb421439170",
+                "reference": "fc7719d5fae069dad3915cc5330dcfb421439170",
                 "shasum": ""
             },
             "require": {
@@ -719,7 +719,7 @@
                 "database",
                 "orm"
             ],
-            "time": "2013-08-25 14:23:20"
+            "time": "2013-08-29 03:15:55"
         },
         {
             "name": "friendsofsymfony/rest",
@@ -2063,12 +2063,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "32947b2fc8c199b7aab4475473136ed651c097a0"
+                "reference": "feff411dfc83282488e8ebf02160a2ee899706a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/32947b2fc8c199b7aab4475473136ed651c097a0",
-                "reference": "32947b2fc8c199b7aab4475473136ed651c097a0",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/feff411dfc83282488e8ebf02160a2ee899706a4",
+                "reference": "feff411dfc83282488e8ebf02160a2ee899706a4",
                 "shasum": ""
             },
             "require": {
@@ -2163,7 +2163,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2013-08-25 08:03:30"
+            "time": "2013-08-29 06:54:01"
         },
         {
             "name": "twig/extensions",
