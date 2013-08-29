@@ -25,29 +25,13 @@
  * @author Nerijus Arlauskas <nercury@gmail.com>
  */
 
-namespace Evispa\Api\Product\Tests;
+namespace Evispa\Api\Resource\Model;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Evispa\Api\Product\Model\Code\CodeV1;
-use Evispa\Api\Product\Model\Code\ProductCodeV1;
-use Evispa\ObjectMigration\VersionConverter;
-use Evispa\ObjectMigration\VersionReader;
-
-class CodeTest extends \PHPUnit_Framework_TestCase
+/**
+ * Implement this interface in your root api resource object.
+ */
+interface ApiResourceInterface
 {
-    public function testVersionAnnotations() {
-        $converter = new VersionConverter(new VersionReader(new AnnotationReader()), 'Evispa\Api\Product\Model\Code\ProductCodeV1');
-
-        // create object
-
-        $code = new ProductCodeV1();
-        $code->code = "Hello";
-
-        // migrate to another version
-
-        $simpleCode = $converter->migrateTo($code, 'vnd.evispa.code.v1');
-
-        $this->assertTrue($simpleCode instanceof CodeV1);
-        $this->assertEquals("Hello", $simpleCode->code);
-    }
+    public function getSlug();
+    public function setSlug($slug);
 }

@@ -39,9 +39,24 @@ class VersionConverter
      */
     private $reader;
 
-    public function __construct(VersionReader $reader)
+    /**
+     * @var string
+     */
+    private $className;
+
+    /**
+     * @var array
+     */
+    private $options;
+
+    public function __construct(VersionReader $reader, $className, $options = array())
     {
         $this->reader = $reader;
+        $this->className = $className;
+
+        $requiredOptions = $reader->getRequiredClassOptions($className);
+
+        $this->options = $options;
     }
 
     /**
@@ -68,33 +83,42 @@ class VersionConverter
      *
      * @return mixed Migrated object.
      */
-    public function migrate($object, $version) {
+    public function migrateTo($object, $version) {
         $className = get_class($object);
+
+        if ($className !== $this->className) {
+            throw new \LogicException('Converter for class "'.$className.'" can not migrate "'.$className.'" objects.');
+        }
+
         $migrationData = $this->reader->getMigrationMetadata($className);
         if (isset($migrationData->migrationsTo[$version])) {
             $methodInfo = $migrationData->migrationsTo[$version];
             /** @var \ReflectionMethod $method */
             $method = $methodInfo['method'];
-            return $method->invoke($object);
+            return $method->invoke($object, $this);
         }
         return null;
     }
 
     /**
-     * Check if object can be migrated to specified version.
+     * Migrate object to specified version.
      *
-     * @param string $version
-     */
-    public function canMigrateToVersion($version) {
-
-    }
-
-    /**
-     * Check if object can be migrated from specified version.
+     * @param mixed $object Object instance.
+     * @param string $version Version name.
      *
-     * @param string $version
+     * @return mixed Migrated object.
      */
-    public function canMigrateFromVersion($version) {
+    public function migrateFrom($object) {
+        $className = get_class($object);
+        $otherMigrationVersion = $this->reader->getClassVersionAnnotation($className)->version;
+        $migrationData = $this->reader->getMigrationMetadata($this->className);
 
+        if (isset($migrationData->migrationsFrom[$otherMigrationVersion])) {
+            $methodInfo = $migrationData->migrationsFrom[$otherMigrationVersion];
+            /** @var \ReflectionMethod $method */
+            $method = $methodInfo['method'];
+            return $method->invoke($this, $object);
+        }
+        return null;
     }
 }

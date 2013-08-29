@@ -156,6 +156,10 @@ class VersionReader
         return $migrationMethods;
     }
 
+    public function getRequiredClassOptions($className) {
+        return array();
+    }
+
     /**
      * Get information about object version and available migrations to other objects.
      *

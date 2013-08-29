@@ -25,29 +25,41 @@
  * @author Nerijus Arlauskas <nercury@gmail.com>
  */
 
-namespace Evispa\Api\Product\Tests;
+namespace Evispa\Api\Product\Model;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Evispa\Api\Product\Model\Code\CodeV1;
-use Evispa\Api\Product\Model\Code\ProductCodeV1;
-use Evispa\ObjectMigration\VersionConverter;
-use Evispa\ObjectMigration\VersionReader;
+use JMS\Serializer\Annotation\Type;
+use Evispa\ObjectMigration\Annotations as Api;
 
-class CodeTest extends \PHPUnit_Framework_TestCase
+/**
+ * @Api\Version("vnd.evispa.simple-product.v1")
+ */
+class SimpleProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
 {
-    public function testVersionAnnotations() {
-        $converter = new VersionConverter(new VersionReader(new AnnotationReader()), 'Evispa\Api\Product\Model\Code\ProductCodeV1');
+    private $slug;
 
-        // create object
-
-        $code = new ProductCodeV1();
-        $code->code = "Hello";
-
-        // migrate to another version
-
-        $simpleCode = $converter->migrateTo($code, 'vnd.evispa.code.v1');
-
-        $this->assertTrue($simpleCode instanceof CodeV1);
-        $this->assertEquals("Hello", $simpleCode->code);
+    public function getSlug()
+    {
+        return $this->slug;
     }
+
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+    }
+
+    /**
+     * @Type("Evispa\Api\Product\Model\Code\CodeV1")
+     * @Api\VersionedProperty("Evispa\Api\Product\Model\Code\CodeV1")
+     *
+     * @var Code\CodeV1
+     */
+    public $code = null;
+
+    /**
+     * @Type("Evispa\Api\Product\Model\Text\TextV1")
+     * @Api\VersionedProperty("Evispa\Api\Product\Model\Text\TextV1")
+     *
+     * @var Text\TextV1
+     */
+    public $text = null;
 }
