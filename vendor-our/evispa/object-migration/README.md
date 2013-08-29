@@ -73,6 +73,11 @@ $this->assertTrue($v2 instanceof V2); // true
 $this->assertEquals("TEST", $v2->id); // true
 ```
 
+Requirements
+------------
+
+This library will use Doctrine/Common for annotation parsing.
+
 Installation
 ------------
 This library can be easily installed via composer
