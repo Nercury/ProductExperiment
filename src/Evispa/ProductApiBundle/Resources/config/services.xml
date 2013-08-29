@@ -6,7 +6,7 @@
 
     <!--
     <parameters>
-        <parameter key="evispa_product_resource.example.class">Evispa\Resource\ProductResourceBundle\Example</parameter>
+        <parameter key="evispa_product_resource.example.class">Evispa\Resource\ProductApiBundle\Example</parameter>
     </parameters>
 
     <services>

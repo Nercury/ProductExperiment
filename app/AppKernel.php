@@ -22,8 +22,7 @@ class AppKernel extends Kernel
             new FSC\HateoasBundle\FSCHateoasBundle(),
             new Evispa\Resource\Core\ApiDocBundle\EvispaResourceApiDocBundle(),
             new Evispa\Resource\Core\ConfigBundle\EvispaResourceConfigBundle(),
-            new Evispa\Resource\Api\ProductResourceBundle\EvispaProductResourceBundle(),
-            new Evispa\Resource\Backend\SqlProductBundle\EvispaSqlProductBundle(),
+            new Evispa\ProductApiBundle\EvispaProductApiBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

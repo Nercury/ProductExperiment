@@ -4,7 +4,7 @@ NelmioApiDocBundle:
 
 evispa_product_resource:
     type: rest
-    resource: "@EvispaProductResourceBundle/Resources/config/products_routes.xml"
+    resource: "@EvispaProductApiBundle/Resources/config/products_routes.xml"
     prefix:   /admin
 
 

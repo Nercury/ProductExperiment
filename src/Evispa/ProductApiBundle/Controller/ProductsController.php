@@ -1,12 +1,14 @@
 <?php
 
-namespace Evispa\Resource\Api\ProductResourceBundle\Controller;
+namespace Evispa\ProductApiBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConverter;
+use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Controller\Annotations\View;
+use FOS\RestBundle\Controller\Annotations\QueryParam;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Evispa\Resource\Component\MultipartResource\Annotations\Resource;
 
@@ -20,7 +22,7 @@ class ProductsController extends Controller
      */
     public function getProductAction($slug)
     {
-        $data = new \Evispa\Resource\Api\ProductResourceBundle\Rest\ProductData();
+        $data = new \Evispa\ProductApiBundle\Rest\ProductData();
         $data->setSlug('pav1');
         $data["name"] = "Pavadinimas";
         $data["attributes"] = array(
@@ -34,17 +36,21 @@ class ProductsController extends Controller
      * Get list of all products.
      *
      * @ApiDoc
+     * @QueryParam(name="page", requirements="\d+", default="1", description="Page of the product list.")
+     * @QueryParam(name="count", requirements="\d+", default="50", strict=true, nullable=true, description="Item count limit")
      * @View(templateVar="products")
      */
-    public function getProductsAction() {
-        $data = new \Evispa\Resource\Api\ProductResourceBundle\Rest\ProductData();
+    public function getProductsAction(ParamFetcher $paramFetcher) {
+        $page = $paramFetcher->get('page');
+
+        $data = new \Evispa\ProductApiBundle\Rest\ProductData();
         $data->setSlug('pav1');
         $data["name"] = "Pavadinimas";
         $data["attributes"] = array(
             'test',
         );
 
-        $data2 = new \Evispa\Resource\Api\ProductResourceBundle\Rest\ProductData();
+        $data2 = new \Evispa\ProductApiBundle\Rest\ProductData();
         $data2->setSlug('pav2');
         $data2["name"] = "Pavadinimas 2";
         $data2["attributes"] = array(
@@ -65,7 +71,7 @@ class ProductsController extends Controller
      * @Resource("product", action="create")
      */
     public function postProductsAction(\Symfony\Component\HttpFoundation\Request $request) {
-        $data = new \Evispa\Resource\Api\ProductResourceBundle\Rest\ProductData();
+        $data = new \Evispa\ProductApiBundle\Rest\ProductData();
         $data->setSlug('pav1');
         $data["name"] = "Pavadinimas";
 
@@ -106,7 +112,7 @@ class ProductsController extends Controller
      * @Resource("product", action="update")
      */
     public function putProductAction(\Symfony\Component\HttpFoundation\Request $request, $slug) {
-        $data = new \Evispa\Resource\Api\ProductResourceBundle\Rest\ProductData();
+        $data = new \Evispa\ProductApiBundle\Rest\ProductData();
         $data->setSlug('pav1');
         $data["name"] = "Pavadinimas";
 

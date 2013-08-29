@@ -3,7 +3,7 @@
  * @author nerijus
  */
 
-namespace Evispa\Resource\Api\ProductResourceBundle\Rest;
+namespace Evispa\ProductApiBundle\Rest;
 
 use Evispa\Resource\Component\MultipartResource\Data\CombinedData;
 use FSC\HateoasBundle\Annotation as Rest;

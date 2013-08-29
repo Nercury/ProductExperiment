@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="evispa_product_resource.example.class">Evispa\Resource\ProductApiBundle\Example</parameter>
+    </parameters>
+
+    <services>
+        <service id="evispa_product_api.product_resource" class="%evispa_product_resource.example.class%">
+            <argument>product</argument>
+            <argument>%parameter_name%</argument>
+        </service>
+    </services>
+
+</container>

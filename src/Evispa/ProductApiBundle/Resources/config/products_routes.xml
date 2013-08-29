@@ -7,6 +7,6 @@
     <import
         id="products"
         type="rest"
-        resource="Evispa\Resource\Api\ProductResourceBundle\Controller\ProductsController"
+        resource="Evispa\ProductApiBundle\Controller\ProductsController"
     />
 </routes>

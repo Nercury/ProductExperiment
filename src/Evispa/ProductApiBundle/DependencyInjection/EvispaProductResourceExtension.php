@@ -1,6 +1,6 @@
 <?php
 
-namespace Evispa\Resource\Api\ProductResourceBundle\DependencyInjection;
+namespace Evispa\ProductApiBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
