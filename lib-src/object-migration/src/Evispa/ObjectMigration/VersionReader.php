@@ -67,11 +67,11 @@ class VersionReader
      *
      * @param string $className Full class name.
      *
-     * @return Annotations\Version
+     * @return string
      *
      * @throws Exception\NotVersionedException If object is not versioned.
      */
-    public function getClassVersionAnnotation($className) {
+    public function getClassVersion($className) {
         if (isset($this->classVersions[$className])) {
             return $this->classVersions[$className];
         }
@@ -86,11 +86,18 @@ class VersionReader
             throw new Exception\NotVersionedException($className);
         }
 
-        $this->classVersions[$className] = $versionAnnotation;
+        $version = $versionAnnotation->version;
 
-        return $versionAnnotation;
+        $this->classVersions[$className] = $version;
+
+        return $version;
     }
 
+    /**
+     *
+     * @param type $className
+     * @return Migration\MethodInfo[]
+     */
     private function getClassMigrationAnnotations($className) {
         $class = $this->getReflectionClass($className);
         $methods = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
@@ -106,15 +113,21 @@ class VersionReader
                 continue;
             }
 
-            $annotations[] = array(
-                'method' => $method,
-                'annotation' => $migrationAnnotation,
-            );
+            $annotations[] = new Migration\MethodInfo($method, $migrationAnnotation);
         }
 
         return $annotations;
     }
 
+    /**
+     * Get migrations for a class.
+     *
+     * @param string $className
+     *
+     * @return Migration\MigrationMethods
+     *
+     * @throws \LogicException
+     */
     public function getClassMigrationMethods($className) {
         if (isset($this->classMigrationMethods[$className])) {
             return $this->classMigrationMethods[$className];
@@ -122,16 +135,16 @@ class VersionReader
 
         $migrationAnnotations = $this->getClassMigrationAnnotations($className);
 
-        $migrationMethods = array('from' => array(), 'to' => array());
+        $migrationMethods = new Migration\MigrationMethods();
 
         foreach ($migrationAnnotations as $migrationAnnotation) {
-            $method = $migrationAnnotation['method'];
-            $migrationAnnotation = $migrationAnnotation['annotation'];
+            $method = $migrationAnnotation->method;
+            $migrationAnnotation = $migrationAnnotation->annotation;
 
             if (null !== $migrationAnnotation->from) {
-                if (false === $method->isStatic() || 1 !== $method->getNumberOfParameters()) {
+                if (false === $method->isStatic() || 2 !== $method->getNumberOfParameters()) {
                     throw new \LogicException(
-                        'Method "'.$method->getName().'" in "'.$className.'" should be static and require 1 parameter.'
+                        'Method "'.$method->getName().'" in "'.$className.'" should be static and require 2 parameters.'
                     );
                 }
 
@@ -142,12 +155,13 @@ class VersionReader
                 }
 
                 $otherClass = $migrationAnnotation->from;
+                $otherClassVersion = $this->getClassVersion($otherClass);
+                $migrationMethods->from[$otherClassVersion] = new CreateAction($method);
 
-                $migrationMethods['from'][] = new CreateAction($method);
             } elseif (null !== $migrationAnnotation->to) {
-                if (true === $method->isStatic() || 0 !== $method->getNumberOfParameters()) {
+                if (true === $method->isStatic() || 1 !== $method->getNumberOfParameters()) {
                     throw new \LogicException(
-                        'Method "'.$method->getName().'" in "'.$className.'" should not be static and require 0 parameters.'
+                        'Method "'.$method->getName().'" in "'.$className.'" should not be static and require 1 parameter.'
                     );
                 }
 
@@ -158,12 +172,9 @@ class VersionReader
                 }
 
                 $otherClass = $migrationAnnotation->to;
+                $otherClassVersion = $this->getClassVersion($otherClass);
+                $migrationMethods->to[$otherClassVersion] = new CloneAction($method);
 
-                $migrationMethods['to'][] = array(
-                    'method' => $method,
-                    'class' => $class,
-                    'other_class' => $otherClass,
-                );
             }
         }
 
@@ -174,37 +185,6 @@ class VersionReader
 
     public function getRequiredClassOptions($className) {
         return array();
-    }
-
-    /**
-     * Get information about object version and available migrations to other objects.
-     *
-     * @param string $className Class name.
-     *
-     * @return MigrationMetadata
-     */
-    public function getMigrationMetadata($className) {
-
-        $versionAnnotation = $this->getClassVersionAnnotation($className);
-
-        $migrationMethods = $this->getClassMigrationMethods($className);
-
-        $migrationsFrom = array();
-        $migrationsTo = array();
-
-        foreach ($migrationMethods['from'] as $migrationMethod) {
-            $otherClassName = $migrationMethod['other_class'];
-            $otherClassVersionAnnotation = $this->getClassVersionAnnotation($otherClassName);
-            $migrationsFrom[$otherClassVersionAnnotation->version] = $migrationMethod;
-        }
-
-        foreach ($migrationMethods['to'] as $migrationMethod) {
-            $otherClassName = $migrationMethod['other_class'];
-            $otherClassVersionAnnotation = $this->getClassVersionAnnotation($otherClassName);
-            $migrationsTo[$otherClassVersionAnnotation->version] = new CloneAction($migrationMethod);
-        }
-
-        return new MigrationMetadata($versionAnnotation->version, $migrationsFrom, $migrationsTo);
     }
 
 }

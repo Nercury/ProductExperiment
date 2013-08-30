@@ -34,5 +34,5 @@ interface MigrationActionInterface
      *
      * @return mixed
      */
-    public function run($object);
+    public function run($object, $options = array());
 }

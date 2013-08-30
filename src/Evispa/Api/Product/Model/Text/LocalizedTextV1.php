@@ -61,11 +61,11 @@ class LocalizedTextV1
     public static function fromTextV1(TextV1 $other, $options) {
         $locale = $options['locale'];
 
-        $other = new self();
+        $new = new self();
 
-        $other->items[$locale] = $other;
+        $new->items[$locale] = clone $other;
 
-        return $other;
+        return $new;
     }
 
     /**

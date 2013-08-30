@@ -37,8 +37,8 @@ class CloneAction implements MigrationActionInterface
         $this->method = $method;
     }
 
-    public function run($object)
+    public function run($object, $options = array())
     {
-        return $this->method->invoke($object);
+        return $this->method->invoke($object, $options);
     }
 }

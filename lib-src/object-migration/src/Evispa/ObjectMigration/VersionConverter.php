@@ -28,7 +28,7 @@
 namespace Evispa\ObjectMigration;
 
 /**
- * 
+ *
  *
  */
 class VersionConverter
@@ -61,62 +61,46 @@ class VersionConverter
     }
 
     /**
-     * Get object version.
-     *
-     * Object should be marked with the annoation:
-     *
-     * <code>Evispa\ObjectMigration\Annotations\Resource("type", version="X")</code>.
-     *
-     * @param mixed $object Object instance.
-     *
-     * @return string
-     */
-    public function getVersion($object) {
-        $className = get_class($object);
-        return $this->reader->getClassVersionAnnotation($className)->version;
-    }
-
-    /**
      * Migrate object to specified version.
      *
      * @param mixed $object Object instance.
-     * @param string $version Version name.
+     * @param string $otherVersion Version name.
      *
      * @return mixed Migrated object.
      */
-    public function migrateTo($object, $version) {
+    public function migrateTo($object, $otherVersion) {
         $className = get_class($object);
 
         if ($className !== $this->className) {
             throw new \LogicException('Converter for class "'.$className.'" can not migrate "'.$className.'" objects.');
         }
 
-        $migrationData = $this->reader->getMigrationMetadata($className);
-        if (isset($migrationData->migrationsTo[$version])) {
-            return $migrationData->migrationsTo[$version]->run($object);
+        $migrationMethods = $this->reader->getClassMigrationMethods($className);
+        if (isset($migrationMethods->to[$otherVersion])) {
+            $action = $migrationMethods->to[$otherVersion];
+            return $action->run($object, $this->options);
         }
         return null;
     }
 
     /**
-     * Migrate object to specified version.
+     * Get object from other version.
      *
      * @param mixed $object Object instance.
      * @param string $version Version name.
      *
      * @return mixed Migrated object.
      */
-    public function migrateFrom($object) {
-        $className = get_class($object);
-        $otherMigrationVersion = $this->reader->getClassVersionAnnotation($className)->version;
-        $migrationData = $this->reader->getMigrationMetadata($this->className);
+    public function migrateFrom($otherObject) {
+        $otherObjectClass = get_class($otherObject);
+        $otherVersion = $this->reader->getClassVersion($otherObjectClass);
+        $migrationMethods = $this->reader->getClassMigrationMethods($this->className);
 
-        if (isset($migrationData->migrationsFrom[$otherMigrationVersion])) {
-            $methodInfo = $migrationData->migrationsFrom[$otherMigrationVersion];
-            /** @var \ReflectionMethod $method */
-            $method = $methodInfo['method'];
-            return $method->invoke($object);
+        if (isset($migrationMethods->from[$otherVersion])) {
+            $action = $migrationMethods->from[$otherVersion];
+            return $action->run($otherObject, $this->options);
         }
+
         return null;
     }
 }

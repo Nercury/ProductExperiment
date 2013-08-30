@@ -14,7 +14,9 @@ use Evispa\ObjectMigration\VersionReader;
 class TextTest extends \PHPUnit_Framework_TestCase
 {
     public function testTextAnnotations() {
-        $converter = new VersionConverter(new VersionReader(new AnnotationReader()), 'Evispa\Api\Product\Model\Text\LocalizedTextV1');
+        $converter = new VersionConverter(new VersionReader(new AnnotationReader()), 'Evispa\Api\Product\Model\Text\LocalizedTextV1', array(
+            'locale' => 'lt',
+        ));
 
         // create object
 

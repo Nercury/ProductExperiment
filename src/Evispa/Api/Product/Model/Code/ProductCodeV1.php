@@ -69,7 +69,7 @@ class ProductCodeV1
      *
      * @return self
      */
-    public static function fromCodeV1(CodeV1 $other) {
+    public static function fromCodeV1(CodeV1 $other, $options) {
         $code = new self();
 
         $code->code = $other->code;
@@ -82,7 +82,7 @@ class ProductCodeV1
      *
      * @return CodeV1
      */
-    public function toCodeV1() {
+    public function toCodeV1($options) {
         $other = new CodeV1();
 
         $other->code = $this->code;
