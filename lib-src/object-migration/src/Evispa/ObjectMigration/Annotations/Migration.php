@@ -40,6 +40,8 @@ final class Migration
                 'Annotation "Migration" requires either "from" or "to" parameters.'
             );
         }
+        var_dump($data);
+
         $this->from = isset($data['from']) ? $data['from'] : null;
         $this->to = isset($data['to']) ? $data['to'] : null;
     }

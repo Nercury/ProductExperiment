@@ -184,7 +184,33 @@ class VersionReader
     }
 
     public function getRequiredClassOptions($className) {
-        return array();
+        $requiredOptions = array();
+
+        $visitedClassNames = array();
+        $markedClassNames = array($className => true);
+        $newClassNames = array();
+
+        while (true) {
+            // find new class names
+            foreach ($markedClassNames as $markedName => $_) {
+                $annotations = $this->getClassMigrationAnnotations($className);
+                foreach ($annotations as $annotationInfo) {
+                    $newClassFrom = $annotationInfo->annotation->from;
+                    $newClassTo = $annotationInfo->annotation->from;
+                    $newClass = null;
+                    if (null !== $newClassFrom) {
+                        $newClass = $newClassFrom;
+                    } elseif (null !== $newClassTo) {
+                        $newClass = $newClassTo;
+                    }
+                    if (null !== $newClass && !isset($newClassNames[$newClass])) {
+                        $newClassNames[$newClass] = true;
+                    }
+                }
+            }
+        }
+
+        return $requiredOptions;
     }
 
 }

@@ -50,7 +50,6 @@ class ProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
 
     /**
      * @Type("Evispa\Api\Product\Model\Code\ProductCodeV1")
-     * @Api\VersionedProperty("Evispa\Api\Product\Model\Code\ProductCodeV1")
      *
      * @var Code\ProductCodeV1
      */
@@ -58,7 +57,6 @@ class ProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
 
     /**
      * @Type("Evispa\Api\Product\Model\Text\LocalizedTextV1")
-     * @Api\VersionedProperty("Evispa\Api\Product\Model\Text\LocalizedTextV1")
      *
      * @var Text\LocalizedTextV1
      */
@@ -71,7 +69,7 @@ class ProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
      *
      * @return self
      */
-    public static function fromSimpleProductV1(VersionConverter $converter, CodeV1 $other) {
+    public static function fromSimpleProductV1(CodeV1 $other) {
         $obj = new self();
 
         $obj->setSlug($other->getSlug());
@@ -88,10 +86,12 @@ class ProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
      *
      * @return self
      */
-    public function toSimpleProductV1(VersionConverter $converter) {
+    public function toSimpleProductV1() {
         $obj = new SimpleProductV1();
 
         $obj->setSlug($this->getSlug());
+
+        
         $converter->migrateProperty($this, 'code', $obj, 'code');
         $converter->migrateProperty($this, 'text', $obj, 'text');
 
