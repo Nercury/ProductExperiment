@@ -50,4 +50,36 @@ class LocalizedTextV1
      * @var array
      */
     public $items = array();
+
+    /**
+     * @Api\Migration(from="Evispa\Api\Product\Model\Text\TextV1", require={"locale"})
+     *
+     * @param TextV1 $old Old version of text part.
+     *
+     * @return self
+     */
+    public static function fromTextV1(TextV1 $other, $options) {
+        $locale = $options['locale'];
+
+        $other = new self();
+
+        $other->items[$locale] = $other;
+
+        return $other;
+    }
+
+    /**
+     * @Api\Migration(to="Evispa\Api\Product\Model\Text\TextV1", require={"locale"})
+     *
+     * @return TextV1
+     */
+    public function toTextV1($options) {
+        $locale = $options['locale'];
+
+        if (isset($this->items[$locale])) {
+            return $this->items[$locale];
+        }
+
+        return new TextV1();
+    }
 }

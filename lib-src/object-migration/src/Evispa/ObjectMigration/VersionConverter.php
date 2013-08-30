@@ -28,7 +28,8 @@
 namespace Evispa\ObjectMigration;
 
 /**
- * @author nerijus
+ * 
+ *
  */
 class VersionConverter
 {
