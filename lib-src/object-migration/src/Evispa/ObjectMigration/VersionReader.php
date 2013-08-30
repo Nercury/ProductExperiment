@@ -91,15 +91,11 @@ class VersionReader
         return $versionAnnotation;
     }
 
-    public function getClassMigrationMethods($className) {
-        if (isset($this->classMigrationMethods[$className])) {
-            return $this->classMigrationMethods[$className];
-        }
-
+    private function getClassMigrationAnnotations($className) {
         $class = $this->getReflectionClass($className);
         $methods = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
 
-        $migrationMethods = array('from' => array(), 'to' => array());
+        $annotations = array();
 
         foreach ($methods as $method) {
             $migrationAnnotation = $this->reader->getMethodAnnotation(
@@ -109,6 +105,28 @@ class VersionReader
             if (null === $migrationAnnotation) {
                 continue;
             }
+
+            $annotations[] = array(
+                'method' => $method,
+                'annotation' => $migrationAnnotation,
+            );
+        }
+
+        return $annotations;
+    }
+
+    public function getClassMigrationMethods($className) {
+        if (isset($this->classMigrationMethods[$className])) {
+            return $this->classMigrationMethods[$className];
+        }
+
+        $migrationAnnotations = $this->getClassMigrationAnnotations($className);
+
+        $migrationMethods = array('from' => array(), 'to' => array());
+
+        foreach ($migrationAnnotations as $migrationAnnotation) {
+            $method = $migrationAnnotation['method'];
+            $migrationAnnotation = $migrationAnnotation['annotation'];
 
             if (null !== $migrationAnnotation->from) {
                 if (false === $method->isStatic() || 1 !== $method->getNumberOfParameters()) {
