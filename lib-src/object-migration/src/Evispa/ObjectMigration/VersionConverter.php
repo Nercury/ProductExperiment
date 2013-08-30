@@ -93,10 +93,7 @@ class VersionConverter
 
         $migrationData = $this->reader->getMigrationMetadata($className);
         if (isset($migrationData->migrationsTo[$version])) {
-            $methodInfo = $migrationData->migrationsTo[$version];
-            /** @var \ReflectionMethod $method */
-            $method = $methodInfo['method'];
-            return $method->invoke($object, $this);
+            return $migrationData->migrationsTo[$version]->run($object);
         }
         return null;
     }
@@ -118,7 +115,7 @@ class VersionConverter
             $methodInfo = $migrationData->migrationsFrom[$otherMigrationVersion];
             /** @var \ReflectionMethod $method */
             $method = $methodInfo['method'];
-            return $method->invoke($this, $object);
+            return $method->invoke($object);
         }
         return null;
     }

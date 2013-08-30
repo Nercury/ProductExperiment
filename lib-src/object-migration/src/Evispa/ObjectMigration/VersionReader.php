@@ -28,6 +28,8 @@
 namespace Evispa\ObjectMigration;
 
 use Doctrine\Common\Annotations\Reader;
+use Evispa\ObjectMigration\Action\CloneAction;
+use Evispa\ObjectMigration\Action\CreateAction;
 
 class VersionReader
 {
@@ -123,11 +125,7 @@ class VersionReader
 
                 $otherClass = $migrationAnnotation->from;
 
-                $migrationMethods['from'][] = array(
-                    'method' => $method,
-                    'class' => $class,
-                    'other_class' => $otherClass,
-                );
+                $migrationMethods['from'][] = new CreateAction($method);
             } elseif (null !== $migrationAnnotation->to) {
                 if (true === $method->isStatic() || 0 !== $method->getNumberOfParameters()) {
                     throw new \LogicException(
@@ -185,7 +183,7 @@ class VersionReader
         foreach ($migrationMethods['to'] as $migrationMethod) {
             $otherClassName = $migrationMethod['other_class'];
             $otherClassVersionAnnotation = $this->getClassVersionAnnotation($otherClassName);
-            $migrationsTo[$otherClassVersionAnnotation->version] = $migrationMethod;
+            $migrationsTo[$otherClassVersionAnnotation->version] = new CloneAction($migrationMethod);
         }
 
         return new MigrationMetadata($versionAnnotation->version, $migrationsFrom, $migrationsTo);
