@@ -40,8 +40,9 @@ final class Migration
                 'Annotation "Migration" requires either "from" or "to" parameters.'
             );
         }
-        var_dump($data);
 
+        $this->require = isset($data['require']) ? $data['require'] : array();
+        
         $this->from = isset($data['from']) ? $data['from'] : null;
         $this->to = isset($data['to']) ? $data['to'] : null;
     }
@@ -55,4 +56,11 @@ final class Migration
      * @var string
      */
     public $to;
+    
+    /**
+     * Required options.
+     * 
+     * @var string[]
+     */
+    public $require;
 }

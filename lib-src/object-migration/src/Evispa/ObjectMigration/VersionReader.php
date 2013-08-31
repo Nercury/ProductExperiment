@@ -186,26 +186,40 @@ class VersionReader
     public function getRequiredClassOptions($className) {
         $requiredOptions = array();
 
-        $visitedClassNames = array();
-        $markedClassNames = array($className => true);
-        $newClassNames = array();
+        $scanList = array($className => true);
+        
+        $scannedSourceNames = array();
 
         while (true) {
+            if (0 === count($scanList)) {
+                break;
+            }
+            
             // find new class names
-            foreach ($markedClassNames as $markedName => $_) {
-                $annotations = $this->getClassMigrationAnnotations($className);
+            foreach ($scanList as $scanName => $_) {
+                $annotations = $this->getClassMigrationAnnotations($scanName);
                 foreach ($annotations as $annotationInfo) {
-                    $newClassFrom = $annotationInfo->annotation->from;
-                    $newClassTo = $annotationInfo->annotation->from;
-                    $newClass = null;
-                    if (null !== $newClassFrom) {
-                        $newClass = $newClassFrom;
-                    } elseif (null !== $newClassTo) {
-                        $newClass = $newClassTo;
+                    if (null !== $annotationInfo->annotation->from) {
+                        $newClass = $annotationInfo->annotation->from;
+                        foreach ($annotationInfo->annotation->require as $requiredOption) {
+                            $requiredOptions[$requiredOption] = array('from' => $newClass, 'to' => $scanName);
+                        }
+                    } elseif (null !== $annotationInfo->annotation->to) {
+                        $newClass = $annotationInfo->annotation->to;
+                        foreach ($annotationInfo->annotation->require as $requiredOption) {
+                            $requiredOptions[$requiredOption] = array('from' => $scanName,  'to' => $newClass);
+                        }
                     }
-                    if (null !== $newClass && !isset($newClassNames[$newClass])) {
-                        $newClassNames[$newClass] = true;
+                    
+                    if (!isset($scannedSourceNames[$newClass])) {
+                        $scanList[$newClass] = true;
                     }
+                }
+                
+                unset($scanList[$scanName]);
+                
+                if (!isset($scannedSourceNames[$scanName])) {
+                    $scannedSourceNames[$scanName] = true;
                 }
             }
         }

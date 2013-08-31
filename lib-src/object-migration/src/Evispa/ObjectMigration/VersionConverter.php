@@ -56,7 +56,12 @@ class VersionConverter
         $this->className = $className;
 
         $requiredOptions = $reader->getRequiredClassOptions($className);
-
+        foreach ($requiredOptions as $option => $classes) {
+            if (!isset($options[$option])) {
+                throw new \LogicException('Migration from "'.$classes['from'].'" to "'.$classes['to'].'" may require "'.$option.'" option which was not set.');
+            }
+        }
+        
         $this->options = $options;
     }
 

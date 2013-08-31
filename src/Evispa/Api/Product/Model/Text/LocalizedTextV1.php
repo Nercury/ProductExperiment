@@ -69,7 +69,7 @@ class LocalizedTextV1
     }
 
     /**
-     * @Api\Migration(to="Evispa\Api\Product\Model\Text\TextV1", require={"locale"})
+     * @Api\Migration(to="Evispa\Api\Product\Model\Text\TextV1")
      *
      * @return TextV1
      */
