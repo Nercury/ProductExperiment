@@ -72,8 +72,13 @@ class ProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
         $obj = new self();
 
         $obj->setSlug($other->getSlug());
-        $obj->code = Code\ProductCodeV1::fromCodeV1($other->code, $options);
-        $obj->text = Text\LocalizedTextV1::fromTextV1($other->text, $options);
+        
+        if (null !== $other->code) {
+            $obj->code = Code\ProductCodeV1::fromCodeV1($other->code, $options);
+        }
+        if (null !== $other->text) {
+            $obj->text = Text\LocalizedTextV1::fromTextV1($other->text, $options);
+        }
 
         return $obj;
     }
@@ -89,10 +94,13 @@ class ProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
         $obj = new SimpleProductV1();
 
         $obj->setSlug($this->getSlug());
-
         
-        $converter->migrateProperty($this, 'code', $obj, 'code');
-        $converter->migrateProperty($this, 'text', $obj, 'text');
+        if (null !== $this->code) {
+            $obj->code = $this->code->toCodeV1($options);
+        }
+        if (null !== $this->text) {
+            $obj->text = $this->text->toTextV1($options);
+        }
 
         return $obj;
     }
