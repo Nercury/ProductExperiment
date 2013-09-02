@@ -81,6 +81,9 @@ fos_rest:
     access_denied_listener:
         json: true
         xml: true
+    body_listener: true
+    body_converter:
+        enabled: false
     param_fetcher_listener: true
 
 nelmio_api_doc: ~
