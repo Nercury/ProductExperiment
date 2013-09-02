@@ -30,6 +30,10 @@ namespace Evispa\ObjectMigration;
 use Doctrine\Common\Annotations\Reader;
 use Evispa\ObjectMigration\Action\CloneAction;
 use Evispa\ObjectMigration\Action\CreateAction;
+use Evispa\ObjectMigration\Annotations\Migration;
+use Evispa\ObjectMigration\Annotations\Version;
+use Evispa\ObjectMigration\Migration\MethodInfo;
+use Evispa\ObjectMigration\Migration\MigrationMethods;
 
 class VersionReader
 {
@@ -51,7 +55,8 @@ class VersionReader
      *
      * @return \ReflectionClass
      */
-    public function getReflectionClass($className) {
+    public function getReflectionClass($className)
+    {
         if (isset($this->classReflections[$className])) {
             return $this->classReflections[$className];
         }
@@ -71,7 +76,8 @@ class VersionReader
      *
      * @throws Exception\NotVersionedException If object is not versioned.
      */
-    public function getClassVersion($className) {
+    public function getClassVersion($className)
+    {
         if (isset($this->classVersions[$className])) {
             return $this->classVersions[$className];
         }
@@ -79,7 +85,8 @@ class VersionReader
         $class = $this->getReflectionClass($className);
 
         $versionAnnotation = $this->reader->getClassAnnotation(
-            $class, 'Evispa\ObjectMigration\Annotations\Version'
+            $class,
+            'Evispa\ObjectMigration\Annotations\Version'
         );
 
         if (null === $versionAnnotation) {
@@ -95,10 +102,12 @@ class VersionReader
 
     /**
      *
-     * @param type $className
-     * @return Migration\MethodInfo[]
+     * @param string $className
+     *
+     * @return MethodInfo[]
      */
-    public function getClassMigrationAnnotations($className) {
+    public function getClassMigrationMethodInfo($className)
+    {
         $class = $this->getReflectionClass($className);
         $methods = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
 
@@ -106,17 +115,114 @@ class VersionReader
 
         foreach ($methods as $method) {
             $migrationAnnotation = $this->reader->getMethodAnnotation(
-                $method, 'Evispa\ObjectMigration\Annotations\Migration'
+                $method,
+                'Evispa\ObjectMigration\Annotations\Migration'
             );
 
             if (null === $migrationAnnotation) {
                 continue;
             }
 
-            $annotations[] = new Migration\MethodInfo($method, $migrationAnnotation);
+            $action = null;
+
+            if (null !== $migrationAnnotation->from) {
+                if (false === $method->isStatic() || 2 !== $method->getNumberOfParameters()) {
+                    throw new \LogicException(
+                        'Method "' . $method->getName(
+                        ) . '" in "' . $className . '" should be static and require 2 parameters.'
+                    );
+                }
+
+                if ($migrationAnnotation->from === $className) {
+                    throw new \LogicException(
+                        'Method "' . $method->getName(
+                        ) . '" in "' . $className . '" should have a migration from a different class.'
+                    );
+                }
+
+                $action = new CreateAction($method);
+
+            } elseif (null !== $migrationAnnotation->to) {
+                if (true === $method->isStatic() || 1 !== $method->getNumberOfParameters()) {
+                    throw new \LogicException(
+                        'Method "' . $method->getName(
+                        ) . '" in "' . $className . '" should not be static and require 1 parameter.'
+                    );
+                }
+
+                if ($migrationAnnotation->to === $className) {
+                    throw new \LogicException(
+                        'Method "' . $method->getName(
+                        ) . '" in "' . $className . '" should have a migration to a different class.'
+                    );
+                }
+
+                $action = new CloneAction($method);
+
+            }
+
+            $annotations[] = new MethodInfo($action, $migrationAnnotation);
         }
 
         return $annotations;
+    }
+
+    /**
+     * Search for class name by version id
+     *
+     * @param $startFromClassName
+     * @param $version
+     *
+     * @return null|string
+     */
+    public function getClassNameByVersion($startFromClassName, $version)
+    {
+        $visited = array();
+
+        return $this->findClassNameByVersion($startFromClassName, $version, $visited);
+    }
+
+    /**
+     * Search for class name by version id
+     *
+     * @param string $startFromClassName
+     * @param string $version
+     * @param array  $visited
+     *
+     * @return null|string
+     */
+    private function findClassNameByVersion($startFromClassName, $version, &$visited = array())
+    {
+        $versionAnnotation = $this->reader->getClassAnnotation(
+            new \ReflectionClass($startFromClassName),
+            'Evispa\ObjectMigration\Annotations\Version'
+        );
+
+        if ($versionAnnotation->version === $version) {
+            return $startFromClassName;
+        }
+
+        $migrationAnnotations = $this->getClassMigrationMethodInfo($startFromClassName);
+        /** @var MethodInfo $methodInfo */
+        foreach ($migrationAnnotations as $methodInfo) {
+            if ($methodInfo->annotation->from && !in_array($methodInfo->annotation->from, $visited)) {
+                $visited[] = $methodInfo->annotation->from;
+                $className = $this->getClassNameByVersion($methodInfo->annotation->from, $version, $visited);
+                if ($className) {
+                    return $className;
+                }
+            }
+
+            if ($methodInfo->annotation->to && !in_array($methodInfo->annotation->to, $visited)) {
+                $visited[] = $methodInfo->annotation->to;
+                $className = $this->getClassNameByVersion($methodInfo->annotation->to, $version, $visited);
+                if ($className) {
+                    return $className;
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -124,18 +230,19 @@ class VersionReader
      *
      * @param string $className
      *
-     * @return Migration\MigrationMethods
+     * @return MigrationMethods
      *
      * @throws \LogicException
      */
-    public function getClassMigrationMethods($className) {
+    public function getClassMigrationMethods($className)
+    {
         if (isset($this->classMigrationMethods[$className])) {
             return $this->classMigrationMethods[$className];
         }
 
-        $migrationAnnotations = $this->getClassMigrationAnnotations($className);
+        $migrationAnnotations = $this->getClassMigrationMethodInfo($className);
 
-        $migrationMethods = new Migration\MigrationMethods();
+        $migrationMethods = new MigrationMethods();
 
         foreach ($migrationAnnotations as $migrationAnnotation) {
             $method = $migrationAnnotation->method;
@@ -144,13 +251,15 @@ class VersionReader
             if (null !== $migrationAnnotation->from) {
                 if (false === $method->isStatic() || 2 !== $method->getNumberOfParameters()) {
                     throw new \LogicException(
-                        'Method "'.$method->getName().'" in "'.$className.'" should be static and require 2 parameters.'
+                        'Method "' . $method->getName(
+                        ) . '" in "' . $className . '" should be static and require 2 parameters.'
                     );
                 }
 
                 if ($migrationAnnotation->from === $className) {
                     throw new \LogicException(
-                        'Method "'.$method->getName().'" in "'.$className.'" should have a migration from a different class.'
+                        'Method "' . $method->getName(
+                        ) . '" in "' . $className . '" should have a migration from a different class.'
                     );
                 }
 
@@ -161,13 +270,15 @@ class VersionReader
             } elseif (null !== $migrationAnnotation->to) {
                 if (true === $method->isStatic() || 1 !== $method->getNumberOfParameters()) {
                     throw new \LogicException(
-                        'Method "'.$method->getName().'" in "'.$className.'" should not be static and require 1 parameter.'
+                        'Method "' . $method->getName(
+                        ) . '" in "' . $className . '" should not be static and require 1 parameter.'
                     );
                 }
 
                 if ($migrationAnnotation->to === $className) {
                     throw new \LogicException(
-                        'Method "'.$method->getName().'" in "'.$className.'" should have a migration to a different class.'
+                        'Method "' . $method->getName(
+                        ) . '" in "' . $className . '" should have a migration to a different class.'
                     );
                 }
 
@@ -183,21 +294,22 @@ class VersionReader
         return $migrationMethods;
     }
 
-    public function getRequiredClassOptions($className) {
+    public function getRequiredClassOptions($className)
+    {
         $requiredOptions = array();
 
         $scanList = array($className => true);
-        
+
         $scannedSourceNames = array();
 
         while (true) {
             if (0 === count($scanList)) {
                 break;
             }
-            
+
             // find new class names
             foreach ($scanList as $scanName => $_) {
-                $annotations = $this->getClassMigrationAnnotations($scanName);
+                $annotations = $this->getClassMigrationMethodInfo($scanName);
                 foreach ($annotations as $annotationInfo) {
                     if (null !== $annotationInfo->annotation->from) {
                         $newClass = $annotationInfo->annotation->from;
@@ -207,17 +319,17 @@ class VersionReader
                     } elseif (null !== $annotationInfo->annotation->to) {
                         $newClass = $annotationInfo->annotation->to;
                         foreach ($annotationInfo->annotation->require as $requiredOption) {
-                            $requiredOptions[$requiredOption] = array('from' => $scanName,  'to' => $newClass);
+                            $requiredOptions[$requiredOption] = array('from' => $scanName, 'to' => $newClass);
                         }
                     }
-                    
+
                     if (!isset($scannedSourceNames[$newClass])) {
                         $scanList[$newClass] = true;
                     }
                 }
-                
+
                 unset($scanList[$scanName]);
-                
+
                 if (!isset($scannedSourceNames[$scanName])) {
                     $scannedSourceNames[$scanName] = true;
                 }

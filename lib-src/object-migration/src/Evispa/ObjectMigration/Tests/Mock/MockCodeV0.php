@@ -25,20 +25,12 @@
  * @author Darius Krištapavičius <darius@evispa.lt>
  */
 
-namespace Evispa\ObjectMigration\Action;
+namespace Evispa\ObjectMigration\Tests\Mock;
 
-class CloneAction implements MigrationActionInterface
+/**
+ * @Api\Version("vnd.evispa.simple-code.v0")
+ */
+class MockCodeV0
 {
-    /** @var  \ReflectionMethod */
-    public $method;
 
-    public function __construct($method)
-    {
-        $this->method = $method;
-    }
-
-    public function run($object, $options = array())
-    {
-        return $this->method->invoke($object, $options);
-    }
 }
