@@ -54,8 +54,8 @@ class VersionPathSearchTest extends \PHPUnit_Framework_TestCase
         $search = new VersionPathSearch(new VersionReader(new AnnotationReader()));
 
         $result = $search->find(
-            'Evispa\ObjectMigration\Tests\Mock\MockCodeV3',
-            'Evispa\ObjectMigration\Tests\Mock\MockCodeV0'
+            'Evispa\ObjectMigration\Tests\Mock\MockCodeV0',
+            'Evispa\ObjectMigration\Tests\Mock\MockCodeV3'
         );
 
         $this->assertEquals(0, count($result));
