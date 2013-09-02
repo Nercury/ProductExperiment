@@ -29,19 +29,29 @@ namespace Evispa\ObjectMigration\Tests\Mock;
 
 use Evispa\ObjectMigration\Annotations as Api;
 
+/**
+ * @Api\Version("vnd.evispa.simple-code.v3")
+ */
 class MockCodeV3
 {
+    public $code;
+
     /**
      * @Api\Migration(to="Evispa\ObjectMigration\Tests\Mock\MockCodeV2")
      */
-    public static function toCodeV2($options) {
+    public function toCodeV2($options)
+    {
 
     }
 
     /**
      * @Api\Migration(to="Evispa\ObjectMigration\Tests\Mock\MockCodeV1")
      */
-    public static function toCodeV1($options) {
+    public function toCodeV1($options)
+    {
+        $v1 = new MockCodeV1();
+        $v1->code = $this->code;
 
+        return $v1;
     }
 }

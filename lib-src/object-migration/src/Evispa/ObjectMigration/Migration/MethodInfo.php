@@ -27,6 +27,9 @@
 
 namespace Evispa\ObjectMigration\Migration;
 
+use Evispa\ObjectMigration\Action\MigrationActionInterface;
+use Evispa\ObjectMigration\Annotations\Migration;
+
 /**
  * Used to store information about migration method.
  */
@@ -35,9 +38,9 @@ class MethodInfo
     /**
      * Method reflection.
      * 
-     * @var \ReflectionMethod
+     * @var MigrationActionInterface
      */
-    public $method;
+    public $action;
 
     /**
      * Migration annotation object.
@@ -46,9 +49,9 @@ class MethodInfo
      */
     public $annotation;
 
-    public function __construct(\ReflectionMethod $method, \Evispa\ObjectMigration\Annotations\Migration $annotation)
+    public function __construct(MigrationActionInterface $action, \Evispa\ObjectMigration\Annotations\Migration $annotation)
     {
-        $this->method = $method;
+        $this->action = $action;
         $this->annotation = $annotation;
     }
 }

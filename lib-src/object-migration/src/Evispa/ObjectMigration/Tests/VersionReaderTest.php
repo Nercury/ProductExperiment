@@ -25,20 +25,23 @@
  * @author Darius Krištapavičius <darius@evispa.lt>
  */
 
-namespace Evispa\ObjectMigration\Action;
+namespace Evispa\ObjectMigration\Tests;
 
-class CloneAction implements MigrationActionInterface
+use Doctrine\Common\Annotations\AnnotationReader;
+use Evispa\ObjectMigration\VersionReader;
+
+class VersionReaderTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var  \ReflectionMethod */
-    public $method;
-
-    public function __construct($method)
+    public function testGetClassNameByVersion()
     {
-        $this->method = $method;
-    }
+        $versionReader = new VersionReader(new AnnotationReader());
 
-    public function run($object, $options = array())
-    {
-        return $this->method->invoke($object, $options);
+        $this->assertEquals(
+            'Evispa\ObjectMigration\Tests\Mock\MockCodeV4',
+            $versionReader->getClassNameByVersion(
+                'Evispa\ObjectMigration\Tests\Mock\MockCodeV1',
+                'vnd.evispa.simple-code.v4'
+            )
+        );
     }
 }

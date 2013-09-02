@@ -25,20 +25,13 @@
  * @author Darius Krištapavičius <darius@evispa.lt>
  */
 
-namespace Evispa\ObjectMigration\Action;
+namespace Evispa\ObjectMigration\Exception;
 
-class CloneAction implements MigrationActionInterface
+
+class VersionPathNotFoundException extends \Exception
 {
-    /** @var  \ReflectionMethod */
-    public $method;
-
-    public function __construct($method)
+    public function __construct($fromClass, $toClass)
     {
-        $this->method = $method;
-    }
-
-    public function run($object, $options = array())
-    {
-        return $this->method->invoke($object, $options);
+        parent::__construct('No migrations path found between ' . $fromClass . ' and ' . $toClass);
     }
 }

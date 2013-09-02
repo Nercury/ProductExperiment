@@ -27,6 +27,9 @@
 
 namespace Evispa\ObjectMigration;
 
+use Evispa\ObjectMigration\Exception\VersionPathNotFoundException;
+use Evispa\ObjectMigration\VersionPath\VersionPathSearch;
+
 /**
  *
  *
@@ -58,54 +61,72 @@ class VersionConverter
         $requiredOptions = $reader->getRequiredClassOptions($className);
         foreach ($requiredOptions as $option => $classes) {
             if (!isset($options[$option])) {
-                throw new \LogicException('Migration from "'.$classes['from'].'" to "'.$classes['to'].'" may require "'.$option.'" option which was not set.');
+                throw new \LogicException('Migration from "' . $classes['from'] . '" to "' . $classes['to'] . '" may require "' . $option . '" option which was not set.');
             }
         }
-        
+
         $this->options = $options;
     }
 
     /**
      * Migrate object to specified version.
      *
-     * @param mixed $object Object instance.
+     * @param mixed  $object       Object instance.
      * @param string $otherVersion Version name.
+     *
+     * @throws \LogicException
+     * @throws Exception\VersionPathNotFoundException
      *
      * @return mixed Migrated object.
      */
-    public function migrateTo($object, $otherVersion) {
+    public function migrateTo($object, $otherVersion)
+    {
         $className = get_class($object);
 
         if ($className !== $this->className) {
-            throw new \LogicException('Converter for class "'.$className.'" can not migrate "'.$className.'" objects.');
+            throw new \LogicException('Converter for class "' . $className . '" can not migrate "' . $className . '" objects.');
         }
 
-        $migrationMethods = $this->reader->getClassMigrationMethods($className);
-        if (isset($migrationMethods->to[$otherVersion])) {
-            $action = $migrationMethods->to[$otherVersion];
-            return $action->run($object, $this->options);
+        $versionPath = new VersionPathSearch($this->reader);
+        $otherVersionClassName = $this->reader->getClassNameByVersion($className, $otherVersion);
+        if ($otherVersionClassName) {
+            $migrations = $versionPath->find($className, $otherVersionClassName);
+
+            if (count($migrations) === 0) {
+                throw new VersionPathNotFoundException($className, $otherVersionClassName);
+            }
+
+            foreach ($migrations as $migration) {
+                $object = $migration->action->run($object, $this->options);
+            }
         }
-        return null;
+
+        return $object;
     }
 
     /**
      * Get object from other version.
      *
-     * @param mixed $object Object instance.
-     * @param string $version Version name.
+     * @param mixed $otherObject  Object instance.
+     *
+     * @throws Exception\VersionPathNotFoundException
      *
      * @return mixed Migrated object.
      */
-    public function migrateFrom($otherObject) {
+    public function migrateFrom($otherObject)
+    {
         $otherObjectClass = get_class($otherObject);
-        $otherVersion = $this->reader->getClassVersion($otherObjectClass);
-        $migrationMethods = $this->reader->getClassMigrationMethods($this->className);
+        $versionPath = new VersionPathSearch($this->reader);
+        $migrations = $versionPath->find($otherObjectClass, $this->className);
 
-        if (isset($migrationMethods->from[$otherVersion])) {
-            $action = $migrationMethods->from[$otherVersion];
-            return $action->run($otherObject, $this->options);
+        if (count($migrations) === 0) {
+            throw new VersionPathNotFoundException($otherObjectClass, $this->className);
         }
 
-        return null;
+        foreach ($migrations as $migration) {
+            $otherObject = $migration->action->run($otherObject, $this->options);
+        }
+
+        return $otherObject;
     }
 }

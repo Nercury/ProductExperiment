@@ -27,12 +27,11 @@
 
 namespace Evispa\ObjectMigration\VersionPath;
 
-use Evispa\ObjectMigration\Annotations\Migration;
-use Evispa\ObjectMigration\Annotations\Version;
 use Evispa\ObjectMigration\Migration\MethodInfo;
 use Evispa\ObjectMigration\VersionReader;
 use Fhaculty\Graph\Algorithm\ShortestPath\BreadthFirst;
 use Fhaculty\Graph\Edge\Directed;
+use Fhaculty\Graph\Exception\OutOfBoundsException;
 use Fhaculty\Graph\Graph as Graph;
 
 class VersionPathSearch
@@ -51,9 +50,15 @@ class VersionPathSearch
         $this->reader = $reader;
     }
 
+    /**
+     * Create edges between versions graph
+     *
+     * @param Graph  $graph
+     * @param string $className
+     */
     private function createEdges(Graph $graph, $className)
     {
-        $migrationsAnnotations = $this->reader->getClassMigrationAnnotations($className);
+        $migrationsAnnotations = $this->reader->getClassMigrationMethodInfo($className);
 
         $parentVertex = $graph->hasVertex($className) ? $graph->getVertex($className) : $graph->createVertex(
             $className
@@ -62,66 +67,70 @@ class VersionPathSearch
         foreach ($migrationsAnnotations as $migrationsAnnotation) {
             if ($migrationsAnnotation->annotation->from) {
                 $fromClass = $migrationsAnnotation->annotation->from;
-                $id = $fromClass;
-                $fromVertex = $graph->hasVertex($id) ? $graph->getVertex($id) : $graph->createVertex($id);
-
-                $edgeCreated = false;
+                $fromVertex = $graph->hasVertex($fromClass) ? $graph->getVertex($fromClass) : $graph->createVertex(
+                    $fromClass
+                );
 
                 if (!$parentVertex->hasEdgeTo($fromVertex)) {
-                    $fromVertex->createEdgeTo($parentVertex);
-                    $edgeCreated = true;
-                }
-
-                if ($edgeCreated) {
+                    $edge = $fromVertex->createEdgeTo($parentVertex);
+                    $this->annotations[$this->getEdgeId($edge)] = $migrationsAnnotation;
                     $this->createEdges($graph, $fromClass);
                 }
-
-                $this->annotations[$id] = $migrationsAnnotation;
             }
 
             if ($migrationsAnnotation->annotation->to) {
                 $toClass = $migrationsAnnotation->annotation->to;
-                $id = $toClass;
-                $fromVertex = $graph->hasVertex($id) ? $graph->getVertex($id) : $graph->createVertex($id);
-
-                $edgeCreated = false;
+                $fromVertex = $graph->hasVertex($toClass) ? $graph->getVertex($toClass) : $graph->createVertex(
+                    $toClass
+                );
 
                 if (!$parentVertex->hasEdgeTo($fromVertex)) {
-                    $parentVertex->createEdgeTo($fromVertex);
-                    $edgeCreated = true;
-                }
-
-                if ($edgeCreated) {
+                    $edge = $parentVertex->createEdgeTo($fromVertex);
+                    $this->annotations[$this->getEdgeId($edge)] = $migrationsAnnotation;
                     $this->createEdges($graph, $toClass);
                 }
-
-                $this->annotations[$id] = $migrationsAnnotation;
             }
         }
     }
 
     /**
-     * @param $fromClassName
-     * @param $toClassName
+     * Get edge id
+     *
+     * @param \Fhaculty\Graph\Edge\Directed $edge
+     *
+     * @return string
+     */
+    private function getEdgeId($edge)
+    {
+        return $edge->getVertexStart()->getId() . '_' . $edge->getVertexEnd()->getId();
+    }
+
+    /**
+     * Find shortest path between versions
+     *
+     * @param string $fromClassName
+     * @param string $toClassName
      *
      * @return MethodInfo[]
      */
     public function find($fromClassName, $toClassName)
     {
+        $annotations = array();
+
         $graph = new Graph();
 
         $this->createEdges($graph, $fromClassName);
         $this->createEdges($graph, $toClassName);
 
-        $breadFirst = new BreadthFirst($graph->getVertex($fromClassName));
-        $edges = $breadFirst->getEdgesTo($graph->getVertex($toClassName));
+        try {
+            $breadFirst = new BreadthFirst($graph->getVertex($fromClassName));
+            $edges = $breadFirst->getEdgesTo($graph->getVertex($toClassName));
+            /** @var Directed $edge */
+            foreach ($edges as $edge) {
+                $annotations[] = $this->annotations[$this->getEdgeId($edge)];
+            }
+        } catch (OutOfBoundsException $e) {
 
-        $annotations = array();
-
-        /** @var Directed $edge */
-        foreach ($edges as $edge) {
-
-            //var_dump($edge->getVertexStart()->getId() . " => " . $edge->getVertexEnd()->getId());
         }
 
         return $annotations;

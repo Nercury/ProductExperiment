@@ -42,12 +42,35 @@ class VersionPathSearchTest extends \PHPUnit_Framework_TestCase
             'Evispa\ObjectMigration\Tests\Mock\MockCodeV4'
         );
 
+        $this->assertEquals('Evispa\ObjectMigration\Tests\Mock\MockCodeV3', $result[0]->action->method->class);
+        $this->assertEquals('toCodeV2', $result[0]->action->method->name);
 
-        //$this->assertEquals('Evispa\ObjectMigration\Tests\Mock\MockCodeV1', $result[0]->method->class);
-        //$this->assertEquals('')
+        $this->assertEquals('Evispa\ObjectMigration\Tests\Mock\MockCodeV4', $result[1]->action->method->class);
+        $this->assertEquals('fromCodeV2', $result[1]->action->method->name);
+    }
 
-        var_dump($result);
+    public function testNotFound()
+    {
+        $search = new VersionPathSearch(new VersionReader(new AnnotationReader()));
 
-        //$this->assertEquals(array('Evispa\Api\Product\Model\Code\V1'), $result);
+        $result = $search->find(
+            'Evispa\ObjectMigration\Tests\Mock\MockCodeV0',
+            'Evispa\ObjectMigration\Tests\Mock\MockCodeV3'
+        );
+
+        $this->assertEquals(0, count($result));
+    }
+
+    public function testFind2()
+    {
+        $search = new VersionPathSearch(new VersionReader(new AnnotationReader()));
+
+        $result = $search->find(
+            'Evispa\ObjectMigration\Tests\Mock\MockCodeV1',
+            'Evispa\ObjectMigration\Tests\Mock\MockCodeV4'
+        );
+
+        $this->assertEquals('Evispa\ObjectMigration\Tests\Mock\MockCodeV1', $result[0]->action->method->class);
+        $this->assertEquals('toCodeV4', $result[0]->action->method->name);
     }
 }

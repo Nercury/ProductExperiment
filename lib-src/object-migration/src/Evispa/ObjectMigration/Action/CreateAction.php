@@ -30,7 +30,7 @@ namespace Evispa\ObjectMigration\Action;
 class CreateAction implements MigrationActionInterface
 {
     /** @var  \ReflectionMethod */
-    protected $method;
+    public $method;
 
     public function __construct($method)
     {
