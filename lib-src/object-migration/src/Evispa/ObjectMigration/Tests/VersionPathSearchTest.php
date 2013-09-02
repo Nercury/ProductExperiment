@@ -25,15 +25,29 @@
  * @author Darius Krištapavičius <darius@evispa.lt>
  */
 
-namespace Evispa\ObjectMigration\Action;
+namespace Evispa\ObjectMigration\Tests;
 
-interface MigrationActionInterface
+use Doctrine\Common\Annotations\AnnotationReader;
+use Evispa\ObjectMigration\VersionPath\VersionPathSearch;
+use Evispa\ObjectMigration\VersionReader;
+
+class VersionPathSearchTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @param       $object
-     * @param array $options
-     *
-     * @return mixed
-     */
-    public function run($object, $options = array());
+    public function testFind()
+    {
+        $search = new VersionPathSearch(new VersionReader(new AnnotationReader()));
+
+        $result = $search->find(
+            'Evispa\ObjectMigration\Tests\Mock\MockCodeV3',
+            'Evispa\ObjectMigration\Tests\Mock\MockCodeV4'
+        );
+
+
+        //$this->assertEquals('Evispa\ObjectMigration\Tests\Mock\MockCodeV1', $result[0]->method->class);
+        //$this->assertEquals('')
+
+        var_dump($result);
+
+        //$this->assertEquals(array('Evispa\Api\Product\Model\Code\V1'), $result);
+    }
 }

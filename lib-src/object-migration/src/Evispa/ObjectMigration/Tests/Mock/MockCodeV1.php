@@ -25,15 +25,16 @@
  * @author Darius Krištapavičius <darius@evispa.lt>
  */
 
-namespace Evispa\ObjectMigration\Action;
+namespace Evispa\ObjectMigration\Tests\Mock;
 
-interface MigrationActionInterface
+use Evispa\ObjectMigration\Annotations as Api;
+
+class MockCodeV1
 {
     /**
-     * @param       $object
-     * @param array $options
-     *
-     * @return mixed
+     * @Api\Migration(to="Evispa\ObjectMigration\Tests\Mock\MockCodeV4")
      */
-    public function run($object, $options = array());
+    public static function toCodeV4($options) {
+
+    }
 }

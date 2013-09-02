@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "208a09ba7b327edc4b6ab2f6d70f7204",
+    "hash": "77466afc7c42cb413f0ef8fd70faccbc",
     "packages": [
         {
             "name": "adrienbrault/form-serializer",
@@ -40,6 +40,54 @@
                 "MIT"
             ],
             "time": "2013-07-01 11:55:23"
+        },
+        {
+            "name": "clue/graph",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/clue/graph.git",
+                "reference": "28fb846066fe2e580000d5b27a414115a36a0c0b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/clue/graph/zipball/28fb846066fe2e580000d5b27a414115a36a0c0b",
+                "reference": "28fb846066fe2e580000d5b27a414115a36a0c0b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "3.7.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Fhaculty": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A mathematical graph/network library written in PHP",
+            "homepage": "https://github.com/clue/graph",
+            "keywords": [
+                "dijkstra",
+                "edge",
+                "graph",
+                "graphviz",
+                "kruskal",
+                "mathematical",
+                "minimum spanning tree",
+                "moore-bellman-ford",
+                "network",
+                "prim",
+                "shortest path",
+                "vertex"
+            ],
+            "time": "2013-08-16 23:36:14"
         },
         {
             "name": "dflydev/markdown",
@@ -2320,7 +2368,8 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
-        "nelmio/api-doc-bundle": 20
+        "nelmio/api-doc-bundle": 20,
+        "clue/graph": 20
     },
     "platform": {
         "php": ">=5.3.3"

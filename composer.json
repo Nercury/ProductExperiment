@@ -26,7 +26,9 @@
         "jms/serializer-bundle": "0.12.0",
         "nelmio/api-doc-bundle": "dev-master",
         "fsc/hateoas-bundle": "<0.5",
-        "pagerfanta/pagerfanta": "v1.0.0"
+        "pagerfanta/pagerfanta": "v1.0.0",
+
+        "clue/graph": "dev-master"
     },
 	"scripts": {
         "post-install-cmd": [
