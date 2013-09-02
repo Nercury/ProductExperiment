@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "9944911c249419aaac81469702ad932b",
+    "hash": "11c322a924743515349dd043fb948a98",
     "packages": [
         {
             "name": "adrienbrault/form-serializer",
@@ -150,16 +150,16 @@
         },
         {
             "name": "doctrine/annotations",
-            "version": "v1.1.2",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/annotations.git",
-                "reference": "v1.1.2"
+                "reference": "40db0c96985aab2822edbc4848b3bd2429e02670"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/annotations/zipball/v1.1.2",
-                "reference": "v1.1.2",
+                "url": "https://api.github.com/repos/doctrine/annotations/zipball/40db0c96985aab2822edbc4848b3bd2429e02670",
+                "reference": "40db0c96985aab2822edbc4848b3bd2429e02670",
                 "shasum": ""
             },
             "require": {
@@ -294,12 +294,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/collections.git",
-                "reference": "623caf42551b416460df786154d89bc50e3d1798"
+                "reference": "bcb53776a096a0c64579cc8d8ec0db62f1109fbc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/collections/zipball/623caf42551b416460df786154d89bc50e3d1798",
-                "reference": "623caf42551b416460df786154d89bc50e3d1798",
+                "url": "https://api.github.com/repos/doctrine/collections/zipball/bcb53776a096a0c64579cc8d8ec0db62f1109fbc",
+                "reference": "bcb53776a096a0c64579cc8d8ec0db62f1109fbc",
                 "shasum": ""
             },
             "require": {
@@ -353,7 +353,7 @@
                 "collections",
                 "iterator"
             ],
-            "time": "2013-07-23 08:27:26"
+            "time": "2013-08-29 16:56:45"
         },
         {
             "name": "doctrine/common",
@@ -700,12 +700,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/doctrine2.git",
-                "reference": "fc7719d5fae069dad3915cc5330dcfb421439170"
+                "reference": "340ae15ba73c317a64504b77723bdfadd3ab31f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/fc7719d5fae069dad3915cc5330dcfb421439170",
-                "reference": "fc7719d5fae069dad3915cc5330dcfb421439170",
+                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/340ae15ba73c317a64504b77723bdfadd3ab31f3",
+                "reference": "340ae15ba73c317a64504b77723bdfadd3ab31f3",
                 "shasum": ""
             },
             "require": {
@@ -767,7 +767,49 @@
                 "database",
                 "orm"
             ],
-            "time": "2013-08-29 03:15:55"
+            "time": "2013-09-01 17:04:22"
+        },
+        {
+            "name": "evispa/object-migration",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/evispa/object-migration.git",
+                "reference": "d6a0550265fd01b6027edab8486b4e63e3617ebd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/evispa/object-migration/zipball/d6a0550265fd01b6027edab8486b4e63e3617ebd",
+                "reference": "d6a0550265fd01b6027edab8486b4e63e3617ebd",
+                "shasum": ""
+            },
+            "require": {
+                "clue/graph": "dev-master",
+                "doctrine/annotations": "*",
+                "php": ">=5.3.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Evispa\\ObjectMigration": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nerijus Arlauskas",
+                    "email": "nercury@gmail.com"
+                },
+                {
+                    "name": "Darius Krištapavičius",
+                    "email": "darius@evispa.lt"
+                }
+            ],
+            "description": "Migrations between object versions, configurable via annotations.",
+            "time": "2013-09-02 12:39:30"
         },
         {
             "name": "friendsofsymfony/rest",
@@ -1366,12 +1408,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "933f7e26beb19ce15d97031a3fdd21d8bd83a3d3"
+                "reference": "1518320bec1f1583a0c514491528d171501dc781"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/933f7e26beb19ce15d97031a3fdd21d8bd83a3d3",
-                "reference": "933f7e26beb19ce15d97031a3fdd21d8bd83a3d3",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/1518320bec1f1583a0c514491528d171501dc781",
+                "reference": "1518320bec1f1583a0c514491528d171501dc781",
                 "shasum": ""
             },
             "require": {
@@ -1420,7 +1462,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2013-08-26 09:42:58"
+            "time": "2013-09-02 10:24:25"
         },
         {
             "name": "nelmio/api-doc-bundle",
@@ -1429,12 +1471,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nelmio/NelmioApiDocBundle.git",
-                "reference": "a2dc56d6e5131cd5b45f35d74880a03a3124034c"
+                "reference": "f690529fc649ebbb4c5921a8b92e81f5726af439"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nelmio/NelmioApiDocBundle/zipball/a2dc56d6e5131cd5b45f35d74880a03a3124034c",
-                "reference": "a2dc56d6e5131cd5b45f35d74880a03a3124034c",
+                "url": "https://api.github.com/repos/nelmio/NelmioApiDocBundle/zipball/f690529fc649ebbb4c5921a8b92e81f5726af439",
+                "reference": "f690529fc649ebbb4c5921a8b92e81f5726af439",
                 "shasum": ""
             },
             "require": {
@@ -1488,7 +1530,7 @@
                 "documentation",
                 "rest"
             ],
-            "time": "2013-08-18 20:44:37"
+            "time": "2013-08-29 23:16:09"
         },
         {
             "name": "pagerfanta/pagerfanta",
@@ -1832,16 +1874,16 @@
         },
         {
             "name": "swiftmailer/swiftmailer",
-            "version": "v5.0.1",
+            "version": "v5.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swiftmailer/swiftmailer.git",
-                "reference": "v5.0.1"
+                "reference": "f3917ecef35a4e4d98b303eb9fee463bc983f379"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/v5.0.1",
-                "reference": "v5.0.1",
+                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/f3917ecef35a4e4d98b303eb9fee463bc983f379",
+                "reference": "f3917ecef35a4e4d98b303eb9fee463bc983f379",
                 "shasum": ""
             },
             "require": {
@@ -1877,7 +1919,7 @@
                 "mail",
                 "mailer"
             ],
-            "time": "2013-06-17 13:32:32"
+            "time": "2013-08-30 12:35:21"
         },
         {
             "name": "symfony/assetic-bundle",
@@ -2111,12 +2153,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "feff411dfc83282488e8ebf02160a2ee899706a4"
+                "reference": "cade045e34b1e1dca7e85170457c7e444ffb3687"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/feff411dfc83282488e8ebf02160a2ee899706a4",
-                "reference": "feff411dfc83282488e8ebf02160a2ee899706a4",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/cade045e34b1e1dca7e85170457c7e444ffb3687",
+                "reference": "cade045e34b1e1dca7e85170457c7e444ffb3687",
                 "shasum": ""
             },
             "require": {
@@ -2211,7 +2253,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2013-08-29 06:54:01"
+            "time": "2013-08-31 11:25:42"
         },
         {
             "name": "twig/extensions",
@@ -2266,12 +2308,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Twig.git",
-                "reference": "3db6b6aeb9442abf85d2a9f6d5c3ae3e07398597"
+                "reference": "427fce4d58bf7f3ec55d7a3ff616b3c02b4c4f1f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Twig/zipball/3db6b6aeb9442abf85d2a9f6d5c3ae3e07398597",
-                "reference": "3db6b6aeb9442abf85d2a9f6d5c3ae3e07398597",
+                "url": "https://api.github.com/repos/fabpot/Twig/zipball/427fce4d58bf7f3ec55d7a3ff616b3c02b4c4f1f",
+                "reference": "427fce4d58bf7f3ec55d7a3ff616b3c02b4c4f1f",
                 "shasum": ""
             },
             "require": {
@@ -2307,7 +2349,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2013-08-28 06:01:53"
+            "time": "2013-09-02 12:28:12"
         },
         {
             "name": "willdurand/negotiation",
@@ -2369,7 +2411,7 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "nelmio/api-doc-bundle": 20,
-        "clue/graph": 20
+        "evispa/object-migration": 20
     },
     "platform": {
         "php": ">=5.3.3"
