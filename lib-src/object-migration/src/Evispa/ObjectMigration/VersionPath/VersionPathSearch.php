@@ -27,7 +27,13 @@
 
 namespace Evispa\ObjectMigration\VersionPath;
 
+use Evispa\ObjectMigration\Annotations\Migration;
+use Evispa\ObjectMigration\Annotations\Version;
+use Evispa\ObjectMigration\Migration\MethodInfo;
 use Evispa\ObjectMigration\VersionReader;
+use Fhaculty\Graph\Algorithm\ShortestPath\BreadthFirst;
+use Fhaculty\Graph\Edge\Directed;
+use Fhaculty\Graph\Graph as Graph;
 
 class VersionPathSearch
 {
@@ -38,63 +44,87 @@ class VersionPathSearch
      */
     private $reader;
 
+    private $annotations;
+
     function __construct($reader)
     {
         $this->reader = $reader;
     }
 
-    private function getQueue($className)
+    private function createEdges(Graph $graph, $className)
     {
-        $queue = array();
-
         $migrationsAnnotations = $this->reader->getClassMigrationAnnotations($className);
-        foreach ($migrationsAnnotations as $migrationsAnnotation) {
-            $className = $migrationsAnnotation->annotation->to;
-            $queue[] = $className;
-        }
 
-        return $queue;
-    }
-
-    public function find($fromClassName, $toClassName)
-    {
-        $agent = array(
-            'path' => array($fromClassName),
-            'queue' => $this->getQueue($fromClassName)
+        $parentVertex = $graph->hasVertex($className) ? $graph->getVertex($className) : $graph->createVertex(
+            $className
         );
 
-        $agents = array($agent);
+        foreach ($migrationsAnnotations as $migrationsAnnotation) {
+            if ($migrationsAnnotation->annotation->from) {
+                $fromClass = $migrationsAnnotation->annotation->from;
+                $id = $fromClass;
+                $fromVertex = $graph->hasVertex($id) ? $graph->getVertex($id) : $graph->createVertex($id);
 
-        $visited = array();
+                $edgeCreated = false;
 
-        while (!empty($agents)) {
+                if (!$parentVertex->hasEdgeTo($fromVertex)) {
+                    $fromVertex->createEdgeTo($parentVertex);
+                    $edgeCreated = true;
+                }
 
-            $agent = array_pop($agents);
+                if ($edgeCreated) {
+                    $this->createEdges($graph, $fromClass);
+                }
 
-            $visited[] = end($agent['path']);
-
-            if (end($agent['path']) === $toClassName) {
-                return $agent['path'];
+                $this->annotations[$id] = $migrationsAnnotation;
             }
 
-            if (count($agent['queue']) > 0) {
-                foreach($agent['queue'] as $className) {
-                    if(!in_array($className, $visited)) {
+            if ($migrationsAnnotation->annotation->to) {
+                $toClass = $migrationsAnnotation->annotation->to;
+                $id = $toClass;
+                $fromVertex = $graph->hasVertex($id) ? $graph->getVertex($id) : $graph->createVertex($id);
 
-                        $newAgent = array(
-                            'path' => $agent['path'],
-                            'queue' => $this->getQueue($className)
-                        );
+                $edgeCreated = false;
 
-                        array_push($newAgent['path'], $className);
-
-                        array_push($agents, $newAgent);
-                    }
+                if (!$parentVertex->hasEdgeTo($fromVertex)) {
+                    $parentVertex->createEdgeTo($fromVertex);
+                    $edgeCreated = true;
                 }
+
+                if ($edgeCreated) {
+                    $this->createEdges($graph, $toClass);
+                }
+
+                $this->annotations[$id] = $migrationsAnnotation;
             }
         }
+    }
 
-        return array();
+    /**
+     * @param $fromClassName
+     * @param $toClassName
+     *
+     * @return MethodInfo[]
+     */
+    public function find($fromClassName, $toClassName)
+    {
+        $graph = new Graph();
+
+        $this->createEdges($graph, $fromClassName);
+        $this->createEdges($graph, $toClassName);
+
+        $breadFirst = new BreadthFirst($graph->getVertex($fromClassName));
+        $edges = $breadFirst->getEdgesTo($graph->getVertex($toClassName));
+
+        $annotations = array();
+
+        /** @var Directed $edge */
+        foreach ($edges as $edge) {
+
+            //var_dump($edge->getVertexStart()->getId() . " => " . $edge->getVertexEnd()->getId());
+        }
+
+        return $annotations;
     }
 
 }

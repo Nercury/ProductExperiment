@@ -27,8 +27,22 @@
 
 namespace Evispa\ObjectMigration\Tests\Mock;
 
+use Evispa\ObjectMigration\Annotations as Api;
 
 class MockCodeV4
 {
+    /**
+     * @Api\Migration(from="Evispa\ObjectMigration\Tests\Mock\MockCodeV2")
+     */
+    public static function fromCodeV2($other, $options) {
+
+    }
+
+    /**
+     * @Api\Migration(to="Evispa\ObjectMigration\Tests\Mock\MockCodeV3")
+     */
+    public static function toCodeV3($options) {
+
+    }
 
 }

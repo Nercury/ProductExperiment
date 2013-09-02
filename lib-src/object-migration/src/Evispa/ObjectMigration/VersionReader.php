@@ -98,7 +98,7 @@ class VersionReader
      * @param type $className
      * @return Migration\MethodInfo[]
      */
-    private function getClassMigrationAnnotations($className) {
+    public function getClassMigrationAnnotations($className) {
         $class = $this->getReflectionClass($className);
         $methods = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
 

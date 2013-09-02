@@ -30,7 +30,8 @@ namespace Evispa\ObjectMigration\Action;
 interface MigrationActionInterface
 {
     /**
-     * @param $object
+     * @param       $object
+     * @param array $options
      *
      * @return mixed
      */

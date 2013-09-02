@@ -27,8 +27,27 @@
 
 namespace Evispa\ObjectMigration\Tests;
 
+use Doctrine\Common\Annotations\AnnotationReader;
+use Evispa\ObjectMigration\VersionPath\VersionPathSearch;
+use Evispa\ObjectMigration\VersionReader;
 
-class VersionPathSearchTest
+class VersionPathSearchTest extends \PHPUnit_Framework_TestCase
 {
+    public function testFind()
+    {
+        $search = new VersionPathSearch(new VersionReader(new AnnotationReader()));
 
+        $result = $search->find(
+            'Evispa\ObjectMigration\Tests\Mock\MockCodeV3',
+            'Evispa\ObjectMigration\Tests\Mock\MockCodeV4'
+        );
+
+
+        //$this->assertEquals('Evispa\ObjectMigration\Tests\Mock\MockCodeV1', $result[0]->method->class);
+        //$this->assertEquals('')
+
+        var_dump($result);
+
+        //$this->assertEquals(array('Evispa\Api\Product\Model\Code\V1'), $result);
+    }
 }
