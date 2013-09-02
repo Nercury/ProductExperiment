@@ -6,7 +6,8 @@
     "autoload": {
         "psr-0": {
             "": "src/",
-            "Evispa\\ObjectMigration\\": "lib-src/object-migration/src/"
+            "Evispa\\ObjectMigration\\": "lib-src/object-migration/src/",
+            "Evispa\\ResourceManagerBundle\\": "lib-src/resource/manager-bundle/src/"
         }
     },
     "require": {
