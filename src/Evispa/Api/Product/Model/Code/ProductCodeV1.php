@@ -28,7 +28,7 @@
 namespace Evispa\Api\Product\Model\Code;
 
 /**
- * @Api\Version("vnd.evispa.product.code.v1")
+ * @Evispa\ObjectMigration\Annotations\Version("vnd.evispa.product.code.v1")
  */
 class ProductCodeV1
 {

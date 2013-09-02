@@ -27,8 +27,6 @@
 
 namespace Evispa\ObjectMigration\VersionPath;
 
-use Evispa\ObjectMigration\Annotations\Migration;
-use Evispa\ObjectMigration\Annotations\Version;
 use Evispa\ObjectMigration\Migration\MethodInfo;
 use Evispa\ObjectMigration\VersionReader;
 use Fhaculty\Graph\Algorithm\ShortestPath\BreadthFirst;
@@ -53,10 +51,10 @@ class VersionPathSearch
     }
 
     /**
-     * Create edges between versions
+     * Create edges between versions graph
      *
-     * @param Graph $graph
-     * @param       $className
+     * @param Graph  $graph
+     * @param string $className
      */
     private function createEdges(Graph $graph, $className)
     {
@@ -73,18 +71,11 @@ class VersionPathSearch
                     $fromClass
                 );
 
-                $edgeCreated = false;
-
                 if (!$parentVertex->hasEdgeTo($fromVertex)) {
-                    $fromVertex->createEdgeTo($parentVertex);
-                    $edgeCreated = true;
-                }
-
-                if ($edgeCreated) {
+                    $edge = $fromVertex->createEdgeTo($parentVertex);
+                    $this->annotations[$this->getEdgeId($edge)] = $migrationsAnnotation;
                     $this->createEdges($graph, $fromClass);
                 }
-
-                $this->annotations[$fromClass . '_' . $className] = $migrationsAnnotation;
             }
 
             if ($migrationsAnnotation->annotation->to) {
@@ -93,19 +84,11 @@ class VersionPathSearch
                     $toClass
                 );
 
-                $edgeCreated = false;
-
                 if (!$parentVertex->hasEdgeTo($fromVertex)) {
                     $edge = $parentVertex->createEdgeTo($fromVertex);
                     $this->annotations[$this->getEdgeId($edge)] = $migrationsAnnotation;
-                    $edgeCreated = true;
-                }
-
-                if ($edgeCreated) {
                     $this->createEdges($graph, $toClass);
                 }
-
-                $this->annotations[$className . '_' . $toClass] = $migrationsAnnotation;
             }
         }
     }
@@ -144,8 +127,7 @@ class VersionPathSearch
             $edges = $breadFirst->getEdgesTo($graph->getVertex($toClassName));
             /** @var Directed $edge */
             foreach ($edges as $edge) {
-                $id = $edge->getVertexStart()->getId() . '_' . $edge->getVertexEnd()->getId();
-                $annotations[] = $this->annotations[$id];
+                $annotations[] = $this->annotations[$this->getEdgeId($edge)];
             }
         } catch (OutOfBoundsException $e) {
 

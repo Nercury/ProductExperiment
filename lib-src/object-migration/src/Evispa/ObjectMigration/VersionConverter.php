@@ -27,6 +27,7 @@
 
 namespace Evispa\ObjectMigration;
 
+use Evispa\ObjectMigration\Exception\VersionPathNotFoundException;
 use Evispa\ObjectMigration\VersionPath\VersionPathSearch;
 
 /**
@@ -73,6 +74,9 @@ class VersionConverter
      * @param mixed  $object       Object instance.
      * @param string $otherVersion Version name.
      *
+     * @throws \LogicException
+     * @throws Exception\VersionPathNotFoundException
+     *
      * @return mixed Migrated object.
      */
     public function migrateTo($object, $otherVersion)
@@ -87,6 +91,11 @@ class VersionConverter
         $otherVersionClassName = $this->reader->getClassNameByVersion($className, $otherVersion);
         if ($otherVersionClassName) {
             $migrations = $versionPath->find($className, $otherVersionClassName);
+
+            if (count($migrations) === 0) {
+                throw new VersionPathNotFoundException($className, $otherVersionClassName);
+            }
+
             foreach ($migrations as $migration) {
                 $object = $migration->action->run($object, $this->options);
             }
@@ -98,17 +107,21 @@ class VersionConverter
     /**
      * Get object from other version.
      *
-     * @param mixed $object  Object instance.
+     * @param mixed $otherObject  Object instance.
+     *
+     * @throws Exception\VersionPathNotFoundException
      *
      * @return mixed Migrated object.
      */
     public function migrateFrom($otherObject)
     {
         $otherObjectClass = get_class($otherObject);
-
         $versionPath = new VersionPathSearch($this->reader);
-
         $migrations = $versionPath->find($otherObjectClass, $this->className);
+
+        if (count($migrations) === 0) {
+            throw new VersionPathNotFoundException($otherObjectClass, $this->className);
+        }
 
         foreach ($migrations as $migration) {
             $otherObject = $migration->action->run($otherObject, $this->options);

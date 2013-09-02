@@ -30,8 +30,6 @@ namespace Evispa\ObjectMigration;
 use Doctrine\Common\Annotations\Reader;
 use Evispa\ObjectMigration\Action\CloneAction;
 use Evispa\ObjectMigration\Action\CreateAction;
-use Evispa\ObjectMigration\Annotations\Migration;
-use Evispa\ObjectMigration\Annotations\Version;
 use Evispa\ObjectMigration\Migration\MethodInfo;
 use Evispa\ObjectMigration\Migration\MigrationMethods;
 
