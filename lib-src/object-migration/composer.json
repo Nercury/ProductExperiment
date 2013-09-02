@@ -1,0 +1,22 @@
+{
+    "name": "evispa/resourceapidoc-bundle",
+    "license": "Evispa Library License",
+    "authors": [
+        {
+            "name": "UAB Evispa"
+        }
+    ],
+    "homepage": "http://dev.evispa.lt/projects/verskis/wiki/evispa-resourceapidocbundle",
+    "require": {
+        "php": ">=5.3.2",
+        "clue/graph": "dev-master"
+    },
+    "target-dir": "Evispa/ResourceApiDocBundle",
+    "type": "symfony-bundle",
+    "autoload": {
+        "psr-0": {
+            "Evispa\\ResourceApiDocBundle": ""
+        }
+    },
+    "description": "Extends Nelmio ApiDoc bundle and adds Resource annotation parsing for Multipart Resource."
+}

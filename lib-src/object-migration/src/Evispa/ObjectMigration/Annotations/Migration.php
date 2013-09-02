@@ -36,7 +36,7 @@ final class Migration
     public function __construct(array $data)
     {
         if ((!isset($data['from']) && !isset($data['to'])) || (isset($data['from']) && isset($data['to']))) {
-            throw new \Symfony\Component\Form\Exception\LogicException(
+            throw new \LogicException(
                 'Annotation "Migration" requires either "from" or "to" parameters.'
             );
         }
