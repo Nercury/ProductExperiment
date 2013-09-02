@@ -5,12 +5,12 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="evispa_resource_api_doc.resource_annotation_handler.class">Evispa\Resource\Core\ApiDocBundle\AnnotationHandler\ResourceAnnotationHandler</parameter>
+        <parameter key="evispa_api_doc.resource_annotation_handler.class">Evispa\ApiDocBundle\AnnotationHandler\ResourceAnnotationHandler</parameter>
     </parameters>
 
     <services>
 
-        <service id="evispa_resource_api_doc.resource_annotation_handler" class="%evispa_resource_api_doc.resource_annotation_handler.class%">
+        <service id="evispa_api_doc.resource_annotation_handler" class="%evispa_api_doc.resource_annotation_handler.class%">
             <tag name="nelmio_api_doc.extractor.handler" />
         </service>
 

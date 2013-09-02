@@ -184,7 +184,47 @@ class VersionReader
     }
 
     public function getRequiredClassOptions($className) {
-        return array();
+        $requiredOptions = array();
+
+        $scanList = array($className => true);
+        
+        $scannedSourceNames = array();
+
+        while (true) {
+            if (0 === count($scanList)) {
+                break;
+            }
+            
+            // find new class names
+            foreach ($scanList as $scanName => $_) {
+                $annotations = $this->getClassMigrationAnnotations($scanName);
+                foreach ($annotations as $annotationInfo) {
+                    if (null !== $annotationInfo->annotation->from) {
+                        $newClass = $annotationInfo->annotation->from;
+                        foreach ($annotationInfo->annotation->require as $requiredOption) {
+                            $requiredOptions[$requiredOption] = array('from' => $newClass, 'to' => $scanName);
+                        }
+                    } elseif (null !== $annotationInfo->annotation->to) {
+                        $newClass = $annotationInfo->annotation->to;
+                        foreach ($annotationInfo->annotation->require as $requiredOption) {
+                            $requiredOptions[$requiredOption] = array('from' => $scanName,  'to' => $newClass);
+                        }
+                    }
+                    
+                    if (!isset($scannedSourceNames[$newClass])) {
+                        $scanList[$newClass] = true;
+                    }
+                }
+                
+                unset($scanList[$scanName]);
+                
+                if (!isset($scannedSourceNames[$scanName])) {
+                    $scannedSourceNames[$scanName] = true;
+                }
+            }
+        }
+
+        return $requiredOptions;
     }
 
 }

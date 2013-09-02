@@ -14,6 +14,10 @@ use Evispa\Resource\Component\MultipartResource\Annotations\Resource;
 
 class ProductsController extends Controller
 {
+    private function getProductStorage() {
+        //$this->get('api_resources')->getResourceBackend('product')
+    }
+    
     /**
      * Get a product by its identifier.
      *
@@ -22,14 +26,22 @@ class ProductsController extends Controller
      */
     public function getProductAction($slug)
     {
-        $data = new \Evispa\ProductApiBundle\Rest\ProductData();
+        $storage = $this->getProductStorage('Evispa\Api\Product\Model\ProductV1');
+        $product = $storage->find($slug);
+        
+        /*$data = new \Evispa\Api\Product\Model\ProductV1();
         $data->setSlug('pav1');
-        $data["name"] = "Pavadinimas";
-        $data["attributes"] = array(
-            "15",
-        );
+        
+        $data->code = new \Evispa\Api\Product\Model\Code\ProductCodeV1();
+        $data->code->code = "PAV1";
+        $data->code->ean = "11111";
+        
+        $data->text = new \Evispa\Api\Product\Model\Text\LocalizedTextV1();
+        $data->text->items['lt'] = new \Evispa\Api\Product\Model\Text\TextV1();
+        $data->text->items['lt']->name = "Pavadinimas 1";
+        $data->text->items['lt']->description = "Aprašymas 1";*/
 
-        return \FOS\RestBundle\View\View::create($data);
+        return \FOS\RestBundle\View\View::create($product);
     }
 
     /**
@@ -43,19 +55,31 @@ class ProductsController extends Controller
     public function getProductsAction(ParamFetcher $paramFetcher) {
         $page = $paramFetcher->get('page');
 
-        $data = new \Evispa\ProductApiBundle\Rest\ProductData();
+        
+        
+        $data = new \Evispa\Api\Product\Model\ProductV1();
         $data->setSlug('pav1');
-        $data["name"] = "Pavadinimas";
-        $data["attributes"] = array(
-            'test',
-        );
+        
+        $data->code = new \Evispa\Api\Product\Model\Code\ProductCodeV1();
+        $data->code->code = "PAV1";
+        $data->code->ean = "11111";
+        
+        $data->text = new \Evispa\Api\Product\Model\Text\LocalizedTextV1();
+        $data->text->items['lt'] = new \Evispa\Api\Product\Model\Text\TextV1();
+        $data->text->items['lt']->name = "Pavadinimas 1";
+        $data->text->items['lt']->description = "Aprašymas 1";
 
-        $data2 = new \Evispa\ProductApiBundle\Rest\ProductData();
+        $data2 = new \Evispa\Api\Product\Model\ProductV1();
         $data2->setSlug('pav2');
-        $data2["name"] = "Pavadinimas 2";
-        $data2["attributes"] = array(
-            'test',
-        );
+        
+        $data2->code = new \Evispa\Api\Product\Model\Code\ProductCodeV1();
+        $data2->code->code = "PAV2";
+        $data2->code->ean = "11112";
+        
+        $data2->text = new \Evispa\Api\Product\Model\Text\LocalizedTextV1();
+        $data2->text->items['lt'] = new \Evispa\Api\Product\Model\Text\TextV1();
+        $data2->text->items['lt']->name = "Pavadinimas 2";
+        $data2->text->items['lt']->description = "Aprašymas 2";
 
         return \FOS\RestBundle\View\View::create(array(
             $data,

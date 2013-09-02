@@ -53,7 +53,7 @@ class SimpleProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
      *
      * @var Code\CodeV1
      */
-    public $code = null;
+    public $code;
 
     /**
      * @Type("Evispa\Api\Product\Model\Text\TextV1")
@@ -61,5 +61,5 @@ class SimpleProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
      *
      * @var Text\TextV1
      */
-    public $text = null;
+    public $text;
 }
