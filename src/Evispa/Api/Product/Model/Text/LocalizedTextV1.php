@@ -27,14 +27,8 @@
 
 namespace Evispa\Api\Product\Model\Text;
 
-use JMS\Serializer\Annotation\Type;
-use JMS\Serializer\Annotation\XmlMap;
-use JMS\Serializer\Annotation\XmlKeyValuePairs;
-
-use Evispa\ObjectMigration\Annotations as Api;
-
 /**
- * @Api\Version("vnd.evispa.product.l11n.text.v1")
+ * @Evispa\ObjectMigration\Annotations\Version("vnd.evispa.product.l11n.text.v1")
  */
 class LocalizedTextV1
 {
@@ -43,16 +37,16 @@ class LocalizedTextV1
      *
      * Array key is the locale string.
      *
-     * @Type("array<string, Evispa\Api\Product\Model\Text\TextV1>")
-     * @XmlMap
-     * @XmlKeyValuePairs
+     * @JMS\Serializer\Annotation\Type("array<string, Evispa\Api\Product\Model\Text\TextV1>")
+     * @JMS\Serializer\Annotation\XmlMap
+     * @JMS\Serializer\Annotation\XmlKeyValuePairs
      *
      * @var array
      */
     public $items = array();
 
     /**
-     * @Api\Migration(from="Evispa\Api\Product\Model\Text\TextV1", require={"locale"})
+     * @Evispa\ObjectMigration\Annotations\Migration(from="Evispa\Api\Product\Model\Text\TextV1", require={"locale"})
      *
      * @param TextV1 $old Old version of text part.
      *
@@ -69,7 +63,7 @@ class LocalizedTextV1
     }
 
     /**
-     * @Api\Migration(to="Evispa\Api\Product\Model\Text\TextV1", require={"locale"})
+     * @Evispa\ObjectMigration\Annotations\Migration(to="Evispa\Api\Product\Model\Text\TextV1", require={"locale"})
      *
      * @return TextV1
      */

@@ -27,18 +27,15 @@
 
 namespace Evispa\Api\Product\Model\Text;
 
-use JMS\Serializer\Annotation\Type;
-use Evispa\ObjectMigration\Annotations as Api;
-
 /**
- * @Api\Version("vnd.evispa.product.text.v1")
+ * @Evispa\ObjectMigration\Annotations\Version("vnd.evispa.product.text.v1")
  */
 class TextV1
 {
     /**
      * Product name.
      *
-     * @Type("string")
+     * @JMS\Serializer\Annotation\Type("string")
      *
      * @var string $name
      */
@@ -49,7 +46,7 @@ class TextV1
      *
      * Usually seen as addition to name, a summary.
      *
-     * @Type("string")
+     * @JMS\Serializer\Annotation\Type("string")
      *
      * @var string $shortDescription
      */
@@ -60,7 +57,7 @@ class TextV1
      *
      * Full information about the product.
      *
-     * @Type("string")
+     * @JMS\Serializer\Annotation\Type("string")
      *
      * @var string $description
      */
