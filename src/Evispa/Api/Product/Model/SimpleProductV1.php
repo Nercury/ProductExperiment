@@ -27,11 +27,8 @@
 
 namespace Evispa\Api\Product\Model;
 
-use JMS\Serializer\Annotation\Type;
-use Evispa\ObjectMigration\Annotations as Api;
-
 /**
- * @Api\Version("vnd.evispa.simple-product.v1")
+ * @Evispa\ObjectMigration\Annotations\Version("vnd.evispa.simple-product.v1")
  */
 class SimpleProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
 {
@@ -48,16 +45,14 @@ class SimpleProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
     }
 
     /**
-     * @Type("Evispa\Api\Product\Model\Code\CodeV1")
-     * @Api\VersionedProperty("Evispa\Api\Product\Model\Code\CodeV1")
+     * @JMS\Serializer\Annotation\Type("Evispa\Api\Product\Model\Code\CodeV1")
      *
      * @var Code\CodeV1
      */
     public $code;
 
     /**
-     * @Type("Evispa\Api\Product\Model\Text\TextV1")
-     * @Api\VersionedProperty("Evispa\Api\Product\Model\Text\TextV1")
+     * @JMS\Serializer\Annotation\Type("Evispa\Api\Product\Model\Text\TextV1")
      *
      * @var Text\TextV1
      */

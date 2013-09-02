@@ -27,11 +27,8 @@
 
 namespace Evispa\Api\Product\Model;
 
-use JMS\Serializer\Annotation\Type;
-use Evispa\ObjectMigration\Annotations as Api;
-
 /**
- * @Api\Version("vnd.evispa.product.v1")
+ * @Evispa\ObjectMigration\Annotations\Version("vnd.evispa.product.v1")
  */
 class ProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
 {
@@ -48,21 +45,21 @@ class ProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
     }
 
     /**
-     * @Type("Evispa\Api\Product\Model\Code\ProductCodeV1")
+     * @JMS\Serializer\Annotation\Type("Evispa\Api\Product\Model\Code\ProductCodeV1")
      *
      * @var Code\ProductCodeV1
      */
     public $code;
 
     /**
-     * @Type("Evispa\Api\Product\Model\Text\LocalizedTextV1")
+     * @JMS\Serializer\Annotation\Type("Evispa\Api\Product\Model\Text\LocalizedTextV1")
      *
      * @var Text\LocalizedTextV1
      */
     public $text = null;
 
     /**
-     * @Api\Migration(from="Evispa\Api\Product\Model\SimpleProductV1", require={"locale"})
+     * @Evispa\ObjectMigration\Annotations\Migration(from="Evispa\Api\Product\Model\SimpleProductV1", require={"locale"})
      *
      * @param CodeV1 $old Old version of code part.
      *
@@ -72,7 +69,7 @@ class ProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
         $obj = new self();
 
         $obj->setSlug($other->getSlug());
-        
+
         if (null !== $other->code) {
             $obj->code = Code\ProductCodeV1::fromCodeV1($other->code, $options);
         }
@@ -84,7 +81,7 @@ class ProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
     }
 
     /**
-     * @Api\Migration(to="Evispa\Api\Product\Model\SimpleProductV1", require={"locale"})
+     * @Evispa\ObjectMigration\Annotations\Migration(to="Evispa\Api\Product\Model\SimpleProductV1", require={"locale"})
      *
      * @param CodeV1 $old Old version of code part.
      *
@@ -94,7 +91,7 @@ class ProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
         $obj = new SimpleProductV1();
 
         $obj->setSlug($this->getSlug());
-        
+
         if (null !== $this->code) {
             $obj->code = $this->code->toCodeV1($options);
         }

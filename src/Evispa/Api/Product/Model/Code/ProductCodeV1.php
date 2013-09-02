@@ -27,9 +27,6 @@
 
 namespace Evispa\Api\Product\Model\Code;
 
-use JMS\Serializer\Annotation\Type;
-use Evispa\ObjectMigration\Annotations as Api;
-
 /**
  * @Api\Version("vnd.evispa.product.code.v1")
  */
@@ -38,7 +35,7 @@ class ProductCodeV1
     /**
      * Unique product code for a shop.
      *
-     * @Type("string")
+     * @JMS\Serializer\Annotation\Type("string")
      *
      * @var string $code
      */
@@ -47,7 +44,7 @@ class ProductCodeV1
     /**
      * EAN code.
      *
-     * @Type("string")
+     * @JMS\Serializer\Annotation\Type("string")
      *
      * @var string $ean
      */
@@ -56,14 +53,14 @@ class ProductCodeV1
     /**
      * UPC code.
      *
-     * @Type("string")
+     * @JMS\Serializer\Annotation\Type("string")
      *
      * @var string $upc
      */
     public $upc = null;
 
     /**
-     * @Api\Migration(from="Evispa\Api\Product\Model\Code\CodeV1")
+     * @Evispa\ObjectMigration\Annotations\Migration(from="Evispa\Api\Product\Model\Code\CodeV1")
      *
      * @param CodeV1 $old Old version of code part.
      *
@@ -78,7 +75,7 @@ class ProductCodeV1
     }
 
     /**
-     * @Api\Migration(to="Evispa\Api\Product\Model\Code\CodeV1")
+     * @Evispa\ObjectMigration\Annotations\Migration(to="Evispa\Api\Product\Model\Code\CodeV1")
      *
      * @return CodeV1
      */
