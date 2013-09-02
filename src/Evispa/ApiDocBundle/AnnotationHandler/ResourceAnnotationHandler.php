@@ -5,9 +5,9 @@
  * Time: 4:59 PM
  */
 
-namespace Evispa\Resource\Core\ApiDocBundle\AnnotationHandler;
+namespace Evispa\ApiDocBundle\AnnotationHandler;
 
-use Evispa\Resource\Component\MultipartResource\Annotations\Resource;
+//use Evispa\Resource\Component\MultipartResource\Annotations\Resource;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Nelmio\ApiDocBundle\Extractor\HandlerInterface;
 use Nelmio\ApiDocBundle\Extractor\Nelmio;
@@ -28,9 +28,9 @@ class ResourceAnnotationHandler implements HandlerInterface
     public function handle(ApiDoc $apiAnnotation, array $annotations, Route $route, \ReflectionMethod $method)
     {
         foreach ($annotations as $annotation) {
-            if ($annotation instanceof Resource) {
+           /* if ($annotation instanceof Resource) {
                 $apiAnnotation->setSection($annotation->getName());
-            }
+            }*/
         }
     }
 }

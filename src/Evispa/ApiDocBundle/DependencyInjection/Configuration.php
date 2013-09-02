@@ -1,6 +1,6 @@
 <?php
 
-namespace Evispa\Resource\Core\ApiDocBundle\DependencyInjection;
+namespace Evispa\ApiDocBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -18,7 +18,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('evispa_resource_api_doc');
+        $rootNode = $treeBuilder->root('evispa_api_doc');
 
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for

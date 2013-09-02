@@ -22,12 +22,12 @@
  */
 
 /**
- * 
+ *
  */
 
 namespace Evispa\ObjectMigration\Tests;
 
 class AnnotationTester
 {
-    //put your code here
+    
 }

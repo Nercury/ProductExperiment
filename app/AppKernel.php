@@ -20,8 +20,7 @@ class AppKernel extends Kernel
             new FOS\RestBundle\FOSRestBundle(),
             new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
             new FSC\HateoasBundle\FSCHateoasBundle(),
-            new Evispa\Resource\Core\ApiDocBundle\EvispaResourceApiDocBundle(),
-            new Evispa\Resource\Core\ConfigBundle\EvispaResourceConfigBundle(),
+            new Evispa\ApiDocBundle\EvispaApiDocBundle(),
             new Evispa\ProductApiBundle\EvispaProductApiBundle(),
         );
 
