@@ -1,5 +1,5 @@
-evispa_resource_manager:
-    resource: "@EvispaResourceManagerBundle/Controller/"
+evispa_resource_api:
+    resource: "@EvispaResourceApiBundle/Controller/"
     type:     annotation
     prefix:   /
 

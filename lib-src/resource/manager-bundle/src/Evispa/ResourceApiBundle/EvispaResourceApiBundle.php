@@ -1,9 +1,9 @@
 <?php
 
-namespace Evispa\ResourceManagerBundle;
+namespace Evispa\ResourceApiBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class EvispaResourceManagerBundle extends Bundle
+class EvispaResourceApiBundle extends Bundle
 {
 }

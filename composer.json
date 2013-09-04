@@ -6,7 +6,7 @@
     "autoload": {
         "psr-0": {
             "": "src/",
-            "Evispa\\ResourceManagerBundle\\": "lib-src/resource/manager-bundle/src/"
+            "Evispa\\ResourceApiBundle\\": "lib-src/resource/manager-bundle/src/"
         }
     },
     "require": {
@@ -28,7 +28,7 @@
         "fsc/hateoas-bundle": "<0.5",
         "pagerfanta/pagerfanta": "v1.0.0",
 
-        "evispa/object-migration": "dev-master"
+        "evispa/object-migration": "@dev"
     },
 	"scripts": {
         "post-install-cmd": [

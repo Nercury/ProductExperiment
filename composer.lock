@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "11c322a924743515349dd043fb948a98",
+    "hash": "f1a349767019879bd074f7b1b2755599",
     "packages": [
         {
             "name": "adrienbrault/form-serializer",
@@ -150,7 +150,7 @@
         },
         {
             "name": "doctrine/annotations",
-            "version": "dev-master",
+            "version": "v1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/annotations.git",
@@ -206,7 +206,7 @@
                 {
                     "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "http://jmsyst.com",
+                    "homepage": "https://github.com/schmittjoh",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -775,12 +775,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/evispa/object-migration.git",
-                "reference": "d6a0550265fd01b6027edab8486b4e63e3617ebd"
+                "reference": "aa6bb1c89ece13da09f9aeb2dbef94989e90d7a5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/evispa/object-migration/zipball/d6a0550265fd01b6027edab8486b4e63e3617ebd",
-                "reference": "d6a0550265fd01b6027edab8486b4e63e3617ebd",
+                "url": "https://api.github.com/repos/evispa/object-migration/zipball/aa6bb1c89ece13da09f9aeb2dbef94989e90d7a5",
+                "reference": "aa6bb1c89ece13da09f9aeb2dbef94989e90d7a5",
                 "shasum": ""
             },
             "require": {
@@ -791,7 +791,7 @@
             "type": "library",
             "autoload": {
                 "psr-0": {
-                    "Evispa\\ObjectMigration": "src/"
+                    "Evispa\\ObjectMigration": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -809,7 +809,7 @@
                 }
             ],
             "description": "Migrations between object versions, configurable via annotations.",
-            "time": "2013-09-02 12:39:30"
+            "time": "2013-09-02 15:40:46"
         },
         {
             "name": "friendsofsymfony/rest",
@@ -1012,12 +1012,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Incenteev/ParameterHandler.git",
-                "reference": "548ea586258845b68e8142b0e3f0a7dbac2e6f49"
+                "reference": "bc06242a63298affc72d2089f93d8986a6217c4c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Incenteev/ParameterHandler/zipball/548ea586258845b68e8142b0e3f0a7dbac2e6f49",
-                "reference": "548ea586258845b68e8142b0e3f0a7dbac2e6f49",
+                "url": "https://api.github.com/repos/Incenteev/ParameterHandler/zipball/bc06242a63298affc72d2089f93d8986a6217c4c",
+                "reference": "bc06242a63298affc72d2089f93d8986a6217c4c",
                 "shasum": ""
             },
             "require": {
@@ -1055,7 +1055,7 @@
             "keywords": [
                 "parameters management"
             ],
-            "time": "2013-08-27 09:48:45"
+            "time": "2013-09-03 08:29:03"
         },
         {
             "name": "jdorn/sql-formatter",
@@ -1063,12 +1063,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jdorn/sql-formatter.git",
-                "reference": "bccca26bfe75b30aba71c2f734e9f9dd854a85f6"
+                "reference": "7045fde3163d5a4ea6ec32e409a7dcf00779e204"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jdorn/sql-formatter/zipball/bccca26bfe75b30aba71c2f734e9f9dd854a85f6",
-                "reference": "bccca26bfe75b30aba71c2f734e9f9dd854a85f6",
+                "url": "https://api.github.com/repos/jdorn/sql-formatter/zipball/7045fde3163d5a4ea6ec32e409a7dcf00779e204",
+                "reference": "7045fde3163d5a4ea6ec32e409a7dcf00779e204",
                 "shasum": ""
             },
             "require": {
@@ -1105,7 +1105,7 @@
                 "highlight",
                 "sql"
             ],
-            "time": "2013-07-11 13:51:14"
+            "time": "2013-09-02 17:19:28"
         },
         {
             "name": "jms/metadata",
@@ -1337,12 +1337,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kriswallsmith/assetic.git",
-                "reference": "f9f754dc7524acd6daf0bf510d22c055b4967e08"
+                "reference": "e0646fa52937c4e5ce61ce089ada28c509b01b40"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/f9f754dc7524acd6daf0bf510d22c055b4967e08",
-                "reference": "f9f754dc7524acd6daf0bf510d22c055b4967e08",
+                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/e0646fa52937c4e5ce61ce089ada28c509b01b40",
+                "reference": "e0646fa52937c4e5ce61ce089ada28c509b01b40",
                 "shasum": ""
             },
             "require": {
@@ -1400,7 +1400,7 @@
                 "compression",
                 "minification"
             ],
-            "time": "2013-07-11 15:56:23"
+            "time": "2013-09-03 12:45:02"
         },
         {
             "name": "monolog/monolog",
@@ -1928,12 +1928,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/AsseticBundle.git",
-                "reference": "bc213d871f8c085c48ea00cb26eb91e1f260b5a7"
+                "reference": "bcc79f384fb67c69206d77734c3648673f112336"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/AsseticBundle/zipball/bc213d871f8c085c48ea00cb26eb91e1f260b5a7",
-                "reference": "bc213d871f8c085c48ea00cb26eb91e1f260b5a7",
+                "url": "https://api.github.com/repos/symfony/AsseticBundle/zipball/bcc79f384fb67c69206d77734c3648673f112336",
+                "reference": "bcc79f384fb67c69206d77734c3648673f112336",
                 "shasum": ""
             },
             "require": {
@@ -1982,7 +1982,7 @@
                 "compression",
                 "minification"
             ],
-            "time": "2013-07-15 14:44:32"
+            "time": "2013-09-03 10:28:24"
         },
         {
             "name": "symfony/icu",
@@ -2153,12 +2153,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "cade045e34b1e1dca7e85170457c7e444ffb3687"
+                "reference": "6f59f072cbaf44924c1120fcf42603a330adbb4b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/cade045e34b1e1dca7e85170457c7e444ffb3687",
-                "reference": "cade045e34b1e1dca7e85170457c7e444ffb3687",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/6f59f072cbaf44924c1120fcf42603a330adbb4b",
+                "reference": "6f59f072cbaf44924c1120fcf42603a330adbb4b",
                 "shasum": ""
             },
             "require": {
@@ -2253,7 +2253,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2013-08-31 11:25:42"
+            "time": "2013-09-02 13:36:16"
         },
         {
             "name": "twig/extensions",
@@ -2308,12 +2308,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Twig.git",
-                "reference": "427fce4d58bf7f3ec55d7a3ff616b3c02b4c4f1f"
+                "reference": "b5516cadf6042c11b0d54cdad4f6c5fb25d2ec40"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Twig/zipball/427fce4d58bf7f3ec55d7a3ff616b3c02b4c4f1f",
-                "reference": "427fce4d58bf7f3ec55d7a3ff616b3c02b4c4f1f",
+                "url": "https://api.github.com/repos/fabpot/Twig/zipball/b5516cadf6042c11b0d54cdad4f6c5fb25d2ec40",
+                "reference": "b5516cadf6042c11b0d54cdad4f6c5fb25d2ec40",
                 "shasum": ""
             },
             "require": {
@@ -2349,7 +2349,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2013-09-02 12:28:12"
+            "time": "2013-09-04 06:20:08"
         },
         {
             "name": "willdurand/negotiation",

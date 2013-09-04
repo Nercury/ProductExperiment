@@ -46,6 +46,11 @@ function _out($t, $ic = 0) {
 delete_files(__SYMFONY_PATH . '/app/cache', TRUE);
 _out('deleted files in '.__SYMFONY_PATH . '/app/cache');
 
+if (function_exists('opcache_reset')) {
+    opcache_reset();
+    _out('cleared opcache');
+}
+
 if (function_exists('apc_clear_cache')) {
     apc_clear_cache();
     apc_clear_cache('user');
