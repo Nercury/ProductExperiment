@@ -11,8 +11,13 @@
     <services>
         <service id="evispa_product_api.product_resource" class="%evispa_product_api.resource_config.class%">
             <tag name="resource_api_config" />
-            <argument>product</argument>
-            <argument>Evispa\Api\Product\Model\ProductV1</argument>
+            <argument>product</argument> <!-- Resource identifier -->
+            <argument>Evispa\Api\Product\Model\ProductV1</argument> <!-- Resource public class -->
+            <argument type="collection"> <!-- Resource parts for other modules to hook into -->
+                <!-- key is part identifier, value is property name -->
+                <argument key="product.code">code</argument>
+                <argument key="product.text">text</argument>
+            </argument>
         </service>
     </services>
 

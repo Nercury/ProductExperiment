@@ -17,19 +17,28 @@ class ResourceApiConfig
     /**
      * Resource class name, i.e "Vendor\Product".
      *
-     * @var string
+     * @var \ReflectionClass
      */
     private $resourceClass;
+
+    private $parts;
 
     /**
      *
      * @param string $resourceId Resource identifier, i.e. "product".
      * @param string $resourceClass Resource class name, i.e "Vendor\Product".
      */
-    function __construct($resourceId, $resourceClass)
+    function __construct($resourceId, $resourceClass, $parts)
     {
         $this->resourceId = $resourceId;
-        $this->resourceClass = $resourceClass;
+        $this->resourceClass = new \ReflectionClass($resourceClass);
+        $this->parts = $parts;
+
+        $requiredInterface = 'Evispa\Api\Resource\Model\ApiResourceInterface';
+
+        if (!$this->resourceClass->implementsInterface($requiredInterface)) {
+            throw new \LogicException('Root resource class "'.$resourceClass.'" must implement "'.$requiredInterface.'" interface.');
+        }
     }
 
     public function getResourceId()
@@ -37,8 +46,21 @@ class ResourceApiConfig
         return $this->resourceId;
     }
 
+    /**
+     * @return \ReflectionClass
+     */
     public function getResourceClass()
     {
         return $this->resourceClass;
+    }
+
+    /**
+     * Return array of (part identifier) => (part property name).
+     *
+     * @return array
+     */
+    public function getParts()
+    {
+        return $this->parts;
     }
 }

@@ -7,11 +7,17 @@ namespace Evispa\ResourceApiBundle\Manager;
  */
 class ResourceManager
 {
-    private $className;
+    /**
+     * @var \ReflectionClass
+     */
+    private $class;
 
-    public function __construct($className)
+    /**
+     * @param \ReflectionClass $class
+     */
+    public function __construct($class)
     {
-        $this->className = $className;
+        $this->class = $class;
     }
 
     /**
