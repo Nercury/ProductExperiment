@@ -9,11 +9,22 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 class DefaultController extends Controller
 {
     /**
-     * @Route("/hello/{name}")
+     * @return \Evispa\ResourceApiBundle\Registry\ManagerRegistry
+     */
+    private function getResourceManagers() {
+        return $this->get('resource_managers');
+    }
+
+    /**
+     * @Route("/api/test")
      * @Template()
      */
-    public function indexAction($name)
+    public function testAction()
     {
+        $managers = $this->getResourceManagers();
+
+        var_dump($managers->getResourceManager('product')); die;
+
         return array('name' => $name);
     }
 }

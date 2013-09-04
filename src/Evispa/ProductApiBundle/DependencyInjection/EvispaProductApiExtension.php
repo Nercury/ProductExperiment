@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\Loader;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class EvispaProductResourceExtension extends Extension
+class EvispaProductApiExtension extends Extension
 {
     /**
      * {@inheritDoc}
@@ -24,5 +24,6 @@ class EvispaProductResourceExtension extends Extension
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
+        $loader->load('api/product.xml');
     }
 }

@@ -7,6 +7,13 @@ namespace Evispa\ResourceApiBundle\Manager;
  */
 class ResourceManager
 {
+    private $className;
+
+    public function __construct($className)
+    {
+        $this->className = $className;
+    }
+
     /**
      * Find a single resource object.
      *
