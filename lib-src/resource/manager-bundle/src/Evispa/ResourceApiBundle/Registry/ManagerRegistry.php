@@ -9,7 +9,22 @@ class ManagerRegistry
 {
     private $loadedManagers = array();
 
+    /**
+     * @var ApiConfigRegistry
+     */
     protected $apiConfigRegistry;
+
+    /**
+     * @var ResourceBackendConfigRegistry
+     */
+    protected $backendConfigRegistry;
+
+    /**
+     * @var \Evispa\ResourceApiBundle\Backend\ApiBackendResolver
+     */
+    protected $backendResolver;
+
+    protected $apiBackendMapConfiguration;
 
     /**
      * Set api config registry.
@@ -20,7 +35,22 @@ class ManagerRegistry
         $this->apiConfigRegistry = $apiConfigRegistry;
     }
 
+    public function setBackendConfigRegistry(ResourceBackendConfigRegistry $backendConfigRegistry) {
+        $this->backendConfigRegistry = $backendConfigRegistry;
+    }
+
+    public function setBackendResolver($backendResolver) {
+        $this->backendResolver = $backendResolver;
+    }
+
+    public function setApiBackendMap($mapConfiguration) {
+        $this->apiBackendMapConfiguration = $mapConfiguration;
+    }
+
     protected function loadManagerForConfig(\Evispa\ResourceApiBundle\Config\ResourceApiConfig $config) {
+
+        $this->backendResolver->createBackend($config, $this->backendConfigRegistry, $this->apiBackendMapConfiguration);
+
         $manager = new \Evispa\ResourceApiBundle\Manager\ResourceManager($config->getResourceClass());
 
         return $manager;

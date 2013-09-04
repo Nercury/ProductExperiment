@@ -1,6 +1,6 @@
 <?php
 
-namespace Evispa\ResourceApiBundle\DependencyInjection;
+namespace Evispa\MongoProductBackendBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -18,22 +18,11 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('evispa_resource_api');
+        $rootNode = $treeBuilder->root('evispa_mongo_product_backend');
 
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for
         // more information on that topic.
-
-        $rootNode->children()
-            ->arrayNode('backend')
-                ->prototype('array')
-                    ->children()
-                        ->scalarNode('manager')->defaultNull()->end()
-                    ->end()
-                ->end()
-                ->useAttributeAsKey('id')
-            ->end()
-        ->end();
 
         return $treeBuilder;
     }

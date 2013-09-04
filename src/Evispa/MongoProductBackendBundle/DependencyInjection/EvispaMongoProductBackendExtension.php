@@ -1,6 +1,6 @@
 <?php
 
-namespace Evispa\ResourceApiBundle\DependencyInjection;
+namespace Evispa\MongoProductBackendBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\Loader;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class EvispaResourceApiExtension extends Extension
+class EvispaMongoProductBackendExtension extends Extension
 {
     /**
      * {@inheritDoc}
@@ -24,7 +24,6 @@ class EvispaResourceApiExtension extends Extension
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
-
-        $container->setParameter('evispa_resource_api_backend_map', $config['backend']);
+        $loader->load('backend/product.xml');
     }
 }
