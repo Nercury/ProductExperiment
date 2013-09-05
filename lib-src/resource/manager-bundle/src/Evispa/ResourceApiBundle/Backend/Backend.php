@@ -8,5 +8,20 @@ namespace Evispa\ResourceApiBundle\Backend;
 class Backend
 {
     private $backendManager;
-    private $partManagers;
+    private $backendParts;
+
+    private $partManagersWrappers;
+
+    public function getBackendManager()
+    {
+        return $this->backendManager;
+    }
+
+    public function setBackendManager($backendManager)
+    {
+        $this->backendManager = $backendManager;
+        return $this;
+    }
+
+    
 }

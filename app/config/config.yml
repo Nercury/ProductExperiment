@@ -92,3 +92,5 @@ evispa_resource_api:
     backend:
         product:
             manager: mongo.product
+            parts:
+                text: mongo.product.text
