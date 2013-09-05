@@ -82,8 +82,10 @@ class ManagerRegistry
      */
     public function getResourceManager($resourceId, $options)
     {
-        if (isset($this->loadedManagers[$resourceId])) {
-            return $this->loadedManagers[$resourceId];
+        $hash = md5(json_encode(array($resourceId, $options)));
+
+        if (isset($this->loadedManagers[$hash])) {
+            return $this->loadedManagers[$hash];
         }
 
         $resourceConfig = $this->apiConfigRegistry->getResourceConfig($resourceId);
@@ -91,8 +93,8 @@ class ManagerRegistry
             return null;
         }
 
-        $this->loadedManagers[$resourceId] = $this->loadManagerForConfig($resourceConfig, $options);
+        $this->loadedManagers[$hash] = $this->loadManagerForConfig($resourceConfig, $options);
 
-        return $this->loadedManagers[$resourceId];
+        return $this->loadedManagers[$hash];
     }
 }
