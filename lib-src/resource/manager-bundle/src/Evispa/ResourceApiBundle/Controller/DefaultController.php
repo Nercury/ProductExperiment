@@ -23,9 +23,11 @@ class DefaultController extends Controller
     {
         $managers = $this->getResourceManagers();
 
-        var_dump($managers->getResourceManager('product')); die;
+        $pm = $managers->getResourceManager('product');
 
-        //$p = $managers->getResourceManager('product')->findOne(15);
+        $p = $pm->findOne(15);
+
+        var_dump($p); die;
 
         return array('name' => $name);
     }

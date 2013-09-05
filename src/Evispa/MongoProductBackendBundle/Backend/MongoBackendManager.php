@@ -4,12 +4,12 @@ namespace Evispa\MongoProductBackendBundle\Backend;
 
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Evispa\MongoProductBackendBundle\Document\Product;
-use Evispa\ResourceApiBundle\Backend\BackendManagerInterface;
+use Evispa\ResourceApiBundle\Backend\BackendInterface;
 
 /**
  * @author nerijus
  */
-class MongoBackendManager implements BackendManagerInterface
+class MongoBackendManager implements BackendInterface
 {
     /** @var ManagerRegistry */
     protected $mongodb;
@@ -35,7 +35,19 @@ class MongoBackendManager implements BackendManagerInterface
 //        $product->getCode();
 //        $product->getText();
 
-        return $product;
+        $result = array();
+
+        if (in_array('product.code', $requestedParts)) {
+            $result['product.code'] = new \Evispa\Api\Product\Model\Code\CodeV1();
+            $result['product.code']->code = "X";
+        }
+
+        if (in_array('product.text', $requestedParts)) {
+            $result['product.text'] = new \Evispa\Api\Product\Model\Text\TextV1();
+            $result['product.text']->name = "Pav Mongo Yay";
+        }
+
+        return $result;
 
     }
 }

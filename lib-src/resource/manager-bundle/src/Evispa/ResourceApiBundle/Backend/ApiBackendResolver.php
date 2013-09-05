@@ -33,25 +33,27 @@ class ApiBackendResolver
      * @param ResourceBackendConfigRegistry $backendConfigs
      * @param array $appApiBackendMap
      *
-     * @return Backend
+     * @return Unicorn
      */
     public function createBackend(ResourceApiConfig $apiConfig, ResourceBackendConfigRegistry $backendConfigs, array $appApiBackendMap) {
 
         $resourceId = $apiConfig->getResourceId();
         $productBackendMap = isset($appApiBackendMap[$resourceId]) ? $appApiBackendMap[$resourceId] : null;
 
-        $availableBackendManagers = array();
+        $availableBackends = array();
+        $backendManagerConfigs = array();
         foreach ($backendConfigs->getBackendConfigs() as $config) {
             if ($resourceId === $config->getResourceId()) {
                 if (null !== $config->getBackendManager()) {
-                    $availableBackendManagers[$config->getBackendId()] = $config->getBackendManager();
+                    $availableBackends[$config->getBackendId()] = $config->getBackendManager();
+                    $backendManagerConfigs[$config->getBackendId()] = $config;
                 }
             }
         }
 
         // Check for backend managers.
 
-        if (0 === count($availableBackendManagers)) {
+        if (0 === count($availableBackends)) {
             throw new BackendConfigurationException(
                 'There is no backend with a manager for "'.$resourceId.'" resource.'
             );
@@ -62,24 +64,24 @@ class ApiBackendResolver
         if (null !== $productBackendMap) {
             if (isset($productBackendMap['manager']) && !empty($productBackendMap['manager'])) {
                 $requiredManager = $productBackendMap['manager'];
-                if (!isset($availableBackendManagers[$requiredManager])) {
-                    $configSuggestion = $this->buildManagerBackendSuggestion($resourceId, $availableBackendManagers);
+                if (!isset($availableBackends[$requiredManager])) {
+                    $configSuggestion = $this->buildManagerBackendSuggestion($resourceId, $availableBackends);
                     throw new BackendConfigurationException(
                         'Backend manager "'.$requiredManager.'" assigned to "'.$resourceId.'" was not found, but '.
                         $configSuggestion.' are available. Check configuration for "evispa_resource_api.backend.'.$resourceId.'.manager".'
                     );
                 }
 
-                $availableBackendManagers = array(
-                    $requiredManager => $availableBackendManagers[$requiredManager],
+                $availableBackends = array(
+                    $requiredManager => $availableBackends[$requiredManager],
                 );
             }
         }
 
         // Make sure no more than 1 backend is available before continuing.
 
-        if (1 < count($availableBackendManagers)) {
-            $configSuggestion = $this->buildManagerBackendSuggestion($resourceId, $availableBackendManagers);
+        if (1 < count($availableBackends)) {
+            $configSuggestion = $this->buildManagerBackendSuggestion($resourceId, $availableBackends);
 
             throw new BackendConfigurationException(
                 'Resource "'.$resourceId.'" can use only a single backend manager at a time, '.
@@ -88,13 +90,17 @@ class ApiBackendResolver
             );
         }
 
-        $backendManagerIds = array_keys($availableBackendManagers);
-        $backendManager = $availableBackendManagers[$backendManagerIds[0]];
+        $backendManagerIds = array_keys($availableBackends);
+        $backendId = $backendManagerIds[0];
+        $backend = $availableBackends[$backendId];
+        $backendConfig = $backendManagerConfigs[$backendId];
 
-        $backend = new Backend();
+        $unicorn = new Unicorn();
 
-        $backend->setBackendManager($backendManager);
+        // default backend
 
-        return $backend;
+        $unicorn->addBackend(new UnicornBackend($backendConfig->getParts(), $backend));
+
+        return $unicorn;
     }
 }

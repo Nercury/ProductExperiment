@@ -49,9 +49,9 @@ class ManagerRegistry
 
     protected function loadManagerForConfig(\Evispa\ResourceApiBundle\Config\ResourceApiConfig $config) {
 
-        $this->backendResolver->createBackend($config, $this->backendConfigRegistry, $this->apiBackendMapConfiguration);
+        $unicorn = $this->backendResolver->createBackend($config, $this->backendConfigRegistry, $this->apiBackendMapConfiguration);
 
-        $manager = new \Evispa\ResourceApiBundle\Manager\ResourceManager($config->getResourceClass());
+        $manager = new \Evispa\ResourceApiBundle\Manager\ResourceManager($config->getResourceClass(), $config->getParts(), $unicorn);
 
         return $manager;
     }
