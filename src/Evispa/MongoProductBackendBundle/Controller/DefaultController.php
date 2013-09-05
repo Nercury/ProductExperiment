@@ -15,19 +15,11 @@ class DefaultController extends Controller
      */
     public function indexAction()
     {
-        $product = $this->get('evispa_mongo_product_backend.product_backend_manager')->findOne('52284a46ed7d3e6d0c8b4576', array());
+        $options = array('locale' => $this->getRequest()->getLocale());
+
+        $product = $this->get('resource_managers')->getResourceManager('product', $options)->findOne('52284a46ed7d3e6d0c8b4576');
 
         var_dump($product);
-
-//        $dm = $this->get('doctrine_mongodb')->getManager();
-//        $product = new Product();
-//        $product->setCode('#'.rand(100000, 9999999));
-//        $product->setText('tekstas');
-//
-//        $dm->persist($product);
-//
-//        $dm->flush();
-//        $product->getSlug();
 
         return array('name' => 'test');
     }

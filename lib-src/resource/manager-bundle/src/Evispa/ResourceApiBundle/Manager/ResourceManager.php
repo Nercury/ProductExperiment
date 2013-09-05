@@ -2,6 +2,13 @@
 
 namespace Evispa\ResourceApiBundle\Manager;
 
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\Reader;
+use Evispa\ObjectMigration\VersionConverter;
+use Evispa\ObjectMigration\VersionReader;
+use Evispa\ResourceApiBundle\Backend\Unicorn;
+use Symfony\Component\Form\Exception\LogicException;
+
 /**
  * @author nerijus
  */
@@ -17,20 +24,58 @@ class ResourceManager
     private $resourceProperties;
 
     /**
-     * @var \Evispa\ResourceApiBundle\Backend\Unicorn
+     * @var VersionConverter[]
+     */
+    private $partVersionConverter;
+
+    /**
+     * @var Unicorn
      */
     private $unicorn;
 
     /**
-     * @param \ReflectionClass $class
+     * @param Reader        $reader
+     * @param VersionReader $versionReader
+     * @param array         $converterOptions
+     * @param               $class
+     * @param               $resourceProperties
+     * @param Unicorn       $unicorn
+     *
+     * @throws \Symfony\Component\Form\Exception\LogicException
      */
-    public function __construct($class, $resourceProperties, \Evispa\ResourceApiBundle\Backend\Unicorn $unicorn)
-    {
+    public function __construct(
+        Reader $reader,
+        VersionReader $versionReader,
+        array $converterOptions,
+        $class,
+        $resourceProperties,
+        Unicorn $unicorn
+    ) {
         $this->propertyAccess = \Symfony\Component\PropertyAccess\PropertyAccess::createPropertyAccessor();
-
         $this->class = $class;
         $this->resourceProperties = $resourceProperties;
         $this->unicorn = $unicorn;
+
+        foreach ($this->resourceProperties as $partName => $propertyName) {
+            $property = $reader->getPropertyAnnotation(
+                $this->class->getProperty($propertyName),
+                'JMS\Serializer\Annotation\Type'
+            );
+
+            if (null === $property) {
+                throw new LogicException(
+                    'Resource "' . $this->class->getName() .
+                    '" property "' . $propertyName .
+                    '" should have JMS\Serializer\Annotation\Type annotation.'
+                );
+            }
+
+            $this->partVersionConverter[$partName] = new VersionConverter(
+                $versionReader,
+                $property->name,
+                $converterOptions
+            );
+        }
     }
 
     /**
@@ -38,9 +83,12 @@ class ResourceManager
      *
      * @param string $slug Resource identifier.
      *
+     * @throws \LogicException
+     *
      * @return \Evispa\Api\Resource\Model\ApiResourceInterface
      */
-    public function findOne($slug) {
+    public function findOne($slug)
+    {
         $resource = $this->class->newInstance();
         $resource->setSlug($slug);
 
@@ -52,13 +100,14 @@ class ResourceManager
             $backendResult = $realBackend->findOne($slug, $backendPartNames);
             foreach ($backendPartNames as $partName) {
                 if (!isset($backendResult[$partName])) {
-                    throw new \LogicException('Expected part "'.$partName.'" not found in backend "'.get_class($realBackend).'".');
+                    throw new \LogicException(
+                        'Expected part "' . $partName . '" not found in backend "' . get_class($realBackend) . '".'
+                    );
                 }
 
-                $partObj = $backendResult[$partName];
-                // migrate part obj to version in product
+                $part = $this->partVersionConverter[$partName]->migrateFrom($backendResult[$partName]);
 
-                $this->propertyAccess->setValue($resource, $this->resourceProperties[$partName], $partObj);
+                $this->propertyAccess->setValue($resource, $this->resourceProperties[$partName], $part);
             }
         }
 
@@ -66,11 +115,12 @@ class ResourceManager
     }
 
     /**
-     * Create and get a new resource object, no persiting to the db.
+     * Create and get a new resource object, no persist to the db.
      *
      * @return \Evispa\Api\Resource\Model\ApiResourceInterface
      */
-    public function getNew() {
+    public function getNew()
+    {
 
     }
 
@@ -79,7 +129,8 @@ class ResourceManager
      *
      * @param \Evispa\Api\Resource\Model\ApiResourceInterface $resource
      */
-    public function saveOne($resource) {
+    public function saveOne($resource)
+    {
 
     }
 }

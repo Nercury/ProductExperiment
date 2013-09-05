@@ -31,23 +31,19 @@ class MongoBackendManager implements BackendInterface
     {
         /** @var Product $product */
         $product = $this->mongodb->getRepository('EvispaMongoProductBackendBundle:Product')->find($slug);
-//
-//        $product->getCode();
-//        $product->getText();
 
         $result = array();
 
         if (in_array('product.code', $requestedParts)) {
             $result['product.code'] = new \Evispa\Api\Product\Model\Code\CodeV1();
-            $result['product.code']->code = "X";
+            $result['product.code']->code = $product->getCode();
         }
 
         if (in_array('product.text', $requestedParts)) {
             $result['product.text'] = new \Evispa\Api\Product\Model\Text\TextV1();
-            $result['product.text']->name = "Pav Mongo Yay";
+            $result['product.text']->name = $product->getText();
         }
 
         return $result;
-
     }
 }
