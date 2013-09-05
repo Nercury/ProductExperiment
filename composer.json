@@ -27,7 +27,8 @@
         "nelmio/api-doc-bundle": "dev-master",
         "fsc/hateoas-bundle": "<0.5",
         "pagerfanta/pagerfanta": "v1.0.0",
-
+        "doctrine/mongodb-odm": "1.0.*@dev",
+        "doctrine/mongodb-odm-bundle": "3.0.*@dev",
         "evispa/object-migration": "@dev"
     },
 	"scripts": {

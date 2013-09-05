@@ -91,8 +91,6 @@ class ApiBackendResolver
         $backendManagerIds = array_keys($availableBackendManagers);
         $backendManager = $availableBackendManagers[$backendManagerIds[0]];
 
-        var_dump($backendManager); die;
-
         return new Backend();
     }
 }
