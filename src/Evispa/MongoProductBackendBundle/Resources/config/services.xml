@@ -10,7 +10,7 @@
 
     <services>
         <service id="evispa_mongo_product_backend.product_backend_manager" class="%evispa_mongo_product_backend.product_backend_manager.class%">
-            
+            <argument type="service" id="doctrine_mongodb" />
         </service>
     </services>
 </container>

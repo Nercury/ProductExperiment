@@ -99,9 +99,7 @@ class ProductsController extends Controller
     public function postProductsAction() {
         $request = $this->getRequest();
 
-        
 
-        var_dump($request->getContent()); die;
 
         $fb = $this->createFormBuilder(null, array(
             'csrf_protection' => false
