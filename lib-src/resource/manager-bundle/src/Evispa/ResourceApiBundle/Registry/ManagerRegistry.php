@@ -54,7 +54,7 @@ class ManagerRegistry
         $this->apiBackendMapConfiguration = $mapConfiguration;
     }
 
-    protected function loadManagerForConfig(\Evispa\ResourceApiBundle\Config\ResourceApiConfig $config, $options)
+    protected function loadManagerForConfig(\Evispa\ResourceApiBundle\Config\ResourceApiConfig $config, array $options)
     {
         $reader = new AnnotationReader();
         $versionReader = new VersionReader($reader);
@@ -80,7 +80,7 @@ class ManagerRegistry
      *
      * @return \Evispa\ResourceApiBundle\Manager\ResourceManager
      */
-    public function getResourceManager($resourceId, $options)
+    public function getResourceManager($resourceId, array $options = array())
     {
         $hash = md5(json_encode(array($resourceId, $options)));
 
