@@ -4,7 +4,12 @@
 
 {% for product in products %}
     <div>
-        <div>{{ product.name }}</div>
+        <div>
+            <h2>{{ product.slug }}</h2>
+            {% for key, item in product.text.items %}
+                <div>{{ key }}: {{ item.name }}</div>
+            {% endfor %}
+        </div>
     </div>
 {% else %}
     <div>No Products to display.</div>

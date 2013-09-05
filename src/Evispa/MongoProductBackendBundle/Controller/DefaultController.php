@@ -17,9 +17,19 @@ class DefaultController extends Controller
     {
         $options = array('locale' => $this->getRequest()->getLocale());
 
-        $product = $this->get('resource_managers')->getResourceManager('product', $options)->findOne('52284a46ed7d3e6d0c8b4576');
+        $products = $this->get('doctrine_mongodb')->getRepository('EvispaMongoProductBackendBundle:Product')->findAll();
 
-        var_dump($product);
+        /** @var Product $product */
+        foreach ($products as $product) {
+            $resource = $this->get('resource_managers')->getResourceManager('product', $options)->findOne(
+                $product->getSlug()
+            );
+
+            var_dump($resource);
+        }
+
+
+
 
         return array('name' => 'test');
     }

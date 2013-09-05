@@ -29,8 +29,11 @@ class ProductsController extends Controller
      */
     public function getProductAction($slug)
     {
-        $storage = $this->getProductStorage('Evispa\Api\Product\Model\ProductV1');
-        $product = $storage->find($slug);
+        $options = array('locale' => $this->getRequest()->getLocale());
+
+        $product = $this->get('resource_managers')->getResourceManager('product', $options)->findOne(
+            $slug
+        );
 
         /*$data = new \Evispa\Api\Product\Model\ProductV1();
         $data->setSlug('pav1');
