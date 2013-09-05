@@ -904,12 +904,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/doctrine2.git",
-                "reference": "0a9ff77303e515bf8b1d610ff5cdcf61c82b0d09"
+                "reference": "0a07207f596b87ce4dc7765698856bc78dcca2b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/0a9ff77303e515bf8b1d610ff5cdcf61c82b0d09",
-                "reference": "0a9ff77303e515bf8b1d610ff5cdcf61c82b0d09",
+                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/0a07207f596b87ce4dc7765698856bc78dcca2b3",
+                "reference": "0a07207f596b87ce4dc7765698856bc78dcca2b3",
                 "shasum": ""
             },
             "require": {
@@ -971,7 +971,7 @@
                 "database",
                 "orm"
             ],
-            "time": "2013-09-04 22:18:36"
+            "time": "2013-09-05 13:43:28"
         },
         {
             "name": "evispa/object-migration",
