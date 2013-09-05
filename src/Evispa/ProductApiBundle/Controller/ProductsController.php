@@ -47,7 +47,13 @@ class ProductsController extends Controller
         $data->text->items['lt']->name = "Pavadinimas 1";
         $data->text->items['lt']->description = "Aprašymas 1";*/
 
-        return \FOS\RestBundle\View\View::create($product);
+        $view = \FOS\RestBundle\View\View::create($product);
+
+        if(null === $product) {
+            $view->setStatusCode(404);
+        }
+
+        return $view;
     }
 
     /**
