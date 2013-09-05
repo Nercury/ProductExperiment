@@ -8,7 +8,7 @@
         <parameter key="evispa_resource_api.api_config_registry.class">Evispa\ResourceApiBundle\Registry\ApiConfigRegistry</parameter>
         <parameter key="evispa_resource_api.backend_config_registry.class">Evispa\ResourceApiBundle\Registry\ResourceBackendConfigRegistry</parameter>
         <parameter key="evispa_resource_api.managers.class">Evispa\ResourceApiBundle\Registry\ManagerRegistry</parameter>
-        <parameter key="evispa_resource_api.api_backend_resolver.class">Evispa\ResourceApiBundle\Backend\ApiBackendResolver</parameter>
+        <parameter key="evispa_resource_api.api_unicorn_resolver.class">Evispa\ResourceApiBundle\Backend\ApiUnicornResolver</parameter>
     </parameters>
 
     <services>
@@ -18,7 +18,7 @@
         <service id="evispa_resource_api.backend_config_registry" class="%evispa_resource_api.backend_config_registry.class%">
         </service>
 
-        <service id="evispa_resource_api.api_backend_resolver" class="%evispa_resource_api.api_backend_resolver.class%">
+        <service id="evispa_resource_api.api_unicorn_resolver" class="%evispa_resource_api.api_unicorn_resolver.class%">
         </service>
 
         <service id="evispa_resource_api.managers" class="%evispa_resource_api.managers.class%">
@@ -28,8 +28,8 @@
             <call method="setBackendConfigRegistry">
                 <argument type="service" id="evispa_resource_api.backend_config_registry" />
             </call>
-            <call method="setBackendResolver">
-                <argument type="service" id="evispa_resource_api.api_backend_resolver" />
+            <call method="setUnicornResolver">
+                <argument type="service" id="evispa_resource_api.api_unicorn_resolver" />
             </call>
             <call method="setApiBackendMap">
                 <argument>%evispa_resource_api_backend_map%</argument>

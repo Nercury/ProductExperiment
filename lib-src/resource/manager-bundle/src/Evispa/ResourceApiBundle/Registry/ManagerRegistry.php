@@ -23,9 +23,9 @@ class ManagerRegistry
     protected $backendConfigRegistry;
 
     /**
-     * @var \Evispa\ResourceApiBundle\Backend\ApiBackendResolver
+     * @var \Evispa\ResourceApiBundle\Backend\ApiUnicornResolver
      */
-    protected $backendResolver;
+    protected $unicornResolver;
 
     protected $apiBackendMapConfiguration;
 
@@ -44,9 +44,9 @@ class ManagerRegistry
         $this->backendConfigRegistry = $backendConfigRegistry;
     }
 
-    public function setBackendResolver($backendResolver)
+    public function setUnicornResolver($unicornResolver)
     {
-        $this->backendResolver = $backendResolver;
+        $this->unicornResolver = $unicornResolver;
     }
 
     public function setApiBackendMap($mapConfiguration)
@@ -59,7 +59,7 @@ class ManagerRegistry
         $reader = new AnnotationReader();
         $versionReader = new VersionReader($reader);
 
-        $unicorn = $this->backendResolver->createBackend(
+        $unicorn = $this->unicornResolver->makeUnicorn(
             $config,
             $this->backendConfigRegistry,
             $this->apiBackendMapConfiguration

@@ -32,6 +32,10 @@ class MongoBackendManager implements BackendInterface
         /** @var Product $product */
         $product = $this->mongodb->getRepository('EvispaMongoProductBackendBundle:Product')->find($slug);
 
+        if (null ===  $product) {
+            return null;
+        }
+
         $result = array();
 
         if (in_array('product.code', $requestedParts)) {

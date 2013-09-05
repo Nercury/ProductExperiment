@@ -23,7 +23,9 @@ class DefaultController extends Controller
     {
         $managers = $this->getResourceManagers();
 
-        $pm = $managers->getResourceManager('product');
+        $pm = $managers->getResourceManager('product', array(
+            'locale' => 'lt'
+        ));
 
         $p = $pm->findOne(15);
 

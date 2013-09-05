@@ -7,9 +7,9 @@ use Evispa\ResourceApiBundle\Exception\BackendConfigurationException;
 use Evispa\ResourceApiBundle\Registry\ResourceBackendConfigRegistry;
 
 /**
- * Creates a new backend based on api config, available backend configs, and project config.
+ * Creates a new unicorn based on api config, available backend configs, and project config.
  */
-class ApiBackendResolver
+class ApiUnicornResolver
 {
     private function buildManagerBackendSuggestion($resourceId, $availableBackendManagers) {
         $managersKeys = array_keys($availableBackendManagers);
@@ -35,7 +35,7 @@ class ApiBackendResolver
      *
      * @return Unicorn
      */
-    public function createBackend(ResourceApiConfig $apiConfig, ResourceBackendConfigRegistry $backendConfigs, array $appApiBackendMap) {
+    public function makeUnicorn(ResourceApiConfig $apiConfig, ResourceBackendConfigRegistry $backendConfigs, array $appApiBackendMap) {
 
         $resourceId = $apiConfig->getResourceId();
         $productBackendMap = isset($appApiBackendMap[$resourceId]) ? $appApiBackendMap[$resourceId] : null;

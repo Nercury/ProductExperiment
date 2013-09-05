@@ -78,6 +78,32 @@ class ResourceManager
         }
     }
 
+    private function getPartsFromUnicorn($slug, $unicornBackend) {
+        $realBackend = $unicornBackend->getBackend();
+        $backendPartClasses = $unicornBackend->getManagedParts();
+        $backendPartNames = array_keys($backendPartClasses);
+
+        return $realBackend->findOne($slug, $backendPartNames);
+    }
+
+    private function updateResourceForParts($unicornBackend, $parts, $resource) {
+        $realBackend = $unicornBackend->getBackend();
+        $backendPartClasses = $unicornBackend->getManagedParts();
+        $backendPartNames = array_keys($backendPartClasses);
+
+        foreach ($backendPartNames as $partName) {
+            if (!isset($parts[$partName])) {
+                throw new \LogicException(
+                    'Expected part "' . $partName . '" not found in backend "' . get_class($realBackend) . '".'
+                );
+            }
+
+            $part = $this->partVersionConverter[$partName]->migrateFrom($parts[$partName]);
+
+            $this->propertyAccess->setValue($resource, $this->resourceProperties[$partName], $part);
+        }
+    }
+
     /**
      * Find a single resource object.
      *
@@ -92,23 +118,36 @@ class ResourceManager
         $resource = $this->class->newInstance();
         $resource->setSlug($slug);
 
-        foreach ($this->unicorn->getBackends() as $unicornBackend) {
-            $realBackend = $unicornBackend->getBackend();
-            $backendPartClasses = $unicornBackend->getManagedParts();
-            $backendPartNames = array_keys($backendPartClasses);
+        $backends = $this->unicorn->getBackends();
 
-            $backendResult = $realBackend->findOne($slug, $backendPartNames);
-            foreach ($backendPartNames as $partName) {
-                if (!isset($backendResult[$partName])) {
-                    throw new \LogicException(
-                        'Expected part "' . $partName . '" not found in backend "' . get_class($realBackend) . '".'
-                    );
-                }
+        // Make sure there is at least 1 backend.
 
-                $part = $this->partVersionConverter[$partName]->migrateFrom($backendResult[$partName]);
+        if (0 === count($backends)) {
+            return null;
+        }
 
-                $this->propertyAccess->setValue($resource, $this->resourceProperties[$partName], $part);
+        // First backend is "primary" backend, put others in array.
+
+        $primaryBackend = $backends[0];
+        $otherBackends = array_slice($backends, 1);
+
+        // Execute first backend, if it does not find anything, return null.
+
+        $primaryParts = $this->getPartsFromUnicorn($slug, $primaryBackend);
+        if (null === $primaryParts) {
+            return null;
+        }
+
+        $this->updateResourceForParts($primaryBackend, $primaryParts, $resource);
+
+        // Execute other backends, if they do not find anything, ignore.
+
+        foreach ($otherBackends as $unicornBackend) {
+            $otherParts = $this->getPartsFromUnicorn($slug, $unicornBackend);
+            if (null === $otherParts) {
+                continue;
             }
+            $this->updateResourceForParts($unicornBackend, $otherParts, $resource);
         }
 
         return $resource;
