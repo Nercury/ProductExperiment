@@ -204,9 +204,9 @@
                     "email": "kontakt@beberlei.de"
                 },
                 {
-                    "name": "Johannes Schmitt",
+                    "name": "Johannes M. Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "https://github.com/schmittjoh",
+                    "homepage": "http://jmsyst.com",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -700,12 +700,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/doctrine2.git",
-                "reference": "340ae15ba73c317a64504b77723bdfadd3ab31f3"
+                "reference": "0a9ff77303e515bf8b1d610ff5cdcf61c82b0d09"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/340ae15ba73c317a64504b77723bdfadd3ab31f3",
-                "reference": "340ae15ba73c317a64504b77723bdfadd3ab31f3",
+                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/0a9ff77303e515bf8b1d610ff5cdcf61c82b0d09",
+                "reference": "0a9ff77303e515bf8b1d610ff5cdcf61c82b0d09",
                 "shasum": ""
             },
             "require": {
@@ -767,7 +767,7 @@
                 "database",
                 "orm"
             ],
-            "time": "2013-09-01 17:04:22"
+            "time": "2013-09-04 22:18:36"
         },
         {
             "name": "evispa/object-migration",
@@ -775,12 +775,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/evispa/object-migration.git",
-                "reference": "aa6bb1c89ece13da09f9aeb2dbef94989e90d7a5"
+                "reference": "14a005a3ca6672b36482ae670dcf1a2649a8427b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/evispa/object-migration/zipball/aa6bb1c89ece13da09f9aeb2dbef94989e90d7a5",
-                "reference": "aa6bb1c89ece13da09f9aeb2dbef94989e90d7a5",
+                "url": "https://api.github.com/repos/evispa/object-migration/zipball/14a005a3ca6672b36482ae670dcf1a2649a8427b",
+                "reference": "14a005a3ca6672b36482ae670dcf1a2649a8427b",
                 "shasum": ""
             },
             "require": {
@@ -809,7 +809,7 @@
                 }
             ],
             "description": "Migrations between object versions, configurable via annotations.",
-            "time": "2013-09-02 15:40:46"
+            "time": "2013-09-04 15:07:39"
         },
         {
             "name": "friendsofsymfony/rest",
@@ -2308,12 +2308,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Twig.git",
-                "reference": "b5516cadf6042c11b0d54cdad4f6c5fb25d2ec40"
+                "reference": "c0731335a12c58e2a84cde6cf133c586be639491"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Twig/zipball/b5516cadf6042c11b0d54cdad4f6c5fb25d2ec40",
-                "reference": "b5516cadf6042c11b0d54cdad4f6c5fb25d2ec40",
+                "url": "https://api.github.com/repos/fabpot/Twig/zipball/c0731335a12c58e2a84cde6cf133c586be639491",
+                "reference": "c0731335a12c58e2a84cde6cf133c586be639491",
                 "shasum": ""
             },
             "require": {
@@ -2349,7 +2349,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2013-09-04 06:20:08"
+            "time": "2013-09-04 15:00:30"
         },
         {
             "name": "willdurand/negotiation",
