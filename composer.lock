@@ -979,12 +979,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/evispa/object-migration.git",
-                "reference": "b4b1bcffa93e70728d3df0d2cad2c03dd7f4af08"
+                "reference": "3fecf12a0d086821ede4c437750f11dfa78563b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/evispa/object-migration/zipball/b4b1bcffa93e70728d3df0d2cad2c03dd7f4af08",
-                "reference": "b4b1bcffa93e70728d3df0d2cad2c03dd7f4af08",
+                "url": "https://api.github.com/repos/evispa/object-migration/zipball/3fecf12a0d086821ede4c437750f11dfa78563b3",
+                "reference": "3fecf12a0d086821ede4c437750f11dfa78563b3",
                 "shasum": ""
             },
             "require": {
@@ -1013,7 +1013,7 @@
                 }
             ],
             "description": "Migrations between object versions, configurable via annotations.",
-            "time": "2013-09-06 12:20:31"
+            "time": "2013-09-06 14:19:12"
         },
         {
             "name": "friendsofsymfony/rest",
@@ -2132,12 +2132,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/AsseticBundle.git",
-                "reference": "bcc79f384fb67c69206d77734c3648673f112336"
+                "reference": "9a665341e32934c11ceabf264fc5b27bc95e7bdb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/AsseticBundle/zipball/bcc79f384fb67c69206d77734c3648673f112336",
-                "reference": "bcc79f384fb67c69206d77734c3648673f112336",
+                "url": "https://api.github.com/repos/symfony/AsseticBundle/zipball/9a665341e32934c11ceabf264fc5b27bc95e7bdb",
+                "reference": "9a665341e32934c11ceabf264fc5b27bc95e7bdb",
                 "shasum": ""
             },
             "require": {
@@ -2155,6 +2155,7 @@
                 "symfony/yaml": "~2.1"
             },
             "suggest": {
+                "kriswallsmith/spork": "v0.2",
                 "symfony/twig-bundle": "~2.1"
             },
             "type": "symfony-bundle",
@@ -2186,7 +2187,7 @@
                 "compression",
                 "minification"
             ],
-            "time": "2013-09-03 10:28:24"
+            "time": "2013-09-06 13:53:25"
         },
         {
             "name": "symfony/icu",
