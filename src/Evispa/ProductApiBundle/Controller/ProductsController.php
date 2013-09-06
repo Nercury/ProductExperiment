@@ -55,7 +55,7 @@ class ProductsController extends Controller
         $versionReader = $prm->getVersionReader();
         $restVersionParser = new \Evispa\ResourceApiBundle\VersionParser\AcceptVersionParser();
         return $restVersionParser
-            ->setAllowedVersions($versionReader->getAllowedClassInputVersions($prm->getClassName()))
+            ->setAllowedVersions($versionReader->getAllowedClassOutputVersions($prm->getClassName()))
             ->setRequestedFormat($request->getRequestFormat())
             ->setDefault('html', $versionReader->getClassVersion('Evispa\Api\Product\Model\ProductV1'))
             ->setDefault('json', $versionReader->getClassVersion('Evispa\Api\Product\Model\SimpleProductV1'))
