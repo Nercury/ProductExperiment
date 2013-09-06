@@ -25,20 +25,44 @@
  * @author Darius Krištapavičius <darius@evispa.lt>
  */
 
-namespace Evispa\ResourceApiBundle\Tests\Mock;
+namespace Evispa\ResourceApiBundle\Backend;
 
-
-class MockProduct implements \Evispa\Api\Resource\Model\ApiResourceInterface
+/**
+ * Class PrimaryBackendResultObject
+ *
+ * @package Evispa\ResourceApiBundle\Backend
+ */
+class PrimaryBackendResultObject
 {
-    private $slug;
+    /**
+     * @var String
+     */
+    private $resourceSlug;
 
-    public function getSlug()
+    /**
+     * @var array
+     */
+    private $resourceParts;
+
+    function __construct($resourceSlug, $resourceParts = array())
     {
-        return $this->slug;
+        $this->resourceSlug = $resourceSlug;
+        $this->resourceParts = $resourceParts;
     }
 
-    public function setSlug($slug)
+    /**
+     * @return array
+     */
+    public function getResourceParts()
     {
-        $this->slug = $slug;
+        return $this->resourceParts;
+    }
+
+    /**
+     * @return String
+     */
+    public function getResourceSlug()
+    {
+        return $this->resourceSlug;
     }
 }

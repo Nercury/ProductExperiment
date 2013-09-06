@@ -28,17 +28,23 @@
 namespace Evispa\ResourceApiBundle\Tests\Mock;
 
 
-class MockProduct implements \Evispa\Api\Resource\Model\ApiResourceInterface
-{
-    private $slug;
+use Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface;
+use Evispa\ResourceApiBundle\Backend\FindParameters;
 
-    public function getSlug()
+class MockProductBackend implements PrimaryBackendInterface
+{
+
+    public function findOne($slug, array $requestedParts)
     {
-        return $this->slug;
+        if ($slug === 'a1') {
+            return array();
+        }
+
+        return null;
     }
 
-    public function setSlug($slug)
+    public function find(FindParameters $params, array $requestedParts)
     {
-        $this->slug = $slug;
+        // TODO: Implement find() method.
     }
 }

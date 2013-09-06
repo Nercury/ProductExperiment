@@ -25,20 +25,15 @@
  * @author Darius Krištapavičius <darius@evispa.lt>
  */
 
-namespace Evispa\ResourceApiBundle\Tests\Mock;
+namespace Evispa\ResourceApiBundle\Backend;
 
 
-class MockProduct implements \Evispa\Api\Resource\Model\ApiResourceInterface
+use Symfony\Component\Config\Resource\ResourceInterface;
+
+class FindResult
 {
-    private $slug;
-
-    public function getSlug()
-    {
-        return $this->slug;
-    }
-
-    public function setSlug($slug)
-    {
-        $this->slug = $slug;
-    }
+    /** @var ResourceInterface */
+    private $parameters;
+    private $resources;
+    private $total;
 }

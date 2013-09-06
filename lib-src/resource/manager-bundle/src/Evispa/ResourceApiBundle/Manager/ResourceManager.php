@@ -4,9 +4,11 @@ namespace Evispa\ResourceApiBundle\Manager;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
+use Evispa\Api\Resource\Model\ApiResourceInterface;
 use Evispa\ObjectMigration\VersionConverter;
 use Evispa\ObjectMigration\VersionReader;
 use Evispa\ResourceApiBundle\Backend\FindParameters;
+use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject;
 use Evispa\ResourceApiBundle\Backend\Unicorn;
 use Evispa\ResourceApiBundle\Backend\UnicornBackend;
 use Symfony\Component\Form\Exception\LogicException;
@@ -64,12 +66,12 @@ class ResourceManager
     private $converterOptions;
 
     /**
-     * @param Reader        $reader
-     * @param VersionReader $versionReader
-     * @param array         $converterOptions
+     * @param Reader           $reader
+     * @param VersionReader    $versionReader
+     * @param array            $converterOptions
      * @param \ReflectionClass $class
      * @param array            $resourceProperties
-     * @param Unicorn       $unicorn
+     * @param Unicorn          $unicorn
      *
      * @throws \Symfony\Component\Form\Exception\LogicException
      */
@@ -115,7 +117,8 @@ class ResourceManager
      *
      * @return string
      */
-    public function getClassName() {
+    public function getClassName()
+    {
         return $this->class->getName();
     }
 
@@ -124,7 +127,8 @@ class ResourceManager
      *
      * @return VersionReader
      */
-    public function getVersionReader() {
+    public function getVersionReader()
+    {
         return $this->versionReader;
     }
 
@@ -151,11 +155,69 @@ class ResourceManager
         return $backendPartNames;
     }
 
-    private function findOneUnicornParts($slug, $unicornBackend) {
+    /**
+     * @param string         $slug
+     * @param UnicornBackend $unicornBackend
+     *
+     * @return \Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject|null
+     */
+    private function getPrimaryBackendResult($slug, $unicornBackend)
+    {
         $realBackend = $unicornBackend->getBackend();
         $backendPartNames = $this->getBackendPartNames($unicornBackend);
 
         return $realBackend->findOne($slug, $backendPartNames);
+    }
+
+    /**
+     * @param FindParameters $params
+     * @param UnicornBackend $unicornBackend
+     *
+     * @return \Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject[]
+     */
+    private function getPrimaryBackendResults(FindParameters $params, $unicornBackend)
+    {
+        $realBackend = $unicornBackend->getBackend();
+        $backendPartNames = $this->getBackendPartNames($unicornBackend);
+
+        return $realBackend->find($params, $backendPartNames);
+    }
+
+    /**
+     * @param string         $slug
+     * @param UnicornBackend $unicornBackend
+     *
+     * @return array
+     */
+    private function getResourceSecondaryBackendParts($slug, $unicornBackend)
+    {
+        $realBackend = $unicornBackend->getBackend();
+        $backendPartNames = $this->getBackendPartNames($unicornBackend);
+
+        return $realBackend->findOne($slug, $backendPartNames);
+    }
+
+    /**
+     * @param array          $slugs
+     * @param UnicornBackend $unicornBackend
+     *
+     * @return array
+     */
+    private function getResourcesSecondaryBackendParts(array $slugs, $unicornBackend)
+    {
+        $realBackend = $unicornBackend->getBackend();
+        $backendPartNames = $this->getBackendPartNames($unicornBackend);
+
+        return $realBackend->find($slugs, $backendPartNames);
+    }
+
+    private function createResource(PrimaryBackendResultObject $object)
+    {
+        /** @var ApiResourceInterface $resource */
+        $resource = $this->class->newInstance();
+        $resource->setSlug($object->getResourceSlug());
+
+        return $resource;
     }
 
     /**
@@ -195,36 +257,25 @@ class ResourceManager
      */
     public function findOne($slug)
     {
-        $resource = $this->class->newInstance();
-        $resource->setSlug($slug);
+        $resultObject = $this->getPrimaryBackendResult($slug, $this->unicorn->getPrimaryBackend());
 
-        $backends = $this->unicorn->getBackends();
-
-        // Make sure there is at least 1 backend.
-
-        if (0 === count($backends)) {
+        if (null === $resultObject) {
             return null;
         }
 
-        // First backend is "primary" backend, put others in array.
+        // create new resource
+        $resource = $this->createResource($resultObject);
 
-        $primaryBackend = $backends[0];
-        /** @var UnicornBackend[] $otherBackends */
-        $otherBackends = array_slice($backends, 1);
+        // set parts from primary backend
+        $this->updateResourceForParts(
+            $this->unicorn->getPrimaryBackend(),
+            $resultObject->getResourceParts(),
+            $resource
+        );
 
-        // Execute first backend, if it does not find anything, return null.
-
-        $primaryParts = $this->findOneUnicornParts($slug, $primaryBackend);
-        if (null === $primaryParts) {
-            return null;
-        }
-
-        $this->updateResourceForParts($primaryBackend, $primaryParts, $resource);
-
-        // Execute other backends, if they do not find anything, ignore.
-
-        foreach ($otherBackends as $unicornBackend) {
-            $otherParts = $this->findOneUnicornParts($slug, $unicornBackend);
+        // set parts form secondary backends
+        foreach ($this->unicorn->getSecondaryBackends() as $unicornBackend) {
+            $otherParts = $this->getResourceSecondaryBackendParts($slug, $unicornBackend);
             if (null === $otherParts) {
                 continue;
             }
@@ -235,34 +286,50 @@ class ResourceManager
     }
 
     /**
-     * TODO: finish
+     * Find batch of resources
      *
      * @param FindParameters $params
+     *
+     * @return array
      */
     public function find(FindParameters $params)
     {
-        $backends = $this->unicorn->getBackends();
+        $resultObjects = $this->getPrimaryBackendResults($params, $this->unicorn->getPrimaryBackend());
 
-        // Make sure there is at least 1 backend.
+        $resources = array();
 
-        if (0 === count($backends)) {
-            return null;
+        foreach ($resultObjects as $resultObject) {
+            // create new resource
+            $resource = $this->createResource($resultObject);
+
+            // set parts from primary backend
+            $this->updateResourceForParts(
+                $this->unicorn->getPrimaryBackend(),
+                $resultObject->getResourceParts(),
+                $resource
+            );
+
+            $resources[$resultObject->getResourceSlug()] = $resource;
         }
 
-        $primaryBackend = $backends[0];
-        /** @var UnicornBackend[] $otherBackends */
-        $otherBackends = array_slice($backends, 1);
+        $slugs = array_keys($resources);
 
-        // Execute first backend, if it does not find anything, return null.
-        $primaryParts = $this->getFindPartsFromUnicorn($params, $primaryBackend);
-        if (null === $primaryParts) {
-            return null;
+        if (0 < count($slugs)) {
+            // set parts form secondary backends
+            foreach ($this->unicorn->getSecondaryBackends() as $unicornBackend) {
+                $resourcesParts = $this->getResourcesSecondaryBackendParts($slugs, $unicornBackend);
+
+                foreach ($resourcesParts as $slug => $resourceParts) {
+                    $this->updateResourceForParts(
+                        $this->unicorn->getPrimaryBackend(),
+                        $resourceParts,
+                        $resources[$slug]
+                    );
+                }
+            }
         }
 
-        foreach ($primaryParts as $part) {
-
-        }
-
+        return $resources;
     }
 
     /**

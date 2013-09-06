@@ -21,7 +21,6 @@
             <call method="setBackendManager">
                 <argument type="service" id="evispa_mongo_product_backend.product_backend_manager" />
             </call>
-
         </service>
 
         <service id="evispa_oracle_product_backend.product_backend_config" class="%evispa_mongo_product_backend.backend_config.class%">
