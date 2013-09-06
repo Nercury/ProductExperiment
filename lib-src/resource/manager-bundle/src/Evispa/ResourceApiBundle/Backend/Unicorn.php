@@ -27,7 +27,7 @@ class Unicorn
         return $this->primaryBackend;
     }
 
-    function __construct($primaryBackend, $backends = array())
+    function __construct(UnicornBackend $primaryBackend, $backends = array())
     {
         $this->primaryBackend = $primaryBackend;
         $this->secondaryBackends = $backends;

@@ -44,10 +44,9 @@ class PrimaryBackendResultObject
      */
     private $resourceParts;
 
-    function __construct($resourceSlug, $resourceParts = array())
+    function __construct($resourceSlug)
     {
         $this->resourceSlug = $resourceSlug;
-        $this->resourceParts = $resourceParts;
     }
 
     /**
@@ -64,5 +63,14 @@ class PrimaryBackendResultObject
     public function getResourceSlug()
     {
         return $this->resourceSlug;
+    }
+
+    /**
+     * @param string $partName
+     * @param mixed $part
+     */
+    public function addPart($partName, $part)
+    {
+        $this->resourceParts[$partName] = $part;
     }
 }

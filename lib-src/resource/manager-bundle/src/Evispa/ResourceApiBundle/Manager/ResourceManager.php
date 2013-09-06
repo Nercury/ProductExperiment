@@ -253,7 +253,7 @@ class ResourceManager
      *
      * @throws \LogicException
      *
-     * @return \Evispa\Api\Resource\Model\ApiResourceInterface
+     * @return \Evispa\Api\Resource\Model\ApiResourceInterface|null
      */
     public function findOne($slug)
     {

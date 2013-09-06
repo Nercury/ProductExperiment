@@ -41,22 +41,19 @@ class ResourceManagerTest extends \PHPUnit_Framework_TestCase
 {
         public function testFindOne() {
 
-//            $reader = new AnnotationReader();
-//            $versionsReader = new VersionReader($reader);
-//
-//            $class = new \ReflectionClass('Evispa\ResourceApiBundle\Tests\Mock\MockProduct');
-//
-//            $unicorn = new Unicorn();
-//
-//            $unicornBackend = new UnicornBackend(array(), new MockProductBackend());
-//            $unicorn->addBackend($unicornBackend);
-//
-//            $manager = new ResourceManager($reader, $versionsReader, array(), $class, array('product.slug' => 'slug'), $unicorn);
-//
-//            $product = $manager->findOne('a1');
-//
-//            $this->assertTrue($product instanceof MockProduct);
-//            $this->assertEquals('a1', $product->getSlug());
+            $reader = new AnnotationReader();
+            $versionsReader = new VersionReader($reader);
+
+            $class = new \ReflectionClass('Evispa\ResourceApiBundle\Tests\Mock\MockProduct');
+
+            $unicorn = new Unicorn(new UnicornBackend(array(), new MockProductBackend()));
+
+            $manager = new ResourceManager($reader, $versionsReader, array(), $class, array(), $unicorn);
+
+            $product = $manager->findOne('a1');
+
+            $this->assertTrue($product instanceof MockProduct);
+            $this->assertEquals('a1', $product->getSlug());
 
         }
 }

@@ -30,6 +30,7 @@ namespace Evispa\ResourceApiBundle\Tests\Mock;
 
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface;
 use Evispa\ResourceApiBundle\Backend\FindParameters;
+use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject;
 
 class MockProductBackend implements PrimaryBackendInterface
 {
@@ -37,7 +38,7 @@ class MockProductBackend implements PrimaryBackendInterface
     public function findOne($slug, array $requestedParts)
     {
         if ($slug === 'a1') {
-            return array();
+            return new PrimaryBackendResultObject($slug);
         }
 
         return null;
