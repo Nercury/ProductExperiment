@@ -25,20 +25,30 @@
  * @author Darius Krištapavičius <darius@evispa.lt>
  */
 
-namespace Evispa\ResourceApiBundle\Tests\Mock;
+namespace Evispa\ResourceApiBundle\Backend;
 
 
-class MockProduct implements \Evispa\Api\Resource\Model\ApiResourceInterface
+interface SecondaryBackendInterface
 {
-    private $slug;
+    /**
+     * Get parts by slug
+     *
+     * @param string $slug
+     * @param array  $requestedParts
+     *
+     * @return array[] (parts)
+     */
+    public function findOne($slug, array $requestedParts);
 
-    public function getSlug()
-    {
-        return $this->slug;
-    }
-
-    public function setSlug($slug)
-    {
-        $this->slug = $slug;
-    }
+    /**
+     * Get parts for batch of slugs
+     *
+     * Result no need to maintain same slugs order as given in param
+     *
+     * @param array $slugs
+     * @param array $requestedParts
+     *
+     * @return array[string] (array[slug] => parts)
+     */
+    public function find(array $slugs, array $requestedParts);
 }

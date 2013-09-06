@@ -31,23 +31,29 @@ namespace Evispa\ResourceApiBundle\Tests;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Evispa\ObjectMigration\VersionReader;
 use Evispa\ResourceApiBundle\Backend\Unicorn;
+use Evispa\ResourceApiBundle\Backend\UnicornBackend;
 use Evispa\ResourceApiBundle\Manager\ResourceManager;
+use Evispa\ResourceApiBundle\Tests\Mock\MockProduct;
+use Evispa\ResourceApiBundle\Tests\Mock\MockProductBackend;
 use Symfony\Component\PropertyAccess\PropertyPath;
 
 class ResourceManagerTest extends \PHPUnit_Framework_TestCase
 {
         public function testFindOne() {
 
-//            $reader = new AnnotationReader();
-//            $versionsReader = new VersionReader($reader);
-//
-//            $class = new PropertyPath('');
-//
-//            $unicorn = new Unicorn();
-//
-//            $manager = new ResourceManager($reader, $versionsReader, array(), $class, array(), $unicorn);
-//
-//            $manager->findOne();
+            $reader = new AnnotationReader();
+            $versionsReader = new VersionReader($reader);
+
+            $class = new \ReflectionClass('Evispa\ResourceApiBundle\Tests\Mock\MockProduct');
+
+            $unicorn = new Unicorn(new UnicornBackend(array(), new MockProductBackend()));
+
+            $manager = new ResourceManager($reader, $versionsReader, array(), $class, array(), $unicorn);
+
+            $product = $manager->findOne('a1');
+
+            $this->assertTrue($product instanceof MockProduct);
+            $this->assertEquals('a1', $product->getSlug());
 
         }
 }

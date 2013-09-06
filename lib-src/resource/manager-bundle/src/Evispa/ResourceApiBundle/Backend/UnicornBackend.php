@@ -10,7 +10,7 @@ class UnicornBackend
     private $managedParts = array();
     private $backend;
 
-    function __construct(array $managedParts, BackendInterface $backend)
+    function __construct(array $managedParts, PrimaryBackendInterface $backend)
     {
         $this->managedParts = $managedParts;
         $this->backend = $backend;
@@ -25,7 +25,7 @@ class UnicornBackend
     }
 
     /**
-     * @return BackendInterface
+     * @return PrimaryBackendInterface
      */
     public function getBackend()
     {
