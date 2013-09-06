@@ -36,12 +36,12 @@ class ResourceManager
     private $unicorn;
 
     /**
-     * @param Reader        $reader
-     * @param VersionReader $versionReader
-     * @param array         $converterOptions
-     * @param               $class
-     * @param               $resourceProperties
-     * @param Unicorn       $unicorn
+     * @param Reader           $reader
+     * @param VersionReader    $versionReader
+     * @param array            $converterOptions
+     * @param \ReflectionClass $class
+     * @param array            $resourceProperties
+     * @param Unicorn          $unicorn
      *
      * @throws \Symfony\Component\Form\Exception\LogicException
      */
@@ -49,8 +49,8 @@ class ResourceManager
         Reader $reader,
         VersionReader $versionReader,
         array $converterOptions,
-        $class,
-        $resourceProperties,
+        \ReflectionClass $class,
+        array $resourceProperties,
         Unicorn $unicorn
     ) {
         $this->propertyAccess = \Symfony\Component\PropertyAccess\PropertyAccess::createPropertyAccessor();
@@ -220,7 +220,7 @@ class ResourceManager
             return null;
         }
 
-        foreach($primaryParts as $part) {
+        foreach ($primaryParts as $part) {
 
         }
 

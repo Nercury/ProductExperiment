@@ -45,7 +45,8 @@ class CodeTest extends \PHPUnit_Framework_TestCase
 
         // migrate to another version
 
-        $simpleCode = $converter->migrateTo($code, 'vnd.evispa.code.v1');
+
+        $simpleCode = $converter->migrateToVersion($code, 'vnd.evispa.code.v1');
 
         $this->assertTrue($simpleCode instanceof CodeV1);
         $this->assertEquals("Hello", $simpleCode->code);

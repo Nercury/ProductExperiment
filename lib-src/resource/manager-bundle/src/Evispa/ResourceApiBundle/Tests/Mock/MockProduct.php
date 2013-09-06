@@ -25,29 +25,19 @@
  * @author Darius Krištapavičius <darius@evispa.lt>
  */
 
-namespace Evispa\ResourceApiBundle\Tests;
+namespace Evispa\ResourceApiBundle\Tests\Mock;
 
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Evispa\ObjectMigration\VersionReader;
-use Evispa\ResourceApiBundle\Backend\Unicorn;
-use Evispa\ResourceApiBundle\Manager\ResourceManager;
-use Symfony\Component\PropertyAccess\PropertyPath;
-
-class ResourceManagerTest extends \PHPUnit_Framework_TestCase
+class MockProduct implements \Evispa\Api\Resource\Model\ApiResourceInterface
 {
-        public function testFindOne() {
 
-//            $reader = new AnnotationReader();
-//            $versionsReader = new VersionReader($reader);
-//
-//            $class = new PropertyPath('');
-//
-//            $unicorn = new Unicorn();
-//
-//            $manager = new ResourceManager($reader, $versionsReader, array(), $class, array(), $unicorn);
-//
-//            $manager->findOne();
+    public function getSlug()
+    {
+        // TODO: Implement getSlug() method.
+    }
 
-        }
+    public function setSlug($slug)
+    {
+        // TODO: Implement setSlug() method.
+    }
 }
