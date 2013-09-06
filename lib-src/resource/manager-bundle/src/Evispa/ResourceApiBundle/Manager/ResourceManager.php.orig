@@ -57,6 +57,7 @@ class ResourceManager
     private $unicorn;
 
     /**
+<<<<<<< HEAD
      * Used converter options.
      *
      * @var array
@@ -67,9 +68,17 @@ class ResourceManager
      * @param Reader        $reader
      * @param VersionReader $versionReader
      * @param array         $converterOptions
+     * @param               $class
+     * @param               $resourceProperties
+     * @param Unicorn       $unicorn
+=======
+     * @param Reader           $reader
+     * @param VersionReader    $versionReader
+     * @param array            $converterOptions
      * @param \ReflectionClass $class
      * @param array            $resourceProperties
-     * @param Unicorn       $unicorn
+     * @param Unicorn          $unicorn
+>>>>>>> 5163af34daafb7f2ef1e68f153da657db68e5f94
      *
      * @throws \Symfony\Component\Form\Exception\LogicException
      */
@@ -111,6 +120,7 @@ class ResourceManager
     }
 
     /**
+<<<<<<< HEAD
      * Get the name of managed class.
      *
      * @return string
@@ -138,24 +148,46 @@ class ResourceManager
         return $this->converterOptions;
     }
 
-    /**
+    private function findOneUnicornParts($slug, $unicornBackend) {
+        $realBackend = $unicornBackend->getBackend();
+=======
      * @param UnicornBackend $unicornBackend
      *
      * @return array
      */
     private function getBackendPartNames($unicornBackend)
     {
+>>>>>>> 5163af34daafb7f2ef1e68f153da657db68e5f94
         $backendPartClasses = $unicornBackend->getManagedParts();
         $backendPartNames = array_keys($backendPartClasses);
 
         return $backendPartNames;
     }
 
-    private function findOneUnicornParts($slug, $unicornBackend) {
+    /**
+     * @param string         $slug
+     * @param UnicornBackend $unicornBackend
+     *
+     * @return array|null
+     */
+    private function getFindOnePartsFromUnicorn($slug, $unicornBackend)
+    {
         $realBackend = $unicornBackend->getBackend();
         $backendPartNames = $this->getBackendPartNames($unicornBackend);
 
         return $realBackend->findOne($slug, $backendPartNames);
+    }
+
+    /**
+     * @param FindParameters $params
+     * @param UnicornBackend $unicornBackend
+     */
+    private function getFindPartsFromUnicorn(FindParameters $params, $unicornBackend)
+    {
+        $realBackend = $unicornBackend->getBackend();
+        $backendPartNames = $this->getBackendPartNames($unicornBackend);
+
+        return $realBackend->find($params, $backendPartNames);
     }
 
     /**
@@ -214,7 +246,11 @@ class ResourceManager
 
         // Execute first backend, if it does not find anything, return null.
 
+<<<<<<< HEAD
         $primaryParts = $this->findOneUnicornParts($slug, $primaryBackend);
+=======
+        $primaryParts = $this->getFindOnePartsFromUnicorn($slug, $primaryBackend);
+>>>>>>> 5163af34daafb7f2ef1e68f153da657db68e5f94
         if (null === $primaryParts) {
             return null;
         }
@@ -224,7 +260,11 @@ class ResourceManager
         // Execute other backends, if they do not find anything, ignore.
 
         foreach ($otherBackends as $unicornBackend) {
+<<<<<<< HEAD
             $otherParts = $this->findOneUnicornParts($slug, $unicornBackend);
+=======
+            $otherParts = $this->getFindOnePartsFromUnicorn($slug, $unicornBackend);
+>>>>>>> 5163af34daafb7f2ef1e68f153da657db68e5f94
             if (null === $otherParts) {
                 continue;
             }

@@ -5,6 +5,7 @@ namespace Evispa\MongoProductBackendBundle\Backend;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Evispa\MongoProductBackendBundle\Document\Product;
 use Evispa\ResourceApiBundle\Backend\BackendInterface;
+use Evispa\ResourceApiBundle\Backend\FindParameters;
 
 /**
  * @author nerijus
@@ -49,5 +50,10 @@ class MongoBackendManager implements BackendInterface
         }
 
         return $result;
+    }
+
+    public function find(FindParameters $params, array $requestedParts)
+    {
+        // TODO: Implement find() method.
     }
 }
