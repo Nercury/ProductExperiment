@@ -44,22 +44,42 @@ class ProductsController extends Controller
     }
 
     /**
+     * Get version and format for the request.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param \Evispa\ResourceApiBundle\Manager\ResourceManager $prm
+     *
+     * @return \Evispa\ResourceApiBundle\VersionParser\VersionAndFormat
+     */
+    private function getExpectedVersionAndFormat($request, \Evispa\ResourceApiBundle\Manager\ResourceManager $prm) {
+        $versionReader = $prm->getVersionReader();
+        $restVersionParser = new \Evispa\ResourceApiBundle\VersionParser\AcceptVersionParser();
+        return $restVersionParser
+            ->setAllowedVersions($versionReader->getAllowedClassInputVersions($prm->getClassName()))
+            ->setRequestedFormat($request->getRequestFormat())
+            ->setDefault('html', $versionReader->getClassVersion('Evispa\Api\Product\Model\ProductV1'))
+            ->setDefault('json', $versionReader->getClassVersion('Evispa\Api\Product\Model\SimpleProductV1'))
+            ->setDefault('xml', $versionReader->getClassVersion('Evispa\Api\Product\Model\SimpleProductV1'))
+            ->parseVersionAndFormat($request->getAcceptableContentTypes());
+    }
+
+    /**
      * Get a product by its identifier.
      *
      * @ApiDoc
      * @View(templateVar="product")
      */
-    public function getProductAction($slug)
+    public function getProductAction(ParamFetcher $paramFetcher, $slug)
     {
-
         $request = $this->getRequest();
+
         $options = array('locale' => $request->getLocale());
 
         $prm = $this->getProductResourceManager($options);
         $product = $prm->findOne(
             $slug
         );
-        
+
         if (null === $product) {
             throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException("Product was not found.");
         } else {
@@ -69,13 +89,22 @@ class ProductsController extends Controller
                     "Resource returned incorrect API object."
                 );
             }
-            $vc = $this->getProductVersionConverter($prm);
-            //var_dump($vc->getAllowedInputVersions());
-            $acceptableContentTypes = $request->getAcceptableContentTypes();
+
             $view = \FOS\RestBundle\View\View::create();
-            $view->setFormat('json');
-            //var_dump($acceptableContentTypes); die;
-            //throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException($acceptableContentTypes);
+
+            // Find out what client wants. Impossible, but very important.
+            $expectedVersionAndFormat = $this->getExpectedVersionAndFormat($request, $prm);
+
+            if (null === $expectedVersionAndFormat) {
+                throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException(
+                    'Can not return requested resource in '.$request->getRequestFormat().' format.'
+                );
+            }
+
+            $view->setFormat($expectedVersionAndFormat->getFormat());
+
+            $vc = $this->getProductVersionConverter($prm);
+            $product = $vc->migrateToVersion($product, $expectedVersionAndFormat->getVersion());
 
             $view->setData($product);
         }
