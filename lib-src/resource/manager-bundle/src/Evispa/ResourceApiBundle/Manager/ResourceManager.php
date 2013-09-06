@@ -14,6 +14,11 @@ use Symfony\Component\Form\Exception\LogicException;
  */
 class ResourceManager
 {
+    /**
+     * Used to read/write resource properties.
+     *
+     * @var \Symfony\Component\PropertyAccess\PropertyAccessor
+     */
     private $propertyAccess;
 
     /**
@@ -21,17 +26,40 @@ class ResourceManager
      */
     private $class;
 
+    /**
+     * Resource property list from config, (property.id) => (property).
+     *
+     * @var type
+     */
     private $resourceProperties;
 
     /**
+     * Version reader.
+     *
+     * @var VersionReader
+     */
+    private $versionReader;
+
+    /**
+     * Version converter for each resource part.
+     *
      * @var VersionConverter[]
      */
     private $partVersionConverter;
 
     /**
+     * Unicorn - backend configuration set.
+     *
      * @var Unicorn
      */
     private $unicorn;
+
+    /**
+     * Used converter options.
+     *
+     * @var array
+     */
+    private $converterOptions;
 
     /**
      * @param Reader        $reader
@@ -51,10 +79,12 @@ class ResourceManager
         $resourceProperties,
         Unicorn $unicorn
     ) {
+        $this->versionReader = $versionReader;
         $this->propertyAccess = \Symfony\Component\PropertyAccess\PropertyAccess::createPropertyAccessor();
         $this->class = $class;
         $this->resourceProperties = $resourceProperties;
         $this->unicorn = $unicorn;
+        $this->converterOptions = $converterOptions;
 
         foreach ($this->resourceProperties as $partName => $propertyName) {
             $property = $reader->getPropertyAnnotation(
@@ -78,7 +108,35 @@ class ResourceManager
         }
     }
 
-    private function getPartsFromUnicorn($slug, $unicornBackend) {
+    /**
+     * Get the name of managed class.
+     *
+     * @return string
+     */
+    public function getClassName() {
+        return $this->class->getName();
+    }
+
+    /**
+     * Get version reader used by this manager.
+     *
+     * @return VersionReader
+     */
+    public function getVersionReader() {
+        return $this->versionReader;
+    }
+
+    /**
+     * Get used converter options.
+     *
+     * @return array
+     */
+    public function getConverterOptions()
+    {
+        return $this->converterOptions;
+    }
+
+    private function findOneUnicornParts($slug, $unicornBackend) {
         $realBackend = $unicornBackend->getBackend();
         $backendPartClasses = $unicornBackend->getManagedParts();
         $backendPartNames = array_keys($backendPartClasses);
@@ -133,7 +191,7 @@ class ResourceManager
 
         // Execute first backend, if it does not find anything, return null.
 
-        $primaryParts = $this->getPartsFromUnicorn($slug, $primaryBackend);
+        $primaryParts = $this->findOneUnicornParts($slug, $primaryBackend);
         if (null === $primaryParts) {
             return null;
         }
@@ -143,7 +201,7 @@ class ResourceManager
         // Execute other backends, if they do not find anything, ignore.
 
         foreach ($otherBackends as $unicornBackend) {
-            $otherParts = $this->getPartsFromUnicorn($slug, $unicornBackend);
+            $otherParts = $this->findOneUnicornParts($slug, $unicornBackend);
             if (null === $otherParts) {
                 continue;
             }

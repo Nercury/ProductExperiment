@@ -17,8 +17,30 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 class ProductsController extends Controller
 {
-    private function getProductStorage() {
-        //$this->get('api_resources')->getResourceBackend('product')
+    /**
+     * Get product resource manager.
+     *
+     * @param array $options
+     * @return \Evispa\ResourceApiBundle\Manager\ResourceManager
+     */
+    private function getProductResourceManager($options) {
+        $prm = $this->get('resource_managers')->getResourceManager('product', $options);
+        return $prm;
+    }
+
+    /**
+     * Get version converter for Product resource.
+     *
+     * @param \Evispa\ResourceApiBundle\Manager\ResourceManager $prm Resource manager.
+     *
+     * @return \Evispa\ObjectMigration\VersionConverter
+     */
+    private function getProductVersionConverter($prm) {
+        return new \Evispa\ObjectMigration\VersionConverter(
+            $prm->getVersionReader(),
+            $prm->getClassName(),
+            $prm->getConverterOptions()
+        );
     }
 
     /**
@@ -29,28 +51,33 @@ class ProductsController extends Controller
      */
     public function getProductAction($slug)
     {
-        $options = array('locale' => $this->getRequest()->getLocale());
 
-        $product = $this->get('resource_managers')->getResourceManager('product', $options)->findOne(
+        $request = $this->getRequest();
+        $options = array('locale' => $request->getLocale());
+
+        $prm = $this->getProductResourceManager($options);
+        $product = $prm->findOne(
             $slug
         );
+        
+        if (null === $product) {
+            throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException("Product was not found.");
+        } else {
+            $resultClass = get_class($product);
+            if ($resultClass !== $prm->getClassName()) {
+                throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException(
+                    "Resource returned incorrect API object."
+                );
+            }
+            $vc = $this->getProductVersionConverter($prm);
+            //var_dump($vc->getAllowedInputVersions());
+            $acceptableContentTypes = $request->getAcceptableContentTypes();
+            $view = \FOS\RestBundle\View\View::create();
+            $view->setFormat('json');
+            //var_dump($acceptableContentTypes); die;
+            //throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException($acceptableContentTypes);
 
-        /*$data = new \Evispa\Api\Product\Model\ProductV1();
-        $data->setSlug('pav1');
-
-        $data->code = new \Evispa\Api\Product\Model\Code\ProductCodeV1();
-        $data->code->code = "PAV1";
-        $data->code->ean = "11111";
-
-        $data->text = new \Evispa\Api\Product\Model\Text\LocalizedTextV1();
-        $data->text->items['lt'] = new \Evispa\Api\Product\Model\Text\TextV1();
-        $data->text->items['lt']->name = "Pavadinimas 1";
-        $data->text->items['lt']->description = "Aprašymas 1";*/
-
-        $view = \FOS\RestBundle\View\View::create($product);
-
-        if(null === $product) {
-            $view->setStatusCode(404);
+            $view->setData($product);
         }
 
         return $view;

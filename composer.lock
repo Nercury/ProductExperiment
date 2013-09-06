@@ -435,12 +435,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "7ffb2701931aeae3bb32fa2012b9a575f3a7929b"
+                "reference": "60cc6c2da04c4025bdd72795d7423ae75ebf1455"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/7ffb2701931aeae3bb32fa2012b9a575f3a7929b",
-                "reference": "7ffb2701931aeae3bb32fa2012b9a575f3a7929b",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/60cc6c2da04c4025bdd72795d7423ae75ebf1455",
+                "reference": "60cc6c2da04c4025bdd72795d7423ae75ebf1455",
                 "shasum": ""
             },
             "require": {
@@ -497,7 +497,7 @@
                 "persistence",
                 "queryobject"
             ],
-            "time": "2013-08-24 01:02:33"
+            "time": "2013-09-05 17:30:39"
         },
         {
             "name": "doctrine/doctrine-bundle",
@@ -904,12 +904,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/doctrine2.git",
-                "reference": "0a07207f596b87ce4dc7765698856bc78dcca2b3"
+                "reference": "da7146c4d5edf99d66b4cfb4321f9c71e014768e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/0a07207f596b87ce4dc7765698856bc78dcca2b3",
-                "reference": "0a07207f596b87ce4dc7765698856bc78dcca2b3",
+                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/da7146c4d5edf99d66b4cfb4321f9c71e014768e",
+                "reference": "da7146c4d5edf99d66b4cfb4321f9c71e014768e",
                 "shasum": ""
             },
             "require": {
@@ -971,7 +971,7 @@
                 "database",
                 "orm"
             ],
-            "time": "2013-09-05 13:43:28"
+            "time": "2013-09-05 14:31:19"
         },
         {
             "name": "evispa/object-migration",
@@ -979,12 +979,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/evispa/object-migration.git",
-                "reference": "14a005a3ca6672b36482ae670dcf1a2649a8427b"
+                "reference": "fd05ee207295b8b4b205accd36bdebbea24fdeb5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/evispa/object-migration/zipball/14a005a3ca6672b36482ae670dcf1a2649a8427b",
-                "reference": "14a005a3ca6672b36482ae670dcf1a2649a8427b",
+                "url": "https://api.github.com/repos/evispa/object-migration/zipball/fd05ee207295b8b4b205accd36bdebbea24fdeb5",
+                "reference": "fd05ee207295b8b4b205accd36bdebbea24fdeb5",
                 "shasum": ""
             },
             "require": {
@@ -1013,7 +1013,7 @@
                 }
             ],
             "description": "Migrations between object versions, configurable via annotations.",
-            "time": "2013-09-04 15:07:39"
+            "time": "2013-09-06 09:07:44"
         },
         {
             "name": "friendsofsymfony/rest",

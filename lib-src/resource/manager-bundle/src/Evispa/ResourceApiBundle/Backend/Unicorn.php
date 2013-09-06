@@ -3,7 +3,9 @@
 namespace Evispa\ResourceApiBundle\Backend;
 
 /**
- * @author nerijus
+ * We named this class Unicorn because alternative was ResolvedBackendAndConfigurationSetWrapper.
+ *
+ * It contains all actually configured backends with the assigned parts.
  */
 class Unicorn
 {
