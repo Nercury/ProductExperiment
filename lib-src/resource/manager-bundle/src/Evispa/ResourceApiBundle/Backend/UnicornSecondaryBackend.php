@@ -25,41 +25,44 @@
  * @author Darius Krištapavičius <darius@evispa.lt>
  */
 
-namespace Evispa\ResourceApiBundle\Tests\Mock;
+namespace Evispa\ResourceApiBundle\Backend;
 
-
-class MockProduct implements \Evispa\Api\Resource\Model\ApiResourceInterface
+/**
+ * Class UnicornSecondaryBackend
+ *
+ * @package Evispa\ResourceApiBundle\Backend
+ */
+class UnicornSecondaryBackend
 {
-    private $slug;
+    /**
+     * @var array
+     */
+    private $managedParts = array();
 
     /**
-     * @JMS\Serializer\Annotation\Type("Evispa\ResourceApiBundle\Tests\Mock\MockProductText")
-     * @var MockProductText
+     * @var SecondaryBackendInterface
      */
-    public $text;
+    private $backend = null;
 
-    public function getSlug()
+    public function __construct(array $managedParts, SecondaryBackendInterface $backend)
     {
-        return $this->slug;
-    }
-
-    public function setSlug($slug)
-    {
-        $this->slug = $slug;
+        $this->managedParts = $managedParts;
+        $this->backend = $backend;
     }
 
     /**
-     * @Evispa\ObjectMigration\Annotations\Migration(to="Evispa\ResourceApiBundle\Tests\Mock\MockSimpleProduct")
-     *
-     * @param $options
-     *
-     * @return MockSimpleProduct
+     * @return string[]
      */
-    public function toSimpleProduct($options)
+    public function getManagedParts()
     {
-        $obj = new MockSimpleProduct();
-        $obj->setSlug($this->slug);
+        return $this->managedParts;
+    }
 
-        return $obj;
+    /**
+     * @return SecondaryBackendInterface
+     */
+    public function getBackend()
+    {
+        return $this->backend;
     }
 }

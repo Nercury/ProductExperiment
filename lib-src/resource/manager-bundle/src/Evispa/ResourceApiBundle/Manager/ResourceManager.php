@@ -10,7 +10,7 @@ use Evispa\ObjectMigration\VersionReader;
 use Evispa\ResourceApiBundle\Backend\FindParameters;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject;
 use Evispa\ResourceApiBundle\Backend\Unicorn;
-use Evispa\ResourceApiBundle\Backend\UnicornBackend;
+use Evispa\ResourceApiBundle\Backend\UnicornPrimaryBackend;
 use Symfony\Component\Form\Exception\LogicException;
 
 /**
@@ -143,7 +143,7 @@ class ResourceManager
     }
 
     /**
-     * @param UnicornBackend $unicornBackend
+     * @param UnicornPrimaryBackend $unicornBackend
      *
      * @return array
      */
@@ -157,7 +157,7 @@ class ResourceManager
 
     /**
      * @param string         $slug
-     * @param UnicornBackend $unicornBackend
+     * @param UnicornPrimaryBackend $unicornBackend
      *
      * @return \Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject|null
      */
@@ -171,7 +171,7 @@ class ResourceManager
 
     /**
      * @param FindParameters $params
-     * @param UnicornBackend $unicornBackend
+     * @param UnicornPrimaryBackend $unicornBackend
      *
      * @return \Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject[]
      */
@@ -185,7 +185,7 @@ class ResourceManager
 
     /**
      * @param string         $slug
-     * @param UnicornBackend $unicornBackend
+     * @param UnicornPrimaryBackend $unicornBackend
      *
      * @return array
      */
@@ -199,7 +199,7 @@ class ResourceManager
 
     /**
      * @param array          $slugs
-     * @param UnicornBackend $unicornBackend
+     * @param UnicornPrimaryBackend $unicornBackend
      *
      * @return array
      */
@@ -221,7 +221,7 @@ class ResourceManager
     }
 
     /**
-     * @param UnicornBackend $unicornBackend
+     * @param UnicornPrimaryBackend $unicornBackend
      * @param array          $parts
      * @param                $resource
      *

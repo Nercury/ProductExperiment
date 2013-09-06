@@ -10,37 +10,46 @@ namespace Evispa\ResourceApiBundle\Backend;
 class Unicorn
 {
     /**
-     * @var UnicornBackend
+     * @var UnicornPrimaryBackend
      **/
     private $primaryBackend = null;
 
     /**
-     * @var UnicornBackend[]
+     * @var UnicornSecondaryBackend[]
      */
     private $secondaryBackends = array();
 
     /**
-     * @return UnicornBackend
+     * @param UnicornPrimaryBackend $primaryBackend
+     * @param array                 $backends
+     */
+    public function __construct(UnicornPrimaryBackend $primaryBackend, $backends = array())
+    {
+        $this->primaryBackend = $primaryBackend;
+        $this->secondaryBackends = $backends;
+    }
+
+    /**
+     * @return UnicornPrimaryBackend
      */
     public function getPrimaryBackend()
     {
         return $this->primaryBackend;
     }
 
-    function __construct(UnicornBackend $primaryBackend, $backends = array())
+    /**
+     * @param UnicornSecondaryBackend $backend
+     */
+    public function addSecondaryBackend(UnicornSecondaryBackend $backend)
     {
-        $this->primaryBackend = $primaryBackend;
-        $this->secondaryBackends = $backends;
-    }
-
-    public function addSecondaryBackend(UnicornBackend $backend) {
         $this->secondaryBackends[] = $backend;
     }
 
     /**
-     * @return UnicornBackend[]
+     * @return UnicornSecondaryBackend[]
      */
-    public function getSecondaryBackends() {
+    public function getSecondaryBackends()
+    {
         return $this->secondaryBackends;
     }
 }

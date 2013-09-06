@@ -95,7 +95,7 @@ class ApiUnicornResolver
         $backend = $availableBackends[$backendId];
         $backendConfig = $backendManagerConfigs[$backendId];
 
-        $unicorn = new Unicorn(new UnicornBackend($backendConfig->getParts(), $backend));
+        $unicorn = new Unicorn(new UnicornPrimaryBackend($backendConfig->getParts(), $backend));
 
         return $unicorn;
     }

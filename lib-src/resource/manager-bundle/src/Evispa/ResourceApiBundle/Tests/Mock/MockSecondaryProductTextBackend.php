@@ -28,38 +28,42 @@
 namespace Evispa\ResourceApiBundle\Tests\Mock;
 
 
-class MockProduct implements \Evispa\Api\Resource\Model\ApiResourceInterface
+use Evispa\ResourceApiBundle\Backend\SecondaryBackendInterface;
+
+class MockSecondaryProductTextBackend implements SecondaryBackendInterface
 {
-    private $slug;
+    public $findOneResult = array();
+    public $findResult = array();
 
     /**
-     * @JMS\Serializer\Annotation\Type("Evispa\ResourceApiBundle\Tests\Mock\MockProductText")
-     * @var MockProductText
+     * Get parts by slug
+     *
+     * @param string $slug
+     * @param array  $requestedParts
+     *
+     * @return array[] (parts)
      */
-    public $text;
-
-    public function getSlug()
+    public function findOne($slug, array $requestedParts)
     {
-        return $this->slug;
-    }
+        if (isset($this->findOneResult[$slug]) === true) {
+            return $this->findOneResult[$slug];
+        }
 
-    public function setSlug($slug)
-    {
-        $this->slug = $slug;
+        return null;
     }
 
     /**
-     * @Evispa\ObjectMigration\Annotations\Migration(to="Evispa\ResourceApiBundle\Tests\Mock\MockSimpleProduct")
+     * Get parts for batch of slugs
      *
-     * @param $options
+     * Result no need to maintain same slugs order as given in param
      *
-     * @return MockSimpleProduct
+     * @param array $slugs
+     * @param array $requestedParts
+     *
+     * @return array[string] (array[slug] => parts)
      */
-    public function toSimpleProduct($options)
+    public function find(array $slugs, array $requestedParts)
     {
-        $obj = new MockSimpleProduct();
-        $obj->setSlug($this->slug);
-
-        return $obj;
+        return $this->findResult;
     }
 }

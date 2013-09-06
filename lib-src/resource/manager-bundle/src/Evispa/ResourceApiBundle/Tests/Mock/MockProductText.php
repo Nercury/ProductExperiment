@@ -28,38 +28,12 @@
 namespace Evispa\ResourceApiBundle\Tests\Mock;
 
 
-class MockProduct implements \Evispa\Api\Resource\Model\ApiResourceInterface
+class MockProductText
 {
-    private $slug;
-
-    /**
-     * @JMS\Serializer\Annotation\Type("Evispa\ResourceApiBundle\Tests\Mock\MockProductText")
-     * @var MockProductText
-     */
     public $text;
 
-    public function getSlug()
+    function __construct($text)
     {
-        return $this->slug;
-    }
-
-    public function setSlug($slug)
-    {
-        $this->slug = $slug;
-    }
-
-    /**
-     * @Evispa\ObjectMigration\Annotations\Migration(to="Evispa\ResourceApiBundle\Tests\Mock\MockSimpleProduct")
-     *
-     * @param $options
-     *
-     * @return MockSimpleProduct
-     */
-    public function toSimpleProduct($options)
-    {
-        $obj = new MockSimpleProduct();
-        $obj->setSlug($this->slug);
-
-        return $obj;
+        $this->text = $text;
     }
 }

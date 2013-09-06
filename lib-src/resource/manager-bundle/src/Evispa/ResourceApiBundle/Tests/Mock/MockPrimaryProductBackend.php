@@ -31,7 +31,7 @@ namespace Evispa\ResourceApiBundle\Tests\Mock;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface;
 use Evispa\ResourceApiBundle\Backend\FindParameters;
 
-class MockProductBackend implements PrimaryBackendInterface
+class MockPrimaryProductBackend implements PrimaryBackendInterface
 {
 
     public $findOneResult = array();
