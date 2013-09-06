@@ -30,6 +30,7 @@ namespace Evispa\ResourceApiBundle\Tests;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Evispa\ObjectMigration\VersionReader;
+use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject;
 use Evispa\ResourceApiBundle\Backend\Unicorn;
 use Evispa\ResourceApiBundle\Backend\UnicornBackend;
 use Evispa\ResourceApiBundle\Manager\ResourceManager;
@@ -46,7 +47,10 @@ class ResourceManagerTest extends \PHPUnit_Framework_TestCase
 
             $class = new \ReflectionClass('Evispa\ResourceApiBundle\Tests\Mock\MockProduct');
 
-            $unicorn = new Unicorn(new UnicornBackend(array(), new MockProductBackend()));
+            $mockBackend = new MockProductBackend();
+            $mockBackend->findOneResult['a1'] = new PrimaryBackendResultObject('a1');
+
+            $unicorn = new Unicorn(new UnicornBackend(array(), $mockBackend));
 
             $manager = new ResourceManager($reader, $versionsReader, array(), $class, array(), $unicorn);
 
