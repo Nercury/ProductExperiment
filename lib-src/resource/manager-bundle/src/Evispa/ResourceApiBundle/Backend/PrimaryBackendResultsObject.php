@@ -27,57 +27,42 @@
 
 namespace Evispa\ResourceApiBundle\Backend;
 
-use Symfony\Component\Config\Resource\ResourceInterface;
 
-/**
- * Class FindResult
- *
- * @package Evispa\ResourceApiBundle\Backend
- */
-class FindResult
+class PrimaryBackendResultsObject
 {
-    /** @var FindParameters */
-    private $parameters;
-
-    /** @var ResourceInterface */
-    private $resources;
-
-    /** @var Integer */
-    private $total;
+    /**
+     * @var PrimaryBackendResultObject[]
+     */
+    private $objects;
 
     /**
-     * @param FindParameters    $parameters
-     * @param ResourceInterface $resources
-     * @param Integer           $total
+     * @var Integer
      */
-    public function __construct($parameters, $resources, $total)
+    private $totalFound;
+
+    public function __construct($totalFound)
     {
-        $this->parameters = $parameters;
-        $this->resources = $resources;
-        $this->total = $total;
+        $this->totalFound = $totalFound;
+    }
+
+    public function addObject(PrimaryBackendResultObject $object)
+    {
+        $this->objects[$object->getResourceSlug()] = $object;
     }
 
     /**
-     * @return \Evispa\ResourceApiBundle\Backend\FindParameters
+     * @return \Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject[]
      */
-    public function getParameters()
+    public function getObjects()
     {
-        return $this->parameters;
-    }
-
-    /**
-     * @return \Symfony\Component\Config\Resource\ResourceInterface
-     */
-    public function getResources()
-    {
-        return $this->resources;
+        return $this->objects;
     }
 
     /**
      * @return int
      */
-    public function getTotal()
+    public function getTotalFound()
     {
-        return $this->total;
+        return $this->totalFound;
     }
 }

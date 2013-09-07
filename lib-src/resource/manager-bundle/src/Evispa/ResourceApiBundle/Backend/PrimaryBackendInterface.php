@@ -23,7 +23,7 @@ interface PrimaryBackendInterface
      * @param FindParameters $params
      * @param array          $requestedParts
      *
-     * @return PrimaryBackendResultObject[string]
+     * @return PrimaryBackendResultsObject
      */
     public function find(FindParameters $params, array $requestedParts);
 }

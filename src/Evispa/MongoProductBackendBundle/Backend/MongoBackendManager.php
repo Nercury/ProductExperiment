@@ -7,6 +7,9 @@ use Evispa\MongoProductBackendBundle\Document\Product;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface;
 use Evispa\ResourceApiBundle\Backend\FindParameters;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject;
+use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultsObject;
+use Pagerfanta\Adapter\DoctrineODMMongoDBAdapter;
+use Pagerfanta\Pagerfanta;
 
 /**
  * @author nerijus
@@ -30,20 +33,13 @@ class MongoBackendManager implements PrimaryBackendInterface
     }
 
     /**
-     * @param string $slug
-     * @param array  $requestedParts
+     * @param Product $product
+     * @param array   $requestedParts
      *
-     * @return PrimaryBackendResultObject|null
+     * @return PrimaryBackendResultObject
      */
-    public function findOne($slug, array $requestedParts)
+    private function createResult(Product $product, array $requestedParts)
     {
-        /** @var Product $product */
-        $product = $this->mongodb->getRepository('EvispaMongoProductBackendBundle:Product')->find($slug);
-
-        if (null === $product) {
-            return null;
-        }
-
         $result = new PrimaryBackendResultObject($product->getSlug());
 
         if (in_array('product.code', $requestedParts)) {
@@ -64,6 +60,24 @@ class MongoBackendManager implements PrimaryBackendInterface
     }
 
     /**
+     * @param string $slug
+     * @param array  $requestedParts
+     *
+     * @return PrimaryBackendResultObject|null
+     */
+    public function findOne($slug, array $requestedParts)
+    {
+        /** @var Product $product */
+        $product = $this->mongodb->getRepository('EvispaMongoProductBackendBundle:Product')->find($slug);
+
+        if (null === $product) {
+            return null;
+        }
+
+        return $this->createResult($product, $requestedParts);
+    }
+
+    /**
      * @param FindParameters $params
      * @param array          $requestedParts
      *
@@ -71,38 +85,17 @@ class MongoBackendManager implements PrimaryBackendInterface
      */
     public function find(FindParameters $params, array $requestedParts)
     {
-        // TODO: Implement find() method.
+        // just for testing purpose
+        $qb = $this->mongodb->getManager()->createQueryBuilder('EvispaMongoProductBackendBundle:Product');
+        $adapter = new DoctrineODMMongoDBAdapter($qb);
+
+        $results = new PrimaryBackendResultsObject($adapter->getNbResults());
+        $products = $adapter->getSlice($params->offset, $params->limit);
+
+        foreach ($products as $product) {
+            $results->addObject($this->createResult($product, $requestedParts));
+        }
+
+        return $results;
     }
-
-//    public function findOne($slug, array $requestedParts)
-//    {
-//        /** @var Product $product */
-//        $product = $this->mongodb->getRepository('EvispaMongoProductBackendBundle:Product')->find($slug);
-//
-//        if (null ===  $product) {
-//            return null;
-//        }
-//
-//        $result = array();
-//
-//        $result['slug'] = $product->getSlug();
-//
-//        if (in_array('product.code', $requestedParts)) {
-//            $result['product.code'] = new \Evispa\Api\Product\Model\Code\CodeV1();
-//            $result['product.code']->code = $product->getCode();
-//        }
-//
-//        if (in_array('product.text', $requestedParts)) {
-//            $result['product.text'] = new \Evispa\Api\Product\Model\Text\TextV1();
-//            $result['product.text']->name = $product->getText();
-//        }
-//
-//        return $result;
-//    }
-//
-//    public function find(FindParameters $params, array $requestedParts)
-//    {
-//        // TODO: Implement find() method.
-//    }
-
 }

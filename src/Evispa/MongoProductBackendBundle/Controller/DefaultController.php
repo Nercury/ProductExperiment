@@ -3,6 +3,10 @@
 namespace Evispa\MongoProductBackendBundle\Controller;
 
 use Evispa\MongoProductBackendBundle\Document\Product;
+use Evispa\ResourceApiBundle\Backend\FindParameters;
+use Evispa\ResourceApiBundle\Manager\ResourceManager;
+use Pagerfanta\Adapter\DoctrineODMMongoDBAdapter;
+use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -15,21 +19,21 @@ class DefaultController extends Controller
      */
     public function indexAction()
     {
+
         $options = array('locale' => $this->getRequest()->getLocale());
-
-        $products = $this->get('doctrine_mongodb')->getRepository('EvispaMongoProductBackendBundle:Product')->findAll();
-
-        /** @var Product $product */
-        foreach ($products as $product) {
-            $resource = $this->get('resource_managers')->getResourceManager('product', $options)->findOne(
-                $product->getSlug()
-            );
-
-            var_dump($resource);
-        }
+        /** @var ResourceManager $resourceManager */
+        $resourceManager = $this->get('resource_managers')->getResourceManager('product', $options);
 
 
+        $params = new FindParameters();
+        $params->limit = 5;
+        $params->offset = 5;
 
+        $resources = $resourceManager->find($params);
+
+        var_dump($resources->getTotalFound());
+        var_dump($resources->getParameters());
+        var_dump($resources->getResources());
 
         return array('name' => 'test');
     }

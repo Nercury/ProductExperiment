@@ -2,6 +2,7 @@
 
 namespace Evispa\ProductApiBundle\Controller;
 
+use Evispa\ResourceApiBundle\Backend\FindParameters;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Request\ParamFetcher;
 
@@ -118,41 +119,23 @@ class ProductsController extends Controller
      * @ApiDoc
      * @QueryParam(name="page", requirements="\d+", default="1", description="Page of the product list.")
      * @QueryParam(name="count", requirements="\d+", default="50", strict=true, nullable=true, description="Item count limit")
-     * @View(templateVar="products")
+     * @View(templateVar="result")
      */
     public function getProductsAction(ParamFetcher $paramFetcher) {
         $page = $paramFetcher->get('page');
 
+        $request = $this->getRequest();
 
+        $options = array('locale' => $request->getLocale());
+        $prm = $this->getProductResourceManager($options);
 
-        $data = new \Evispa\Api\Product\Model\ProductV1();
-        $data->setSlug('pav1');
+        $params = new FindParameters();
+        $params->limit = 5;
+        $params->offset = ($page - 1) * $params->limit;
 
-        $data->code = new \Evispa\Api\Product\Model\Code\ProductCodeV1();
-        $data->code->code = "PAV1";
-        $data->code->ean = "11111";
+        $resourcesObject = $prm->find($params);
 
-        $data->text = new \Evispa\Api\Product\Model\Text\LocalizedTextV1();
-        $data->text->items['lt'] = new \Evispa\Api\Product\Model\Text\TextV1();
-        $data->text->items['lt']->name = "Pavadinimas 1";
-        $data->text->items['lt']->description = "Aprašymas 1";
-
-        $data2 = new \Evispa\Api\Product\Model\ProductV1();
-        $data2->setSlug('pav2');
-
-        $data2->code = new \Evispa\Api\Product\Model\Code\ProductCodeV1();
-        $data2->code->code = "PAV2";
-        $data2->code->ean = "11112";
-
-        $data2->text = new \Evispa\Api\Product\Model\Text\LocalizedTextV1();
-        $data2->text->items['lt'] = new \Evispa\Api\Product\Model\Text\TextV1();
-        $data2->text->items['lt']->name = "Pavadinimas 2";
-        $data2->text->items['lt']->description = "Aprašymas 2";
-
-        return \FOS\RestBundle\View\View::create(array(
-            $data,
-            $data2,
-        ));
+        return \FOS\RestBundle\View\View::create($resourcesObject);
     }
 
     /**

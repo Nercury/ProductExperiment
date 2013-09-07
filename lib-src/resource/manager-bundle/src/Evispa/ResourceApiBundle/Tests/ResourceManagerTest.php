@@ -29,7 +29,9 @@ namespace Evispa\ResourceApiBundle\Tests;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Evispa\ObjectMigration\VersionReader;
+use Evispa\ResourceApiBundle\Backend\FindParameters;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject;
+use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultsObject;
 use Evispa\ResourceApiBundle\Backend\Unicorn;
 use Evispa\ResourceApiBundle\Backend\UnicornPrimaryBackend;
 use Evispa\ResourceApiBundle\Backend\UnicornSecondaryBackend;
@@ -94,5 +96,35 @@ class ResourceManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('a1', $product->getSlug());
         $this->assertTrue($product->text instanceof MockProductText);
         $this->assertEquals('tekstas', $product->text->text);
+    }
+
+    public function testFind()
+    {
+        $reader = new AnnotationReader();
+        $versionsReader = new VersionReader($reader);
+
+        $class = new \ReflectionClass('Evispa\ResourceApiBundle\Tests\Mock\MockProduct');
+
+        $mockBackend = new MockPrimaryProductBackend();
+        $mockBackend->findResult = new PrimaryBackendResultsObject(5);
+
+        $mockBackend->findResult->addObject(new PrimaryBackendResultObject('a1'));
+        $mockBackend->findResult->addObject(new PrimaryBackendResultObject('a2'));
+        $mockBackend->findResult->addObject(new PrimaryBackendResultObject('a3'));
+        $mockBackend->findResult->addObject(new PrimaryBackendResultObject('a4'));
+        $mockBackend->findResult->addObject(new PrimaryBackendResultObject('a5'));
+
+        $unicorn = new Unicorn(new UnicornPrimaryBackend(array(), $mockBackend));
+
+        $manager = new ResourceManager($reader, $versionsReader, array(), $class, array(), $unicorn);
+
+        $params = new FindParameters();
+        $params->limit = 5;
+        $params->offset = 0;
+
+        $products = $manager->find($params);
+
+        $this->assertEquals(5, count($products->getResources()));
+        $this->assertEquals(5, $products->getTotalFound());
     }
 }
