@@ -1,9 +1,9 @@
 <?php
 
-namespace Evispa\MongoProductBackendBundle\Backend;
+namespace Evispa\ApiBackend\MongoProductBackendBundle\Backend;
 
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
-use Evispa\MongoProductBackendBundle\Document\Product;
+use Evispa\ApiBackend\MongoProductBackendBundle\Document\Product;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface;
 use Evispa\ResourceApiBundle\Backend\FindParameters;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject;
@@ -14,7 +14,7 @@ use Pagerfanta\Pagerfanta;
 /**
  * @author nerijus
  */
-class MongoBackendManager implements PrimaryBackendInterface
+class MongoBackend implements PrimaryBackendInterface
 {
     /** @var ManagerRegistry */
     protected $mongodb;
@@ -43,7 +43,7 @@ class MongoBackendManager implements PrimaryBackendInterface
         $result = new PrimaryBackendResultObject($product->getSlug());
 
         if (in_array('product.code', $requestedParts)) {
-            $code = new \Evispa\Api\Product\Model\Code\CodeV1();
+            $code = new \Evispa\Api\Product\Model\Code\ProductCodeV1();
             $code->code = $product->getCode();
 
             $result->addPart('product.code', $code);

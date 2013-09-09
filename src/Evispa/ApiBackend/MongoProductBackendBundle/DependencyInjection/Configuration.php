@@ -1,6 +1,6 @@
 <?php
 
-namespace Evispa\MongoProductBackendBundle\DependencyInjection;
+namespace Evispa\ApiBackend\MongoProductBackendBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;

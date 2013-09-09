@@ -19,7 +19,7 @@
                 <argument key="product.text">Evispa\Api\Product\Model\Text\TextV1</argument>
             </argument>
             <call method="setBackendManager">
-                <argument type="service" id="evispa_mongo_product_backend.product_backend_manager" />
+                <argument type="service" id="evispa_mongo_product_backend.product_backend" />
             </call>
         </service>
 
@@ -33,7 +33,7 @@
                 <argument key="product.text">Evispa\Api\Product\Model\Text\TextV1</argument>
             </argument>
             <call method="setBackendManager">
-                <argument type="service" id="evispa_mongo_product_backend.product_backend_manager" />
+                <argument type="service" id="evispa_mongo_product_backend.product_backend" />
             </call>
         </service>
     </services>

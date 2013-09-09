@@ -143,33 +143,6 @@ class ResourceManager
     }
 
     /**
-     * @param UnicornPrimaryBackend $unicornBackend
-     *
-     * @return array
-     */
-    private function getBackendPartNames($unicornBackend)
-    {
-        $backendPartClasses = $unicornBackend->getManagedParts();
-        $backendPartNames = array_keys($backendPartClasses);
-
-        return $backendPartNames;
-    }
-
-    /**
-     * @param string                $slug
-     * @param UnicornPrimaryBackend $unicornBackend
-     *
-     * @return \Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject|null
-     */
-    private function getPrimaryBackendResult($slug, $unicornBackend)
-    {
-        $realBackend = $unicornBackend->getBackend();
-        $backendPartNames = $this->getBackendPartNames($unicornBackend);
-
-        return $realBackend->findOne($slug, $backendPartNames);
-    }
-
-    /**
      * @param FindParameters        $params
      * @param UnicornPrimaryBackend $unicornBackend
      *
@@ -211,41 +184,6 @@ class ResourceManager
         return $realBackend->find($slugs, $backendPartNames);
     }
 
-    private function createResource(PrimaryBackendResultObject $object)
-    {
-        /** @var ApiResourceInterface $resource */
-        $resource = $this->class->newInstance();
-        $resource->setSlug($object->getResourceSlug());
-
-        return $resource;
-    }
-
-    /**
-     * @param UnicornPrimaryBackend $unicornBackend
-     * @param array                 $parts
-     * @param                       $resource
-     *
-     * @throws \LogicException
-     */
-    private function updateResourceForParts($unicornBackend, $parts, $resource)
-    {
-        $realBackend = $unicornBackend->getBackend();
-        $backendPartClasses = $unicornBackend->getManagedParts();
-        $backendPartNames = array_keys($backendPartClasses);
-
-        foreach ($backendPartNames as $partName) {
-            if (!isset($parts[$partName])) {
-                throw new \LogicException(
-                    'Expected part "' . $partName . '" not found in backend "' . get_class($realBackend) . '".'
-                );
-            }
-
-            $part = $this->partVersionConverter[$partName]->migrateFrom($parts[$partName]);
-
-            $this->propertyAccess->setValue($resource, $this->resourceProperties[$partName], $part);
-        }
-    }
-
     /**
      * Find a single resource object.
      *
@@ -257,24 +195,45 @@ class ResourceManager
      */
     public function findOne($slug)
     {
-        $resultObject = $this->getPrimaryBackendResult($slug, $this->unicorn->getPrimaryBackend());
+        $resultObject = $this->unicorn->getPrimaryBackend()->fetchOne($slug);
 
         if (null === $resultObject) {
             return null;
         }
 
-        // create new resource
-        $resource = $this->createResource($resultObject);
+        /** @var ApiResourceInterface $resource */
+        $resource = $this->class->newInstance();
+        $resource->setSlug($resultObject->getResourceSlug());
 
-        // set parts from primary backend
-        $this->updateResourceForParts(
-            $this->unicorn->getPrimaryBackend(),
-            $resultObject->getResourceParts(),
-            $resource
-        );
+        foreach ($resultObject->getResourceParts() as $partName => $part) {
+
+            if (null === $part) {
+                continue;
+            }
+
+            $this->propertyAccess->setValue(
+                $resource,
+                $this->resourceProperties[$partName],
+                $this->partVersionConverter[$partName]->migrateFrom($part)
+            );
+        }
 
         // set parts form secondary backends
         foreach ($this->unicorn->getSecondaryBackends() as $unicornBackend) {
+            $otherParts = $unicornBackend->fetchOne($slug);
+
+            foreach ($otherParts as $partName => $part) {
+                if (null === $part) {
+                    continue;
+                }
+
+                $this->propertyAccess->setValue(
+                    $resource,
+                    $this->resourceProperties[$partName],
+                    $this->partVersionConverter[$partName]->migrateFrom($part)
+                );
+            }
+
             $otherParts = $this->getResourceSecondaryBackendParts($slug, $unicornBackend);
             if (null === $otherParts) {
                 continue;

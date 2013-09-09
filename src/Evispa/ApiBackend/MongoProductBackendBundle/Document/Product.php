@@ -25,7 +25,7 @@
  * @author Darius Krištapavičius <darius@evispa.lt>
  */
 
-namespace Evispa\MongoProductBackendBundle\Document;
+namespace Evispa\ApiBackend\MongoProductBackendBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
