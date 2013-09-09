@@ -2,13 +2,11 @@
 
 namespace Evispa\ResourceApiBundle\Manager;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
 use Evispa\Api\Resource\Model\ApiResourceInterface;
 use Evispa\ObjectMigration\VersionConverter;
 use Evispa\ObjectMigration\VersionReader;
 use Evispa\ResourceApiBundle\Backend\FindParameters;
-use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject;
 use Evispa\ResourceApiBundle\Unicorn\Unicorn;
 use Evispa\ResourceApiBundle\Unicorn\UnicornPrimaryBackend;
 use Symfony\Component\Form\Exception\LogicException;
@@ -143,48 +141,6 @@ class ResourceManager
     }
 
     /**
-     * @param FindParameters        $params
-     * @param UnicornPrimaryBackend $unicornBackend
-     *
-     * @return \Evispa\ResourceApiBundle\Backend\PrimaryBackendResultsObject
-     */
-    private function getPrimaryBackendResults(FindParameters $params, $unicornBackend)
-    {
-        $realBackend = $unicornBackend->getBackend();
-        $backendPartNames = $this->getBackendPartNames($unicornBackend);
-
-        return $realBackend->find($params, $backendPartNames);
-    }
-
-    /**
-     * @param string                $slug
-     * @param UnicornPrimaryBackend $unicornBackend
-     *
-     * @return array
-     */
-    private function getResourceSecondaryBackendParts($slug, $unicornBackend)
-    {
-        $realBackend = $unicornBackend->getBackend();
-        $backendPartNames = $this->getBackendPartNames($unicornBackend);
-
-        return $realBackend->findOne($slug, $backendPartNames);
-    }
-
-    /**
-     * @param array                 $slugs
-     * @param UnicornPrimaryBackend $unicornBackend
-     *
-     * @return array
-     */
-    private function getResourcesSecondaryBackendParts(array $slugs, $unicornBackend)
-    {
-        $realBackend = $unicornBackend->getBackend();
-        $backendPartNames = $this->getBackendPartNames($unicornBackend);
-
-        return $realBackend->find($slugs, $backendPartNames);
-    }
-
-    /**
      * Find a single resource object.
      *
      * @param string $slug Resource identifier.
@@ -193,7 +149,7 @@ class ResourceManager
      *
      * @return \Evispa\Api\Resource\Model\ApiResourceInterface|null
      */
-    public function findOne($slug)
+    public function fetchOne($slug)
     {
         $resultObject = $this->unicorn->getPrimaryBackend()->fetchOne($slug);
 
@@ -233,12 +189,6 @@ class ResourceManager
                     $this->partVersionConverter[$partName]->migrateFrom($part)
                 );
             }
-
-            $otherParts = $this->getResourceSecondaryBackendParts($slug, $unicornBackend);
-            if (null === $otherParts) {
-                continue;
-            }
-            $this->updateResourceForParts($unicornBackend, $otherParts, $resource);
         }
 
         return $resource;
@@ -251,9 +201,9 @@ class ResourceManager
      *
      * @return FindResult
      */
-    public function find(FindParameters $params)
+    public function fetchAll(FindParameters $params)
     {
-        $resultsObject = $this->getPrimaryBackendResults($params, $this->unicorn->getPrimaryBackend());
+        $resultsObject = $this->unicorn->getPrimaryBackend()->fetchAll($params);
 
         $resources = array();
 
@@ -261,12 +211,18 @@ class ResourceManager
             // create new resource
             $resource = $this->createResource($resultObject);
 
-            // set parts from primary backend
-            $this->updateResourceForParts(
-                $this->unicorn->getPrimaryBackend(),
-                $resultObject->getResourceParts(),
-                $resource
-            );
+            foreach ($resultObject->getResourceParts() as $partName => $part) {
+
+                if (null === $part) {
+                    continue;
+                }
+
+                $this->propertyAccess->setValue(
+                    $resource,
+                    $this->resourceProperties[$partName],
+                    $this->partVersionConverter[$partName]->migrateFrom($part)
+                );
+            }
 
             $resources[$resultObject->getResourceSlug()] = $resource;
         }
@@ -276,14 +232,21 @@ class ResourceManager
         if (0 < count($slugs)) {
             // set parts form secondary backends
             foreach ($this->unicorn->getSecondaryBackends() as $unicornBackend) {
-                $resourcesParts = $this->getResourcesSecondaryBackendParts($slugs, $unicornBackend);
+                $resourcesParts = $unicornBackend->fetchBySlugs($slugs);
 
-                foreach ($resourcesParts as $slug => $resourceParts) {
-                    $this->updateResourceForParts(
-                        $this->unicorn->getPrimaryBackend(),
-                        $resourceParts,
-                        $resources[$slug]
-                    );
+                foreach ($resourcesParts as $slug => $otherParts) {
+                    
+                    foreach ($otherParts as $partName => $part) {
+                        if (null === $part) {
+                            continue;
+                        }
+
+                        $this->propertyAccess->setValue(
+                            $resource,
+                            $this->resourceProperties[$partName],
+                            $this->partVersionConverter[$partName]->migrateFrom($part)
+                        );
+                    }
                 }
             }
         }

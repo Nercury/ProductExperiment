@@ -15,7 +15,7 @@ interface PrimaryBackendInterface
      *
      * @return PrimaryBackendResultObject|null
      */
-    public function findOne($slug, array $requestedParts);
+    public function fetchOne($slug, array $requestedParts);
 
     /**
      * Return array (empty if not found)
@@ -25,5 +25,5 @@ interface PrimaryBackendInterface
      *
      * @return PrimaryBackendResultsObject
      */
-    public function find(FindParameters $params, array $requestedParts);
+    public function fetchAll(FindParameters $params, array $requestedParts);
 }

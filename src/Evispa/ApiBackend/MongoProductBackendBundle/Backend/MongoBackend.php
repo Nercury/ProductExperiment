@@ -9,7 +9,6 @@ use Evispa\ResourceApiBundle\Backend\FindParameters;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultsObject;
 use Pagerfanta\Adapter\DoctrineODMMongoDBAdapter;
-use Pagerfanta\Pagerfanta;
 
 /**
  * @author nerijus
@@ -74,7 +73,7 @@ class MongoBackend implements PrimaryBackendInterface
      *
      * @return PrimaryBackendResultObject|null
      */
-    public function findOne($slug, array $requestedParts)
+    public function fetchOne($slug, array $requestedParts)
     {
         /** @var Product $product */
         $product = $this->mongodb->getRepository('EvispaMongoProductBackendBundle:Product')->find($slug);
@@ -92,7 +91,7 @@ class MongoBackend implements PrimaryBackendInterface
      *
      * @return PrimaryBackendResultObject[string]
      */
-    public function find(FindParameters $params, array $requestedParts)
+    public function fetchAll(FindParameters $params, array $requestedParts)
     {
         // just for testing purpose
         $qb = $this->mongodb->getManager()->createQueryBuilder('EvispaMongoProductBackendBundle:Product');

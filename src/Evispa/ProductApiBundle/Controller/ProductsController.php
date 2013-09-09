@@ -77,7 +77,7 @@ class ProductsController extends Controller
         $options = array('locale' => $request->getLocale());
 
         $prm = $this->getProductResourceManager($options);
-        $product = $prm->findOne(
+        $product = $prm->fetchOne(
             $slug
         );
 
@@ -133,7 +133,7 @@ class ProductsController extends Controller
         $params->limit = 5;
         $params->offset = ($page - 1) * $params->limit;
 
-        $resourcesObject = $prm->find($params);
+        $resourcesObject = $prm->fetchAll($params);
 
         return \FOS\RestBundle\View\View::create($resourcesObject);
     }

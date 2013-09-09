@@ -33,7 +33,7 @@ class PrimaryBackendResultsObject
     /**
      * @var PrimaryBackendResultObject[]
      */
-    private $objects;
+    private $objects = array();
 
     /**
      * @var Integer

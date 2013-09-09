@@ -90,7 +90,7 @@ class UnicornSecondaryBackend
             }
         }
 
-        $backendResult = $this->backend->findOne($slug, $requestedParts);
+        $backendResult = $this->backend->fetchOne($slug, $requestedParts);
 
         // If primary backend returns null, it means that item does not exist in database.
 
@@ -105,6 +105,35 @@ class UnicornSecondaryBackend
         return $backendResult;
     }
 
+    public function fetchBySlugs($slugs, $requestedParts = null) {
+        if (null === $requestedParts) {
+
+            $requestedParts = array_keys($this->managedParts);
+
+        } else {
+
+            // Make sure all requested parts exist in managed parts, otherwise bad things can happen.
+
+            foreach ($requestedParts as $partName) {
+                if (!isset($this->managedParts[$partName])) {
+                    throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException(
+                        'Requested part "'.$partName.'" is not managed by "'.$this->id.'" backend.'
+                    );
+                }
+            }
+        }
+        
+        $backendResults = $this->backend->fetchBySlugs($slugs, $requestedParts);
+        
+        // If it returns a result, it must contain all of the requested parts and correct objects.
+        
+        foreach ($backendResults->getObjects() as $backendResult) {
+            $this->validateResultItem($backendResult, $requestedParts);
+        }
+        
+        return $backendResults;
+    }
+    
     /**
      * Throw an exception if a result item contains something bad.
      *
