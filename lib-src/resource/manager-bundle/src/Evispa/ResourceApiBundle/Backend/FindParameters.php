@@ -27,9 +27,20 @@
 
 namespace Evispa\ResourceApiBundle\Backend;
 
-
+/**
+ * Class FindParameters
+ *
+ * @package Evispa\ResourceApiBundle\Backend
+ */
 class FindParameters
 {
+    /**
+     * @var int
+     */
     public $limit = 100;
+
+    /**
+     * @var int
+     */
     public $offset = 0;
 }

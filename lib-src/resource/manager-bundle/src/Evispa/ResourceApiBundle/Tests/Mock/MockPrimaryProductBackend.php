@@ -25,15 +25,29 @@
  * @author Darius Krištapavičius <darius@evispa.lt>
  */
 
-namespace Evispa\ResourceApiBundle\Backend;
+namespace Evispa\ResourceApiBundle\Tests\Mock;
 
 
-use Symfony\Component\Config\Resource\ResourceInterface;
+use Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface;
+use Evispa\ResourceApiBundle\Backend\FindParameters;
 
-class FindResult
+class MockPrimaryProductBackend implements PrimaryBackendInterface
 {
-    /** @var ResourceInterface */
-    private $parameters;
-    private $resources;
-    private $total;
+
+    public $findOneResult = array();
+    public $findResult = array();
+
+    public function findOne($slug, array $requestedParts)
+    {
+        if (isset($this->findOneResult[$slug]) === true) {
+            return $this->findOneResult[$slug];
+        }
+
+        return null;
+    }
+
+    public function find(FindParameters $params, array $requestedParts)
+    {
+        return $this->findResult;
+    }
 }

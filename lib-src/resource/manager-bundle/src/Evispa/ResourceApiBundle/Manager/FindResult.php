@@ -25,41 +25,60 @@
  * @author Darius Krištapavičius <darius@evispa.lt>
  */
 
-namespace Evispa\ResourceApiBundle\Tests\Mock;
+namespace Evispa\ResourceApiBundle\Manager;
 
+use Evispa\ResourceApiBundle\Backend\FindParameters;
+use Symfony\Component\Config\Resource\ResourceInterface;
 
-class MockProduct implements \Evispa\Api\Resource\Model\ApiResourceInterface
+/**
+ * Class FindResult
+ *
+ * @package Evispa\ResourceApiBundle\Backend
+ */
+class FindResult
 {
-    private $slug;
+    /** @var FindParameters */
+    private $parameters;
+
+    /** @var ResourceInterface */
+    private $resources;
+
+    /** @var Integer */
+    private $totalFound;
 
     /**
-     * @JMS\Serializer\Annotation\Type("Evispa\ResourceApiBundle\Tests\Mock\MockProductText")
-     * @var MockProductText
+     * @param FindParameters    $parameters
+     * @param ResourceInterface $resources
+     * @param Integer           $total
      */
-    public $text;
-
-    public function getSlug()
+    public function __construct($parameters, $resources, $totalFound)
     {
-        return $this->slug;
-    }
-
-    public function setSlug($slug)
-    {
-        $this->slug = $slug;
+        $this->parameters = $parameters;
+        $this->resources = $resources;
+        $this->totalFound = $totalFound;
     }
 
     /**
-     * @Evispa\ObjectMigration\Annotations\Migration(to="Evispa\ResourceApiBundle\Tests\Mock\MockSimpleProduct")
-     *
-     * @param $options
-     *
-     * @return MockSimpleProduct
+     * @return FindParameters
      */
-    public function toSimpleProduct($options)
+    public function getParameters()
     {
-        $obj = new MockSimpleProduct();
-        $obj->setSlug($this->slug);
+        return $this->parameters;
+    }
 
-        return $obj;
+    /**
+     * @return \Symfony\Component\Config\Resource\ResourceInterface
+     */
+    public function getResources()
+    {
+        return $this->resources;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTotalFound()
+    {
+        return $this->totalFound;
     }
 }

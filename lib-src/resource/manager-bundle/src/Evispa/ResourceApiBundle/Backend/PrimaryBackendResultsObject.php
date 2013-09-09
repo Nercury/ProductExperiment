@@ -25,41 +25,44 @@
  * @author Darius Krištapavičius <darius@evispa.lt>
  */
 
-namespace Evispa\ResourceApiBundle\Tests\Mock;
+namespace Evispa\ResourceApiBundle\Backend;
 
 
-class MockProduct implements \Evispa\Api\Resource\Model\ApiResourceInterface
+class PrimaryBackendResultsObject
 {
-    private $slug;
+    /**
+     * @var PrimaryBackendResultObject[]
+     */
+    private $objects;
 
     /**
-     * @JMS\Serializer\Annotation\Type("Evispa\ResourceApiBundle\Tests\Mock\MockProductText")
-     * @var MockProductText
+     * @var Integer
      */
-    public $text;
+    private $totalFound;
 
-    public function getSlug()
+    public function __construct($totalFound)
     {
-        return $this->slug;
+        $this->totalFound = $totalFound;
     }
 
-    public function setSlug($slug)
+    public function addObject(PrimaryBackendResultObject $object)
     {
-        $this->slug = $slug;
+        $this->objects[$object->getResourceSlug()] = $object;
     }
 
     /**
-     * @Evispa\ObjectMigration\Annotations\Migration(to="Evispa\ResourceApiBundle\Tests\Mock\MockSimpleProduct")
-     *
-     * @param $options
-     *
-     * @return MockSimpleProduct
+     * @return \Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject[]
      */
-    public function toSimpleProduct($options)
+    public function getObjects()
     {
-        $obj = new MockSimpleProduct();
-        $obj->setSlug($this->slug);
+        return $this->objects;
+    }
 
-        return $obj;
+    /**
+     * @return int
+     */
+    public function getTotalFound()
+    {
+        return $this->totalFound;
     }
 }

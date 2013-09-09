@@ -10,7 +10,7 @@ use Evispa\ObjectMigration\VersionReader;
 use Evispa\ResourceApiBundle\Backend\FindParameters;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject;
 use Evispa\ResourceApiBundle\Backend\Unicorn;
-use Evispa\ResourceApiBundle\Backend\UnicornBackend;
+use Evispa\ResourceApiBundle\Backend\UnicornPrimaryBackend;
 use Symfony\Component\Form\Exception\LogicException;
 
 /**
@@ -33,7 +33,7 @@ class ResourceManager
     /**
      * Resource property list from config, (property.id) => (property).
      *
-     * @var type
+     * @var array
      */
     private $resourceProperties;
 
@@ -143,7 +143,7 @@ class ResourceManager
     }
 
     /**
-     * @param UnicornBackend $unicornBackend
+     * @param UnicornPrimaryBackend $unicornBackend
      *
      * @return array
      */
@@ -156,8 +156,8 @@ class ResourceManager
     }
 
     /**
-     * @param string         $slug
-     * @param UnicornBackend $unicornBackend
+     * @param string                $slug
+     * @param UnicornPrimaryBackend $unicornBackend
      *
      * @return \Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject|null
      */
@@ -170,10 +170,10 @@ class ResourceManager
     }
 
     /**
-     * @param FindParameters $params
-     * @param UnicornBackend $unicornBackend
+     * @param FindParameters        $params
+     * @param UnicornPrimaryBackend $unicornBackend
      *
-     * @return \Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject[]
+     * @return \Evispa\ResourceApiBundle\Backend\PrimaryBackendResultsObject
      */
     private function getPrimaryBackendResults(FindParameters $params, $unicornBackend)
     {
@@ -184,8 +184,8 @@ class ResourceManager
     }
 
     /**
-     * @param string         $slug
-     * @param UnicornBackend $unicornBackend
+     * @param string                $slug
+     * @param UnicornPrimaryBackend $unicornBackend
      *
      * @return array
      */
@@ -198,8 +198,8 @@ class ResourceManager
     }
 
     /**
-     * @param array          $slugs
-     * @param UnicornBackend $unicornBackend
+     * @param array                 $slugs
+     * @param UnicornPrimaryBackend $unicornBackend
      *
      * @return array
      */
@@ -221,9 +221,9 @@ class ResourceManager
     }
 
     /**
-     * @param UnicornBackend $unicornBackend
-     * @param array          $parts
-     * @param                $resource
+     * @param UnicornPrimaryBackend $unicornBackend
+     * @param array                 $parts
+     * @param                       $resource
      *
      * @throws \LogicException
      */
@@ -290,15 +290,15 @@ class ResourceManager
      *
      * @param FindParameters $params
      *
-     * @return array
+     * @return FindResult
      */
     public function find(FindParameters $params)
     {
-        $resultObjects = $this->getPrimaryBackendResults($params, $this->unicorn->getPrimaryBackend());
+        $resultsObject = $this->getPrimaryBackendResults($params, $this->unicorn->getPrimaryBackend());
 
         $resources = array();
 
-        foreach ($resultObjects as $resultObject) {
+        foreach ($resultsObject->getObjects() as $resultObject) {
             // create new resource
             $resource = $this->createResource($resultObject);
 
@@ -329,7 +329,7 @@ class ResourceManager
             }
         }
 
-        return $resources;
+        return new FindResult($params, $resources, $resultsObject->getTotalFound());
     }
 
     /**

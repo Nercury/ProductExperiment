@@ -28,26 +28,12 @@
 namespace Evispa\ResourceApiBundle\Tests\Mock;
 
 
-use Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface;
-use Evispa\ResourceApiBundle\Backend\FindParameters;
-
-class MockProductBackend implements PrimaryBackendInterface
+class MockProductText
 {
+    public $text;
 
-    public $findOneResult = array();
-    public $findResult = array();
-
-    public function findOne($slug, array $requestedParts)
+    function __construct($text)
     {
-        if (isset($this->findOneResult[$slug]) === true) {
-            return $this->findOneResult[$slug];
-        }
-
-        return null;
-    }
-
-    public function find(FindParameters $params, array $requestedParts)
-    {
-        return $this->findResult;
+        $this->text = $text;
     }
 }

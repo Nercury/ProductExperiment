@@ -44,7 +44,10 @@ class PrimaryBackendResultObject
      */
     private $resourceParts;
 
-    function __construct($resourceSlug)
+    /**
+     * @param $resourceSlug
+     */
+    public function __construct($resourceSlug)
     {
         $this->resourceSlug = $resourceSlug;
     }

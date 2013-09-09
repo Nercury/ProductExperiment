@@ -5,12 +5,23 @@ namespace Evispa\ResourceApiBundle\Backend;
 /**
  * @author nerijus
  */
-class UnicornBackend
+class UnicornPrimaryBackend
 {
+    /**
+     * @var array
+     */
     private $managedParts = array();
-    private $backend;
 
-    function __construct(array $managedParts, PrimaryBackendInterface $backend)
+    /**
+     * @var PrimaryBackendInterface
+     */
+    private $backend = null;
+
+    /**
+     * @param array                   $managedParts
+     * @param PrimaryBackendInterface $backend
+     */
+    public function __construct(array $managedParts, PrimaryBackendInterface $backend)
     {
         $this->managedParts = $managedParts;
         $this->backend = $backend;
