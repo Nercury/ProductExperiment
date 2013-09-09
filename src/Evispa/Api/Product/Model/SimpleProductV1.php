@@ -45,9 +45,9 @@ class SimpleProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
     }
 
     /**
-     * @JMS\Serializer\Annotation\Type("Evispa\Api\Product\Model\Code\CodeV1")
+     * @JMS\Serializer\Annotation\Type("string")
      *
-     * @var Code\CodeV1
+     * @var string
      */
     public $code;
 
