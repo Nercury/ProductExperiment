@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "21e50d35d6a5c78b1832cbcb24c04367",
+    "hash": "0914664cc45b9ca1e26e8f52e141380d",
     "packages": [
         {
             "name": "adrienbrault/form-serializer",
@@ -206,7 +206,7 @@
                 {
                     "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "http://jmsyst.com",
+                    "homepage": "https://github.com/schmittjoh",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -274,7 +274,7 @@
                     "email": "kontakt@beberlei.de"
                 },
                 {
-                    "name": "Johannes M. Schmitt",
+                    "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
                     "homepage": "http://jmsyst.com",
                     "role": "Developer of wrapped JMSSerializerBundle"
@@ -340,7 +340,7 @@
                     "email": "kontakt@beberlei.de"
                 },
                 {
-                    "name": "Johannes M. Schmitt",
+                    "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
                     "homepage": "http://jmsyst.com",
                     "role": "Developer of wrapped JMSSerializerBundle"
@@ -357,16 +357,16 @@
         },
         {
             "name": "doctrine/common",
-            "version": "dev-master",
+            "version": "2.4.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/common.git",
-                "reference": "b4c7860e0c5a8d13598ca34d156533300b0dacf0"
+                "reference": "c94d6ff79e25418b1225e187c782bf4742f23a8b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/common/zipball/b4c7860e0c5a8d13598ca34d156533300b0dacf0",
-                "reference": "b4c7860e0c5a8d13598ca34d156533300b0dacf0",
+                "url": "https://api.github.com/repos/doctrine/common/zipball/c94d6ff79e25418b1225e187c782bf4742f23a8b",
+                "reference": "c94d6ff79e25418b1225e187c782bf4742f23a8b",
                 "shasum": ""
             },
             "require": {
@@ -412,7 +412,7 @@
                     "email": "kontakt@beberlei.de"
                 },
                 {
-                    "name": "Johannes M. Schmitt",
+                    "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
                     "homepage": "http://jmsyst.com",
                     "role": "Developer of wrapped JMSSerializerBundle"
@@ -427,39 +427,34 @@
                 "persistence",
                 "spl"
             ],
-            "time": "2013-08-20 18:10:31"
+            "time": "2013-09-07 10:20:35"
         },
         {
             "name": "doctrine/dbal",
-            "version": "dev-master",
+            "version": "2.4.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "60cc6c2da04c4025bdd72795d7423ae75ebf1455"
+                "reference": "814e53d0c538a995e3a36452710d4c039f6c2723"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/60cc6c2da04c4025bdd72795d7423ae75ebf1455",
-                "reference": "60cc6c2da04c4025bdd72795d7423ae75ebf1455",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/814e53d0c538a995e3a36452710d4c039f6c2723",
+                "reference": "814e53d0c538a995e3a36452710d4c039f6c2723",
                 "shasum": ""
             },
             "require": {
-                "doctrine/common": "2.4.*@beta",
+                "doctrine/common": "~2.4",
                 "php": ">=5.3.2"
             },
             "require-dev": {
                 "phpunit/phpunit": "3.7.*",
-                "symfony/console": "2.*"
+                "symfony/console": "~2.0"
             },
             "suggest": {
                 "symfony/console": "Allows use of the command line interface"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.4.x-dev"
-                }
-            },
             "autoload": {
                 "psr-0": {
                     "Doctrine\\DBAL\\": "lib/"
@@ -497,7 +492,7 @@
                 "persistence",
                 "queryobject"
             ],
-            "time": "2013-09-05 17:30:39"
+            "time": "2013-09-08 07:51:49"
         },
         {
             "name": "doctrine/doctrine-bundle",
@@ -621,7 +616,7 @@
                     "email": "kontakt@beberlei.de"
                 },
                 {
-                    "name": "Johannes M. Schmitt",
+                    "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
                     "homepage": "http://jmsyst.com",
                     "role": "Developer of wrapped JMSSerializerBundle"
@@ -904,12 +899,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/doctrine2.git",
-                "reference": "da7146c4d5edf99d66b4cfb4321f9c71e014768e"
+                "reference": "4d51a0290bfbe5e038d0bec5224119eba0de6413"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/da7146c4d5edf99d66b4cfb4321f9c71e014768e",
-                "reference": "da7146c4d5edf99d66b4cfb4321f9c71e014768e",
+                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/4d51a0290bfbe5e038d0bec5224119eba0de6413",
+                "reference": "4d51a0290bfbe5e038d0bec5224119eba0de6413",
                 "shasum": ""
             },
             "require": {
@@ -933,7 +928,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.4.x-dev"
+                    "dev-master": "2.5.x-dev"
                 }
             },
             "autoload": {
@@ -971,7 +966,7 @@
                 "database",
                 "orm"
             ],
-            "time": "2013-09-05 14:31:19"
+            "time": "2013-09-09 10:35:17"
         },
         {
             "name": "evispa/object-migration",
@@ -979,12 +974,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/evispa/object-migration.git",
-                "reference": "3fecf12a0d086821ede4c437750f11dfa78563b3"
+                "reference": "ea425e9b379c45aa35c0f091d26a3a8730428b71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/evispa/object-migration/zipball/3fecf12a0d086821ede4c437750f11dfa78563b3",
-                "reference": "3fecf12a0d086821ede4c437750f11dfa78563b3",
+                "url": "https://api.github.com/repos/evispa/object-migration/zipball/ea425e9b379c45aa35c0f091d26a3a8730428b71",
+                "reference": "ea425e9b379c45aa35c0f091d26a3a8730428b71",
                 "shasum": ""
             },
             "require": {
@@ -998,7 +993,6 @@
                     "Evispa\\ObjectMigration": "src"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1013,7 +1007,11 @@
                 }
             ],
             "description": "Migrations between object versions, configurable via annotations.",
-            "time": "2013-09-06 14:19:12"
+            "support": {
+                "source": "https://github.com/evispa/object-migration/tree/master",
+                "issues": "https://github.com/evispa/object-migration/issues"
+            },
+            "time": "2013-09-09 14:43:46"
         },
         {
             "name": "friendsofsymfony/rest",
@@ -1518,7 +1516,7 @@
             ],
             "authors": [
                 {
-                    "name": "Johannes M. Schmitt",
+                    "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
                     "homepage": "http://jmsyst.com",
                     "role": "Developer of wrapped JMSSerializerBundle"
@@ -1902,13 +1900,13 @@
             "version": "1.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/php-fig/log.git",
-                "reference": "fe0936ee26643249e916849d48e3a51d5f5e278b"
+                "url": "https://github.com/php-fig/log",
+                "reference": "1.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/fe0936ee26643249e916849d48e3a51d5f5e278b",
-                "reference": "fe0936ee26643249e916849d48e3a51d5f5e278b",
+                "url": "https://github.com/php-fig/log/archive/1.0.0.zip",
+                "reference": "1.0.0",
                 "shasum": ""
             },
             "type": "library",
@@ -2132,12 +2130,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/AsseticBundle.git",
-                "reference": "9a665341e32934c11ceabf264fc5b27bc95e7bdb"
+                "reference": "ce74b0664e97cbf566d1f080c65fd19baba2c3f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/AsseticBundle/zipball/9a665341e32934c11ceabf264fc5b27bc95e7bdb",
-                "reference": "9a665341e32934c11ceabf264fc5b27bc95e7bdb",
+                "url": "https://api.github.com/repos/symfony/AsseticBundle/zipball/ce74b0664e97cbf566d1f080c65fd19baba2c3f1",
+                "reference": "ce74b0664e97cbf566d1f080c65fd19baba2c3f1",
                 "shasum": ""
             },
             "require": {
@@ -2187,25 +2185,24 @@
                 "compression",
                 "minification"
             ],
-            "time": "2013-09-06 13:53:25"
+            "time": "2013-09-06 15:38:05"
         },
         {
             "name": "symfony/icu",
-            "version": "1.2.x-dev",
+            "version": "1.0.x-dev",
             "target-dir": "Symfony/Component/Icu",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Icu.git",
-                "reference": "45c8d35427304b1e14a13a03426055f501ba5f61"
+                "reference": "0b790dfb98904df2bcd44b2e14a69b1ccd679ef7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Icu/zipball/45c8d35427304b1e14a13a03426055f501ba5f61",
-                "reference": "45c8d35427304b1e14a13a03426055f501ba5f61",
+                "url": "https://api.github.com/repos/symfony/Icu/zipball/0b790dfb98904df2bcd44b2e14a69b1ccd679ef7",
+                "reference": "0b790dfb98904df2bcd44b2e14a69b1ccd679ef7",
                 "shasum": ""
             },
             "require": {
-                "lib-icu": ">=4.4",
                 "php": ">=5.3.3",
                 "symfony/intl": "~2.3"
             },
@@ -2235,7 +2232,7 @@
                 "icu",
                 "intl"
             ],
-            "time": "2013-08-06 12:55:36"
+            "time": "2013-08-06 12:58:06"
         },
         {
             "name": "symfony/monolog-bundle",
@@ -2358,12 +2355,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "d1ef0f3fddd9ad92053fec288e3f49bc1fdb7265"
+                "reference": "599c86509e06ebc06b71b04b445c0a9721c17ec4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/d1ef0f3fddd9ad92053fec288e3f49bc1fdb7265",
-                "reference": "d1ef0f3fddd9ad92053fec288e3f49bc1fdb7265",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/599c86509e06ebc06b71b04b445c0a9721c17ec4",
+                "reference": "599c86509e06ebc06b71b04b445c0a9721c17ec4",
                 "shasum": ""
             },
             "require": {
@@ -2458,7 +2455,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2013-09-05 08:35:20"
+            "time": "2013-09-08 20:22:53"
         },
         {
             "name": "twig/extensions",
@@ -2513,12 +2510,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Twig.git",
-                "reference": "16008174253c873ccf5b49f08874f949a467308d"
+                "reference": "4001f81a179e3971377ce1ac51b4ff9ea851b8ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Twig/zipball/16008174253c873ccf5b49f08874f949a467308d",
-                "reference": "16008174253c873ccf5b49f08874f949a467308d",
+                "url": "https://api.github.com/repos/fabpot/Twig/zipball/4001f81a179e3971377ce1ac51b4ff9ea851b8ce",
+                "reference": "4001f81a179e3971377ce1ac51b4ff9ea851b8ce",
                 "shasum": ""
             },
             "require": {
@@ -2554,7 +2551,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2013-09-06 10:25:58"
+            "time": "2013-09-08 15:21:02"
         },
         {
             "name": "willdurand/negotiation",
