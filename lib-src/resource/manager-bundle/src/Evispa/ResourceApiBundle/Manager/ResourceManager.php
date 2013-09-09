@@ -157,6 +157,8 @@ class ResourceManager
             return null;
         }
 
+        // Create a new resource.
+        
         /** @var ApiResourceInterface $resource */
         $resource = $this->class->newInstance();
         $resource->setSlug($resultObject->getResourceSlug());
@@ -208,8 +210,12 @@ class ResourceManager
         $resources = array();
 
         foreach ($resultsObject->getObjects() as $resultObject) {
-            // create new resource
-            $resource = $this->createResource($resultObject);
+            
+            // Create a new resource.
+            
+            /** @var ApiResourceInterface $resource */
+            $resource = $this->class->newInstance();
+            $resource->setSlug($resultObject->getResourceSlug());
 
             foreach ($resultObject->getResourceParts() as $partName => $part) {
 
