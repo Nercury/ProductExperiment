@@ -1,6 +1,6 @@
 <?php
 
-namespace Evispa\ResourceApiBundle\Backend;
+namespace Evispa\ResourceApiBundle\Unicorn;
 
 /**
  * We named this class Unicorn because alternative was ResolvedBackendAndConfigurationSetWrapper.

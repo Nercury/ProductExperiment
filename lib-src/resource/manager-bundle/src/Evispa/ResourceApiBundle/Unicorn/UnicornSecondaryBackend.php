@@ -25,7 +25,9 @@
  * @author Darius Krištapavičius <darius@evispa.lt>
  */
 
-namespace Evispa\ResourceApiBundle\Backend;
+namespace Evispa\ResourceApiBundle\Unicorn;
+
+use Evispa\ResourceApiBundle\Backend\SecondaryBackendInterface;
 
 /**
  * Class UnicornSecondaryBackend

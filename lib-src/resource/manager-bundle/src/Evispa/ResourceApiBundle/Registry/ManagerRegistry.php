@@ -23,7 +23,7 @@ class ManagerRegistry
     protected $backendConfigRegistry;
 
     /**
-     * @var \Evispa\ResourceApiBundle\Backend\ApiUnicornResolver
+     * @var \Evispa\ResourceApiBundle\Unicorn\ApiUnicornResolver
      */
     protected $unicornResolver;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Evispa\ResourceApiBundle\Backend;
+namespace Evispa\ResourceApiBundle\Unicorn;
 
 use Evispa\ResourceApiBundle\Config\ResourceApiConfig;
 use Evispa\ResourceApiBundle\Exception\BackendConfigurationException;

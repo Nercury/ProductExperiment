@@ -9,8 +9,8 @@ use Evispa\ObjectMigration\VersionConverter;
 use Evispa\ObjectMigration\VersionReader;
 use Evispa\ResourceApiBundle\Backend\FindParameters;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject;
-use Evispa\ResourceApiBundle\Backend\Unicorn;
-use Evispa\ResourceApiBundle\Backend\UnicornPrimaryBackend;
+use Evispa\ResourceApiBundle\Unicorn\Unicorn;
+use Evispa\ResourceApiBundle\Unicorn\UnicornPrimaryBackend;
 use Symfony\Component\Form\Exception\LogicException;
 
 /**

@@ -1,6 +1,8 @@
 <?php
 
-namespace Evispa\ResourceApiBundle\Backend;
+namespace Evispa\ResourceApiBundle\Unicorn;
+
+use Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface;
 
 /**
  * @author nerijus
