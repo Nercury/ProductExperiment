@@ -95,6 +95,8 @@ class UnicornPrimaryBackend
             );
         }
 
+        //var_dump(strlen('52284a46ed7d3e6d0c8b4575'));
+
         foreach ($requestedParts as $partName) {
 
             $part = $item->getPart($partName);

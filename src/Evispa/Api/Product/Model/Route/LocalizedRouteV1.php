@@ -25,55 +25,62 @@
  * @author Nerijus Arlauskas <nercury@gmail.com>
  */
 
-namespace Evispa\Api\Product\Model\Text;
+namespace Evispa\Api\Product\Model\Route;
 
 /**
- * @Evispa\ObjectMigration\Annotations\Version("vnd.evispa.product.l11n-text.v1")
+ * Object route information.
+ *
+ * This object stores public route "slug" for the object. Note that it is not a link,
+ * just a piece of information about route identifier.
+ *
+ * @Evispa\ObjectMigration\Annotations\Version("vnd.evispa.l11n-route.v1")
  */
-class LocalizedTextV1
+class LocalizedRouteV1
 {
     /**
-     * Array of localized text objects.
+     * Array of localized route slugs.
      *
      * Array key is the locale string.
      *
-     * @JMS\Serializer\Annotation\Type("array<string, Evispa\Api\Product\Model\Text\TextV1>")
+     * @JMS\Serializer\Annotation\Type("array<string, string>")
      * @JMS\Serializer\Annotation\XmlKeyValuePairs
      * @JMS\Serializer\Annotation\XmlList(inline = true)
      *
-     * @var Evispa\Api\Product\Model\Text\TextV1[]
+     * @var string
      */
     public $items = array();
 
     /**
-     * @Evispa\ObjectMigration\Annotations\Migration(from="Evispa\Api\Product\Model\Text\TextV1", require={"locale"})
+     * @Evispa\ObjectMigration\Annotations\Migration(from="Evispa\Api\Product\Model\Route\RouteV1", require={"locale"})
      *
      * @param TextV1 $old Old version of text part.
      *
      * @return self
      */
-    public static function fromTextV1(TextV1 $other, $options) {
+    public static function fromRouteV1(RouteV1 $other, $options) {
         $locale = $options['locale'];
 
         $new = new self();
 
-        $new->items[$locale] = clone $other;
+        $new->items[$locale] = $other->slug;
 
         return $new;
     }
 
     /**
-     * @Evispa\ObjectMigration\Annotations\Migration(to="Evispa\Api\Product\Model\Text\TextV1", require={"locale"})
+     * @Evispa\ObjectMigration\Annotations\Migration(to="Evispa\Api\Product\Model\Route\RouteV1", require={"locale"})
      *
      * @return TextV1
      */
-    public function toTextV1($options) {
+    public function toRouteV1($options) {
         $locale = $options['locale'];
 
         if (isset($this->items[$locale])) {
-            return clone $this->items[$locale];
+            $result = new RouteV1();
+            $result->slug = $this->items[$locale];
+            return $result;
         }
 
-        return new TextV1();
+        return new RouteV1();
     }
 }

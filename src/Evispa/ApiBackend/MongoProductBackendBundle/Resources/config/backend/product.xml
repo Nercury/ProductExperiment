@@ -16,6 +16,7 @@
             <argument type="collection"> <!-- List of parts managed by this backend -->
                 <!-- key is part identifier, value is public class name -->
                 <argument key="product.code">Evispa\Api\Product\Model\Code\ProductCodeV1</argument>
+                <argument key="product.route">Evispa\Api\Product\Model\Route\RouteV1</argument>
                 <argument key="product.text">Evispa\Api\Product\Model\Text\TextV1</argument>
             </argument>
             <call method="setBackendManager">

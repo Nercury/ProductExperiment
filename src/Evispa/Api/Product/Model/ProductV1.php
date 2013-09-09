@@ -52,6 +52,13 @@ class ProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
     public $code;
 
     /**
+     * @JMS\Serializer\Annotation\Type("Evispa\Api\Product\Model\Route\LocalizedRouteV1")
+     *
+     * @var Route\LocalizedRouteV1
+     */
+    public $route;
+
+    /**
      * @JMS\Serializer\Annotation\Type("Evispa\Api\Product\Model\Text\LocalizedTextV1")
      *
      * @var Text\LocalizedTextV1

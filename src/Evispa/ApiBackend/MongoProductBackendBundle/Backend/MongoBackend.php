@@ -49,6 +49,15 @@ class MongoBackend implements PrimaryBackendInterface
             $result->addPart('product.code', $code);
         }
 
+        if (in_array('product.route', $requestedParts)) {
+            $route = new \Evispa\Api\Product\Model\Route\RouteV1();
+            if (null !== $product->getRouteSlug()) {
+                $route->slug = $product->getRouteSlug();
+            }
+
+            $result->addPart('product.route', $route);
+        }
+
         if (in_array('product.text', $requestedParts)) {
             $text = new \Evispa\Api\Product\Model\Text\TextV1();
             $text->name = $product->getText();

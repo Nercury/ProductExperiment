@@ -50,6 +50,11 @@ class Product
     protected $text;
 
     /**
+     * @MongoDB\String
+     */
+    protected $routeSlug;
+
+    /**
      * Get slug
      *
      * @return string $slug
@@ -101,5 +106,16 @@ class Product
     public function getText()
     {
         return $this->text;
+    }
+
+    public function getRouteSlug()
+    {
+        return $this->routeSlug;
+    }
+
+    public function setRouteSlug($routeSlug)
+    {
+        $this->routeSlug = $routeSlug;
+        return $this;
     }
 }

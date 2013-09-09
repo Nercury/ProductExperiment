@@ -49,6 +49,10 @@ class PrimaryBackendResultObject
      */
     public function __construct($resourceSlug)
     {
+        if (strlen($resourceSlug) > 24) {
+            throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException('Resource slug length can not exceed 24 symbols.');
+        }
+
         $this->resourceSlug = $resourceSlug;
     }
 
