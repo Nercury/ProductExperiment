@@ -43,7 +43,7 @@ class MockSecondaryProductTextBackend implements SecondaryBackendInterface
      *
      * @return array[] (parts)
      */
-    public function findOne($slug, array $requestedParts)
+    public function fetchOne($slug, array $requestedParts)
     {
         if (isset($this->findOneResult[$slug]) === true) {
             return $this->findOneResult[$slug];
@@ -62,7 +62,7 @@ class MockSecondaryProductTextBackend implements SecondaryBackendInterface
      *
      * @return array[string] (array[slug] => parts)
      */
-    public function find(array $slugs, array $requestedParts)
+    public function fetchBySlugs(array $slugs, array $requestedParts)
     {
         return $this->findResult;
     }

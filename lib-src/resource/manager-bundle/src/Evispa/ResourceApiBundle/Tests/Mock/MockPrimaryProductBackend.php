@@ -37,7 +37,7 @@ class MockPrimaryProductBackend implements PrimaryBackendInterface
     public $findOneResult = array();
     public $findResult = array();
 
-    public function findOne($slug, array $requestedParts)
+    public function fetchOne($slug, array $requestedParts)
     {
         if (isset($this->findOneResult[$slug]) === true) {
             return $this->findOneResult[$slug];
@@ -46,7 +46,7 @@ class MockPrimaryProductBackend implements PrimaryBackendInterface
         return null;
     }
 
-    public function find(FindParameters $params, array $requestedParts)
+    public function fetchAll(FindParameters $params, array $requestedParts)
     {
         return $this->findResult;
     }

@@ -69,6 +69,7 @@ class UnicornPrimaryBackend
 
         $backendResult = $this->backend->fetchOne($slug, $requestedParts);
 
+
         // If primary backend returns null, it means that item does not exist in database.
 
         if (null === $backendResult) {
@@ -83,7 +84,7 @@ class UnicornPrimaryBackend
     }
 
     public function fetchAll(\Evispa\ResourceApiBundle\Backend\FindParameters $params, $requestedParts = null) {
-        
+
         if (null === $requestedParts) {
 
             $requestedParts = array_keys($this->managedParts);
@@ -100,18 +101,18 @@ class UnicornPrimaryBackend
                 }
             }
         }
-        
+
         $backendResults = $this->backend->fetchAll($params, $requestedParts);
-        
+
         // If it returns a result, it must contain all of the requested parts and correct objects.
-        
+
         foreach ($backendResults->getObjects() as $backendResult) {
             $this->validateResultItem($backendResult, $requestedParts);
         }
-        
+
         return $backendResults;
     }
-    
+
     /**
      * Throw an exception if a result item contains something bad.
      *
@@ -124,8 +125,6 @@ class UnicornPrimaryBackend
                 'Backend "'.$this->id.'" should not return results with empty slug.'
             );
         }
-
-        //var_dump(strlen('52284a46ed7d3e6d0c8b4575'));
 
         foreach ($requestedParts as $partName) {
 

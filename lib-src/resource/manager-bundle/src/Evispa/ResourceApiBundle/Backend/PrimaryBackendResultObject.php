@@ -42,7 +42,7 @@ class PrimaryBackendResultObject
     /**
      * @var array
      */
-    private $resourceParts;
+    private $resourceParts = array();
 
     /**
      * @param $resourceSlug

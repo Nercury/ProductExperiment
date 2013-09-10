@@ -34,9 +34,13 @@ class MockProduct implements \Evispa\Api\Resource\Model\ApiResourceInterface
 
     /**
      * @JMS\Serializer\Annotation\Type("Evispa\ResourceApiBundle\Tests\Mock\MockProductText")
-     * @var MockProductText
      */
     public $text;
+
+    /**
+     * @JMS\Serializer\Annotation\Type("Evispa\ResourceApiBundle\Tests\Mock\MockProductPrice")
+     */
+    public $price;
 
     public function getSlug()
     {

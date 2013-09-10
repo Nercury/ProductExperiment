@@ -44,8 +44,8 @@ class ApiUnicornResolver
         $backendManagerConfigs = array();
         foreach ($backendConfigs->getBackendConfigs() as $config) {
             if ($resourceId === $config->getResourceId()) {
-                if (null !== $config->getBackendManager()) {
-                    $availableBackends[$config->getBackendId()] = $config->getBackendManager();
+                if (null !== $config->getPrimaryBackend()) {
+                    $availableBackends[$config->getBackendId()] = $config->getPrimaryBackend();
                     $backendManagerConfigs[$config->getBackendId()] = $config;
                 }
             }

@@ -158,7 +158,7 @@ class ResourceManager
         }
 
         // Create a new resource.
-        
+
         /** @var ApiResourceInterface $resource */
         $resource = $this->class->newInstance();
         $resource->setSlug($resultObject->getResourceSlug());
@@ -210,9 +210,9 @@ class ResourceManager
         $resources = array();
 
         foreach ($resultsObject->getObjects() as $resultObject) {
-            
+
             // Create a new resource.
-            
+
             /** @var ApiResourceInterface $resource */
             $resource = $this->class->newInstance();
             $resource->setSlug($resultObject->getResourceSlug());
@@ -241,7 +241,7 @@ class ResourceManager
                 $resourcesParts = $unicornBackend->fetchBySlugs($slugs);
 
                 foreach ($resourcesParts as $slug => $otherParts) {
-                    
+
                     foreach ($otherParts as $partName => $part) {
                         if (null === $part) {
                             continue;

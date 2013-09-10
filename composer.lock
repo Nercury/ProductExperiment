@@ -2130,12 +2130,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/AsseticBundle.git",
-                "reference": "ce74b0664e97cbf566d1f080c65fd19baba2c3f1"
+                "reference": "72e961373540661c38b6ddb3ca5f1c9f91e0e9dc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/AsseticBundle/zipball/ce74b0664e97cbf566d1f080c65fd19baba2c3f1",
-                "reference": "ce74b0664e97cbf566d1f080c65fd19baba2c3f1",
+                "url": "https://api.github.com/repos/symfony/AsseticBundle/zipball/72e961373540661c38b6ddb3ca5f1c9f91e0e9dc",
+                "reference": "72e961373540661c38b6ddb3ca5f1c9f91e0e9dc",
                 "shasum": ""
             },
             "require": {
@@ -2185,24 +2185,25 @@
                 "compression",
                 "minification"
             ],
-            "time": "2013-09-06 15:38:05"
+            "time": "2013-09-10 09:39:44"
         },
         {
             "name": "symfony/icu",
-            "version": "1.0.x-dev",
+            "version": "1.2.x-dev",
             "target-dir": "Symfony/Component/Icu",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Icu.git",
-                "reference": "0b790dfb98904df2bcd44b2e14a69b1ccd679ef7"
+                "reference": "45c8d35427304b1e14a13a03426055f501ba5f61"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Icu/zipball/0b790dfb98904df2bcd44b2e14a69b1ccd679ef7",
-                "reference": "0b790dfb98904df2bcd44b2e14a69b1ccd679ef7",
+                "url": "https://api.github.com/repos/symfony/Icu/zipball/45c8d35427304b1e14a13a03426055f501ba5f61",
+                "reference": "45c8d35427304b1e14a13a03426055f501ba5f61",
                 "shasum": ""
             },
             "require": {
+                "lib-icu": ">=4.4",
                 "php": ">=5.3.3",
                 "symfony/intl": "~2.3"
             },
@@ -2232,7 +2233,7 @@
                 "icu",
                 "intl"
             ],
-            "time": "2013-08-06 12:58:06"
+            "time": "2013-08-06 12:55:36"
         },
         {
             "name": "symfony/monolog-bundle",

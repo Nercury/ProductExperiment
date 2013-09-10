@@ -122,18 +122,18 @@ class UnicornSecondaryBackend
                 }
             }
         }
-        
+
         $backendResults = $this->backend->fetchBySlugs($slugs, $requestedParts);
-        
+
         // If it returns a result, it must contain all of the requested parts and correct objects.
-        
+
         foreach ($backendResults->getObjects() as $backendResult) {
             $this->validateResultItem($backendResult, $requestedParts);
         }
-        
+
         return $backendResults;
     }
-    
+
     /**
      * Throw an exception if a result item contains something bad.
      *
@@ -141,10 +141,10 @@ class UnicornSecondaryBackend
      * @param string[] $requestedParts Array of requested parts.
      */
     private function validateResultItem($item, $requestedParts) {
-        
+
         foreach ($requestedParts as $partName) {
 
-            $part = $item->getPart($partName);
+            $part = isset($item[$partName]) ? $item[$partName] : null;
 
             if (null !== $part) {
                 $partClassName = get_class($part);
