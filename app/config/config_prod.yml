@@ -1,15 +1,23 @@
 imports:
     - { resource: config.yml }
 
-#framework:
-#    validation:
-#        cache: apc
+framework:
+    validation:
+        cache: apc
 
 #doctrine:
 #    orm:
 #        metadata_cache_driver: apc
 #        result_cache_driver: apc
 #        query_cache_driver: apc
+
+#parameters:
+#    router:
+#        options:
+#            matcher:
+#                # disable router cache
+#                cache_class: ~
+#            matcher_class: Symfony\Component\Routing\Matcher\ApacheUrlMatcher
 
 monolog:
     handlers:

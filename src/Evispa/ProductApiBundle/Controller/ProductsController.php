@@ -127,9 +127,9 @@ class ProductsController extends Controller
         $params->offset = ($page - 1) * $params->limit;
 
         $resourcesObject = $prm->fetchAll($params);
-        
+
         $view = \FOS\RestBundle\View\View::create();
-        
+
         // Find out what client wants. Impossible, but very important.
         $expectedVersionAndFormat = $this->getExpectedVersionAndFormat($request, $prm);
         if (null === $expectedVersionAndFormat) {
@@ -137,20 +137,20 @@ class ProductsController extends Controller
                 'Can not return requested resource in '.$request->getRequestFormat().' format.'
             );
         }
-        
+
         $view->setFormat($expectedVersionAndFormat->getFormat());
         $vc = $this->getProductVersionConverter($prm);
-        
+
         // TODO: Change "$results" to proper REST object with links to prev/next.
-        
+
         $results = array('resources' => array());
         $results['total'] = $resourcesObject->getTotalFound();
         $results['parameters'] = $resourcesObject->getParameters();
-        
+
         foreach ($resourcesObject->getResources() as $resource) {
             $results['resources'][] = $vc->migrateToVersion($resource, $expectedVersionAndFormat->getVersion());
         }
-        
+
         $view->setData($results);
 
         return $view;

@@ -11,7 +11,8 @@ framework:
         strict_requirements: ~
     form:            ~
     csrf_protection: ~
-    validation:      { enable_annotations: true }
+    validation:
+        enable_annotations: true
     templating:
         engines: ['twig']
         #assets_version: SomeVersionScheme
@@ -56,7 +57,11 @@ doctrine:
 
     orm:
         auto_generate_proxy_classes: %kernel.debug%
-        auto_mapping: true
+        auto_mapping: false
+
+        metadata_cache_driver: apc
+        result_cache_driver: apc
+        query_cache_driver: apc
 
 # Mongo db
 doctrine_mongodb:
@@ -80,6 +85,10 @@ swiftmailer:
 sensio_framework_extra:
     view:    { annotations: false }
     router:  { annotations: true }
+    request:
+        converters: false
+    cache:
+        annotations: false
 
 fos_rest:
     view:
