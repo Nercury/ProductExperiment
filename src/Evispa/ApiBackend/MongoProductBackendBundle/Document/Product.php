@@ -37,7 +37,7 @@ class Product
     /**
      * @MongoDB\Id
      */
-    protected $slug;
+    public $slug;
 
     /**
      * @MongoDB\String
