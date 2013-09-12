@@ -154,12 +154,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/annotations.git",
-                "reference": "40db0c96985aab2822edbc4848b3bd2429e02670"
+                "reference": "v1.1.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/annotations/zipball/40db0c96985aab2822edbc4848b3bd2429e02670",
-                "reference": "40db0c96985aab2822edbc4848b3bd2429e02670",
+                "url": "https://api.github.com/repos/doctrine/annotations/zipball/v1.1.2",
+                "reference": "v1.1.2",
                 "shasum": ""
             },
             "require": {
@@ -206,7 +206,7 @@
                 {
                     "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "https://github.com/schmittjoh",
+                    "homepage": "http://jmsyst.com",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -357,16 +357,16 @@
         },
         {
             "name": "doctrine/common",
-            "version": "2.4.x-dev",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/common.git",
-                "reference": "c94d6ff79e25418b1225e187c782bf4742f23a8b"
+                "reference": "4233262c8a94b2f22189ce3e5972dae25aa6764b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/common/zipball/c94d6ff79e25418b1225e187c782bf4742f23a8b",
-                "reference": "c94d6ff79e25418b1225e187c782bf4742f23a8b",
+                "url": "https://api.github.com/repos/doctrine/common/zipball/4233262c8a94b2f22189ce3e5972dae25aa6764b",
+                "reference": "4233262c8a94b2f22189ce3e5972dae25aa6764b",
                 "shasum": ""
             },
             "require": {
@@ -380,7 +380,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.4.x-dev"
+                    "dev-master": "2.5.x-dev"
                 }
             },
             "autoload": {
@@ -427,34 +427,39 @@
                 "persistence",
                 "spl"
             ],
-            "time": "2013-09-07 10:20:35"
+            "time": "2013-09-11 09:23:32"
         },
         {
             "name": "doctrine/dbal",
-            "version": "2.4.x-dev",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "814e53d0c538a995e3a36452710d4c039f6c2723"
+                "reference": "4f6f844d1aad4dd5b32d1593a7048b7122b276d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/814e53d0c538a995e3a36452710d4c039f6c2723",
-                "reference": "814e53d0c538a995e3a36452710d4c039f6c2723",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/4f6f844d1aad4dd5b32d1593a7048b7122b276d1",
+                "reference": "4f6f844d1aad4dd5b32d1593a7048b7122b276d1",
                 "shasum": ""
             },
             "require": {
-                "doctrine/common": "~2.4",
+                "doctrine/common": "2.4.*@beta",
                 "php": ">=5.3.2"
             },
             "require-dev": {
                 "phpunit/phpunit": "3.7.*",
-                "symfony/console": "~2.0"
+                "symfony/console": "2.*"
             },
             "suggest": {
                 "symfony/console": "Allows use of the command line interface"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.5.x-dev"
+                }
+            },
             "autoload": {
                 "psr-0": {
                     "Doctrine\\DBAL\\": "lib/"
@@ -492,7 +497,7 @@
                 "persistence",
                 "queryobject"
             ],
-            "time": "2013-09-08 07:51:49"
+            "time": "2013-09-08 09:17:35"
         },
         {
             "name": "doctrine/doctrine-bundle",
@@ -974,12 +979,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/evispa/object-migration.git",
-                "reference": "ea425e9b379c45aa35c0f091d26a3a8730428b71"
+                "reference": "f54a1c192cd8d1d0dadc785a21bb1019043d363c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/evispa/object-migration/zipball/ea425e9b379c45aa35c0f091d26a3a8730428b71",
-                "reference": "ea425e9b379c45aa35c0f091d26a3a8730428b71",
+                "url": "https://api.github.com/repos/evispa/object-migration/zipball/f54a1c192cd8d1d0dadc785a21bb1019043d363c",
+                "reference": "f54a1c192cd8d1d0dadc785a21bb1019043d363c",
                 "shasum": ""
             },
             "require": {
@@ -1011,7 +1016,7 @@
                 "source": "https://github.com/evispa/object-migration/tree/master",
                 "issues": "https://github.com/evispa/object-migration/issues"
             },
-            "time": "2013-09-09 14:43:46"
+            "time": "2013-09-12 15:03:40"
         },
         {
             "name": "friendsofsymfony/rest",
@@ -1673,12 +1678,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nelmio/NelmioApiDocBundle.git",
-                "reference": "9dc3f10828aa3c7a45aab67192ccca2e2d50b3e9"
+                "reference": "c2d36d9ef0ec80dadb92746bff55af7df1af8b1c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nelmio/NelmioApiDocBundle/zipball/9dc3f10828aa3c7a45aab67192ccca2e2d50b3e9",
-                "reference": "9dc3f10828aa3c7a45aab67192ccca2e2d50b3e9",
+                "url": "https://api.github.com/repos/nelmio/NelmioApiDocBundle/zipball/c2d36d9ef0ec80dadb92746bff55af7df1af8b1c",
+                "reference": "c2d36d9ef0ec80dadb92746bff55af7df1af8b1c",
                 "shasum": ""
             },
             "require": {
@@ -1732,7 +1737,7 @@
                 "documentation",
                 "rest"
             ],
-            "time": "2013-09-11 12:13:05"
+            "time": "2013-09-12 08:51:49"
         },
         {
             "name": "pagerfanta/pagerfanta",
@@ -2356,12 +2361,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "3e370f66a54fe70bc07aa0ef2eda51c3b5dbde8a"
+                "reference": "5b71e61d15c5e365571367723c9f5a525a8851fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/3e370f66a54fe70bc07aa0ef2eda51c3b5dbde8a",
-                "reference": "3e370f66a54fe70bc07aa0ef2eda51c3b5dbde8a",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/5b71e61d15c5e365571367723c9f5a525a8851fb",
+                "reference": "5b71e61d15c5e365571367723c9f5a525a8851fb",
                 "shasum": ""
             },
             "require": {
@@ -2456,7 +2461,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2013-09-12 04:30:13"
+            "time": "2013-09-12 12:59:51"
         },
         {
             "name": "twig/extensions",
