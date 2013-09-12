@@ -106,25 +106,26 @@ class ResourceManagerTest extends \PHPUnit_Framework_TestCase
         $class = new \ReflectionClass('Evispa\ResourceApiBundle\Tests\Mock\MockProduct');
 
         $mockBackend = new MockPrimaryProductBackend();
-        $mockBackend->findResult = new PrimaryBackendResultsObject(5);
+        $mockBackend->findResult = new PrimaryBackendResultsObject(6);
 
         $mockBackend->findResult->addObject(new PrimaryBackendResultObject('a1'));
         $mockBackend->findResult->addObject(new PrimaryBackendResultObject('a2'));
         $mockBackend->findResult->addObject(new PrimaryBackendResultObject('a3'));
         $mockBackend->findResult->addObject(new PrimaryBackendResultObject('a4'));
         $mockBackend->findResult->addObject(new PrimaryBackendResultObject('a5'));
+        $mockBackend->findResult->addObject(new PrimaryBackendResultObject('a6'));
 
         $unicorn = new Unicorn(new UnicornPrimaryBackend(array(), $mockBackend));
 
         $manager = new ResourceManager($reader, $versionsReader, array(), $class, array(), $unicorn);
 
         $params = new FindParameters();
-        $params->limit = 5;
+        $params->limit = 6;
         $params->offset = 0;
 
         $products = $manager->find($params);
 
-        $this->assertEquals(5, count($products->getResources()));
-        $this->assertEquals(5, $products->getTotalFound());
+        $this->assertEquals(6, count($products->getResources()));
+        $this->assertEquals(6, $products->getTotalFound());
     }
 }
