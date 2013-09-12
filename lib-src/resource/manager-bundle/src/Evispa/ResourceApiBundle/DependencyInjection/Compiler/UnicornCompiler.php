@@ -53,12 +53,35 @@ class UnicornCompiler implements CompilerPassInterface
         return $services;
     }
 
+    private function getManagedPartClasses($backendConfigInfo, $backendConfigs) {
+        $managedPartClasses = array();
+        foreach ($backendConfigInfo->getManagedParts() as $partName) {
+            $definedParts = $backendConfigs->getBackendConfig($backendConfigInfo->getId())->getParts();
+            $partClasses = $definedParts[$partName];
+            if (!is_array($partClasses)) {
+                throw new \Evispa\ResourceApiBundle\Exception\BackendConfigurationException(
+                    'The value of "'.$partName.'" in "'.$backendConfigInfo->getId().'" backend '.
+                    'definition should be a collection.'
+                );
+            }
+            
+            $classesMap = array();
+            foreach ($definedParts[$partName] as $className) {
+                $classesMap[$className] = true;
+            }
+
+            $managedPartClasses[$partName] = $classesMap;
+        }
+        
+        return $managedPartClasses;
+    }
+    
     private function getUnicornDefinition(ContainerBuilder $container, $apiConfig, $backendServices) {
         $backendConfigs = $container->get('evispa_resource_api.backend_config_registry');
         $appApiBackendMap = $container->getParameter('evispa_resource_api_backend_map');
         $unicornResolver = new \Evispa\ResourceApiBundle\Unicorn\ApiUnicornResolver();
 
-        $resolvedUnicornInfo = $unicornResolver->makeUnicorn($apiConfig, $backendConfigs, $appApiBackendMap);
+        $resolvedUnicornInfo = $unicornResolver->getUnicornConfigurationInfo($apiConfig, $backendConfigs, $appApiBackendMap);
 
         $unicornDef = new \Symfony\Component\DependencyInjection\Definition('Evispa\ResourceApiBundle\Unicorn\Unicorn');
 
@@ -66,9 +89,11 @@ class UnicornCompiler implements CompilerPassInterface
 
         $primaryBackendConfigInfo = $resolvedUnicornInfo->getPrimaryBackendConfigInfo();
 
+        $managedPartClasses = $this->getManagedPartClasses($primaryBackendConfigInfo, $backendConfigs);
+        
         $unicornPrimaryBackendDef = new \Symfony\Component\DependencyInjection\Definition('Evispa\ResourceApiBundle\Unicorn\UnicornPrimaryBackend');
         $unicornPrimaryBackendDef->addArgument($primaryBackendConfigInfo->getId());
-        $unicornPrimaryBackendDef->addArgument($primaryBackendConfigInfo->getManagedParts());
+        $unicornPrimaryBackendDef->addArgument($managedPartClasses);
         $unicornPrimaryBackendDef->addArgument(new \Symfony\Component\DependencyInjection\Reference($backendServices[$primaryBackendConfigInfo->getId()]));
 
         $unicornDef->addArgument($unicornPrimaryBackendDef);
@@ -78,10 +103,12 @@ class UnicornCompiler implements CompilerPassInterface
         $secondaryBackendArray = array();
 
         $secondaryBackendConfigInfos = $resolvedUnicornInfo->getSecondaryBackendConfigInfos();
-        foreach ($resolvedUnicornInfo->getSecondaryBackendConfigInfos() as $secondaryBackendConfigInfo) {
+        foreach ($secondaryBackendConfigInfos as $secondaryBackendConfigInfo) {
+            $managedPartClasses = $this->getManagedPartClasses($secondaryBackendConfigInfo, $backendConfigs);
+            
             $unicornSecondaryBackendDef = new \Symfony\Component\DependencyInjection\Definition('Evispa\ResourceApiBundle\Unicorn\UnicornSecondaryBackend');
             $unicornSecondaryBackendDef->addArgument($secondaryBackendConfigInfo->getId());
-            $unicornSecondaryBackendDef->addArgument($secondaryBackendConfigInfo->getManagedParts());
+            $unicornSecondaryBackendDef->addArgument($managedPartClasses);
             $unicornSecondaryBackendDef->addArgument(new \Symfony\Component\DependencyInjection\Reference($backendServices[$secondaryBackendConfigInfo->getId()]));
 
             $secondaryBackendArray[] = $unicornSecondaryBackendDef;

@@ -30,7 +30,7 @@ class ApiUnicornResolver
         $choices = array();
 
         foreach ($availableBackendManagers as $managerName => $_) {
-            $choices[] = $resourceId . '.manager: ' . $managerName;
+            $choices[] = $resourceId . '.primary: ' . $managerName;
         }
 
         return $this->buildChoiceSuggestion($choices);
@@ -45,7 +45,7 @@ class ApiUnicornResolver
      *
      * @return Config\UnicornConfigInfo
      */
-    public function makeUnicorn(ResourceApiConfig $apiConfig, ResourceBackendConfigRegistry $backendConfigs, array $appApiBackendMap) {
+    public function getUnicornConfigurationInfo(ResourceApiConfig $apiConfig, ResourceBackendConfigRegistry $backendConfigs, array $appApiBackendMap) {
 
         $resourceId = $apiConfig->getResourceId();
         $productBackendMap = isset($appApiBackendMap[$resourceId]) ? $appApiBackendMap[$resourceId] : null;
@@ -77,8 +77,8 @@ class ApiUnicornResolver
                 if (!isset($availableBackends[$requiredManager])) {
                     $configSuggestion = $this->buildManagerBackendSuggestion($resourceId, $availableBackends);
                     throw new BackendConfigurationException(
-                        'Backend manager "'.$requiredManager.'" assigned to "'.$resourceId.'" was not found, but '.
-                        $configSuggestion.' are available. Check configuration for "evispa_resource_api.backend.'.$resourceId.'.manager".'
+                        'Backend "'.$requiredManager.'" assigned to "'.$resourceId.'" was not found, but '.
+                        $configSuggestion.' are available. Check configuration for "evispa_resource_api.backend.'.$resourceId.'.primary".'
                     );
                 }
 
@@ -94,9 +94,9 @@ class ApiUnicornResolver
             $configSuggestion = $this->buildManagerBackendSuggestion($resourceId, $availableBackends);
 
             throw new BackendConfigurationException(
-                'Resource "'.$resourceId.'" can use only a single backend manager at a time, '.
+                'Resource "'.$resourceId.'" can use only a single backend at a time, '.
                 'but multiple are available. '.
-                'Please specify one of '.$configSuggestion.' in "evispa_resource_api.backend" configuration.'
+                'Please specify '.$configSuggestion.' in "evispa_resource_api.backend" configuration.'
             );
         }
 
@@ -107,13 +107,21 @@ class ApiUnicornResolver
         $primaryParts = $backendConfig->getParts();
 
         $secondaryConfigs = array();
-        $secondaryParts = array();
+        
+        // Build available backend part array for both primary and secondary backends.
+        
+        $backendParts = array();
+        
+        foreach ($primaryParts as $partId => $_) {
+            $backendParts[$backendId][$partId] = true; 
+        }
+        
         foreach ($backendConfigs->getBackendConfigs() as $config) {
             if ($resourceId === $config->getResourceId()) {
                 if (null !== $config->getSecondaryBackend()) {
                     $secondaryConfigs[$config->getBackendId()] = $config;
                     foreach ($config->getParts() as $partId => $_) {
-                        $secondaryParts[$config->getBackendId()][$partId] = true;
+                        $backendParts[$config->getBackendId()][$partId] = true;
                     }
                 }
             }
@@ -125,7 +133,7 @@ class ApiUnicornResolver
         $prefefinedPartMap = $productBackendMap['parts'];
 
         // Validate predefined map for existing ids.
-        foreach ($prefefinedPartMap as $id => $_) {
+        foreach ($prefefinedPartMap as $id => $mappedBackendId) {
             if (!isset($resourceParts[$id])) {
                 foreach ($resourceParts as $existingId => $_) {
                     if (false !== strpos($existingId, $id)) {
@@ -137,18 +145,94 @@ class ApiUnicornResolver
                 }
                 throw new BackendConfigurationException(
                     'Configured resource part "'.$id.'" was not found on "'.$resourceId.'" resource. '.
-                    'Use either '.$this->buildChoiceSuggestion(array_keys($resourceParts)).'.'
+                    'Use '.$this->buildChoiceSuggestion(array_keys($resourceParts)).'.'
                 );
             }
+            
+            $allowedBackendsForPart = array();
+            foreach ($backendParts as $possibleBackendId => $partNames) {
+                if (isset($partNames[$id])) {
+                    $allowedBackendsForPart[$possibleBackendId] = true;
+                }
+            }
+            
+            if (!isset($backendParts[$mappedBackendId])) {
+                if (0 === count($allowedBackendsForPart)) {
+                    throw new BackendConfigurationException(
+                        'Resource part "'.$id.'" for "'.$resourceId.'" resource can not be mapped to "'.$mappedBackendId.'" '.
+                        'backend, because it does not exist. This configuration most likelly should be removed.'
+                    );
+                }
+                
+                throw new BackendConfigurationException(
+                    'Configured backend "'.$mappedBackendId.'" can not be assigned to "'.$resourceId.'" resource, '.
+                    'because it does not exist. Use '.$this->buildChoiceSuggestion(array_keys($allowedBackendsForPart)).' instead.'
+                );
+            } else {
+                if (!isset($allowedBackendsForPart[$mappedBackendId])) {
+                    throw new BackendConfigurationException(
+                        'Configured backend "'.$mappedBackendId.'" can not be assigned to "'.$resourceId.'" resource, '.
+                        'because it can not manage specified "'.$id.'" part. Use '.$this->buildChoiceSuggestion(array_keys($allowedBackendsForPart)).' instead.'
+                    );
+                }
+            }
         }
+        
+        // Figure out actual part backends.
+        
+        $partBackends = $prefefinedPartMap; // Initially it is equal to predefined map.
+        
+        // First, use predefined map, then assign everything else somehow.
+        
+        foreach ($resourceParts as $partName => $_) {
+            if (!isset($prefefinedPartMap[$partName])) {
+                $backendsThatCanManageThePart = array();
 
-
-        //var_dump($prefefinedPartMap); die;
+                foreach ($backendParts as $candidateBackendId => $candidateParts) {
+                    if (isset($candidateParts[$partName])) {
+                        $backendsThatCanManageThePart[$candidateBackendId] = true;
+                    }
+                }
+                
+                if (0 === count($backendsThatCanManageThePart)) {
+                    continue;
+                }
+                
+                if (1 < count($backendsThatCanManageThePart)) {
+                    $configSuggestion = $this->buildChoiceSuggestion(array_keys($backendsThatCanManageThePart));
+                    
+                    throw new BackendConfigurationException(
+                        'Resource part "'.$partName.'" of "'.$resourceId.'" can use only a single backend at a time, '.
+                        'but multiple are available. '.
+                        'Please specify '.$configSuggestion.' in "evispa_resource_api.backend.'.$resourceId.'.parts" configuration.'
+                    );
+                }
+                
+                $backendItems = array_keys($backendsThatCanManageThePart);
+                $partBackends[$partName] = $backendItems[0];
+            }
+        }
+        
+        $primaryParts = array();
+        $otherResolvedParts = array();
+        
+        foreach ($partBackends as $partId => $resolvedBackendId) {
+            if ($resolvedBackendId === $backendId) {
+                $primaryParts[] = $partId;
+            } else {
+                $otherResolvedParts[$resolvedBackendId][] = $partId;
+            }
+        }
 
         $primaryBackendConfigInfo = new Config\PrimaryBackendConfigInfo($backendId, $primaryParts);
 
         $unicornInfo = new Config\UnicornConfigInfo($primaryBackendConfigInfo);
 
+        foreach ($otherResolvedParts as $resolvedBackendId => $managedParts) {
+            $secondaryBackendConfigInfo = new Config\SecondaryBackendConfigInfo($resolvedBackendId, $managedParts);
+            $unicornInfo->addSecondaryBackendConfigInfo($secondaryBackendConfigInfo);
+        }
+        
         return $unicornInfo;
     }
 }

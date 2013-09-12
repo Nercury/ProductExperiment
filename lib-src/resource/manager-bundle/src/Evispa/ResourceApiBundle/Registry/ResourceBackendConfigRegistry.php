@@ -29,4 +29,8 @@ class ResourceBackendConfigRegistry
     {
         return $this->backendConfigs;
     }
+    
+    public function getBackendConfig($id) {
+        return isset($this->backendConfigs[$id]) ? $this->backendConfigs[$id] : null;
+    }
 }

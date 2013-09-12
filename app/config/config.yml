@@ -113,4 +113,6 @@ evispa_resource_api:
         product:
             primary: mongo.product
             parts:
-                product.text: secondary.mongo.product
+                product.text: mongo.product
+                product.route: mongo.secondary.product
+                
