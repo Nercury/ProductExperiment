@@ -18,7 +18,7 @@
                 <argument key="product.code">code</argument>
                 <argument key="product.route">route</argument>
                 <argument key="product.text">text</argument>
-                <argument key="product.publish">publish</argument>
+                
             </argument>
         </service>
     </services>

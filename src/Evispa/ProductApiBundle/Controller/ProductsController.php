@@ -40,7 +40,7 @@ class ProductsController extends Controller
     private function getExpectedVersionAndFormat($request, \Evispa\ResourceApiBundle\Manager\ResourceManager $prm) {
         $restVersionParser = new \Evispa\ResourceApiBundle\VersionParser\AcceptVersionParser();
         return $restVersionParser
-            ->setAllowedVersions($prm->getOutputMigrationVersions())
+            ->setAllowedVersions($prm->migrationInfo->outputVersions)
             ->setRequestedFormat($request->getRequestFormat())
             ->setDefault('html', $prm->getClassVersion('Evispa\Api\Product\Model\ProductV1'))
             ->setDefault('json', $prm->getClassVersion('Evispa\Api\Product\Model\SimpleProductV1'))
@@ -105,12 +105,12 @@ class ProductsController extends Controller
 
         $options = array('locale' => $request->getLocale());
         $prm = $this->getProductResourceManager();
-
+        
         $params = new FetchParameters();
         $params->limit = 5;
         $params->offset = ($page - 1) * $params->limit;
 
-        $resourcesObject = $prm->fetchAll($params);
+        $resourcesObject = $prm->fetchAll($params, $options);
 
         $view = \FOS\RestBundle\View\View::create();
 
@@ -131,7 +131,13 @@ class ProductsController extends Controller
         $results['parameters'] = $resourcesObject->getParameters();
 
         foreach ($resourcesObject->getResources() as $resource) {
-            $results['resources'][] = $vc->migrateToVersion($resource, $expectedVersionAndFormat->getVersion());
+            $outputClassName = $prm->migrationInfo->outputVersions[$expectedVersionAndFormat->getVersion()];
+            $actions = $prm->migrationInfo->getOutputMigrationActions($outputClassName);
+            foreach ($actions as $action) {
+                $resource = $action->run($resource, $options);
+            }
+            
+            $results['resources'][] = $resource;
         }
 
         $view->setData($results);

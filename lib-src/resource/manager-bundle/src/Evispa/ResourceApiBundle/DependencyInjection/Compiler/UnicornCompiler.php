@@ -61,7 +61,9 @@ class UnicornCompiler implements CompilerPassInterface
         return $services;
     }
 
-    private function getManagedPartClasses($backendConfigInfo, $backendConfigs) {
+    private function getManagedPartClasses($backendConfigInfo, $backendConfigs, $partMigrationInfos) {
+        $migrationInfoBaker = new ClassMigrationBaker();
+        
         $managedPartClasses = array();
         foreach ($backendConfigInfo->getManagedParts() as $partName) {
             $definedParts = $backendConfigs->getBackendConfig($backendConfigInfo->getId())->getParts();
@@ -72,20 +74,15 @@ class UnicornCompiler implements CompilerPassInterface
                     'definition should be a collection.'
                 );
             }
-            
-            $classesMap = array();
-            foreach ($definedParts[$partName] as $className) {
-                $classesMap[$className] = true;
-            }
 
-            $managedPartClasses[$partName] = $classesMap;
+            $managedPartClasses[$partName] = $migrationInfoBaker->bakeServiceDefinition($partMigrationInfos[$partName]);
         }
         
         return $managedPartClasses;
     }
 
     /**
-     * @return \Evispa\ResourceApiBundle\Unicorn\Config\UnicornConfigInfo
+     * @return UnicornConfigInfo
      */
     private function resolveUnicornInfo(ContainerBuilder $container, $apiConfig, $backendConfigs) {
         $appApiBackendMap = $container->getParameter('evispa_resource_api_backend_map');
@@ -94,14 +91,14 @@ class UnicornCompiler implements CompilerPassInterface
         return $resolvedUnicornInfo;
     }
     
-    private function getUnicornDefinition(ContainerBuilder $container, $resolvedUnicornInfo, $backendServices, $backendConfigs) {
+    private function getUnicornDefinition(ContainerBuilder $container, $resolvedUnicornInfo, $partMigrationInfos, $backendServices, $backendConfigs) {
         $unicornDef = new Definition('Evispa\ResourceApiBundle\Unicorn\Unicorn');
 
         // primary
 
         $primaryBackendConfigInfo = $resolvedUnicornInfo->getPrimaryBackendConfigInfo();
 
-        $managedPartClasses = $this->getManagedPartClasses($primaryBackendConfigInfo, $backendConfigs);
+        $managedPartClasses = $this->getManagedPartClasses($primaryBackendConfigInfo, $backendConfigs, $partMigrationInfos);
         
         $unicornPrimaryBackendDef = new Definition('Evispa\ResourceApiBundle\Unicorn\UnicornPrimaryBackend');
         $unicornPrimaryBackendDef->addArgument($primaryBackendConfigInfo->getId());
@@ -116,7 +113,7 @@ class UnicornCompiler implements CompilerPassInterface
 
         $secondaryBackendConfigInfos = $resolvedUnicornInfo->getSecondaryBackendConfigInfos();
         foreach ($secondaryBackendConfigInfos as $secondaryBackendConfigInfo) {
-            $managedPartClasses = $this->getManagedPartClasses($secondaryBackendConfigInfo, $backendConfigs);
+            $managedPartClasses = $this->getManagedPartClasses($secondaryBackendConfigInfo, $backendConfigs, $partMigrationInfos);
 
             $unicornSecondaryBackendDef = new Definition('Evispa\ResourceApiBundle\Unicorn\UnicornSecondaryBackend');
             $unicornSecondaryBackendDef->addArgument($secondaryBackendConfigInfo->getId());
@@ -131,13 +128,57 @@ class UnicornCompiler implements CompilerPassInterface
         return $unicornDef;
     }
 
+    private function getResourcePartClasses($resourceClassName, $resourceParts, $annotationReader) {
+        $class = new \ReflectionClass($resourceClassName);
+        $partClasses = array();
+        
+        foreach ($resourceParts as $partName => $propertyName) {
+            $property = $annotationReader->getPropertyAnnotation(
+                $class->getProperty($propertyName),
+                'JMS\Serializer\Annotation\Type'
+            );
+
+            if (null === $property) {
+                throw new LogicException(
+                    'Resource "' . $class->getName() .
+                    '" property "' . $propertyName .
+                    '" should have JMS\Serializer\Annotation\Type annotation.'
+                );
+            }
+
+            $partClasses[$partName] = $property->name;
+        }
+        
+        return $partClasses;
+    }
+    
+    /**
+     * 
+     * @param array $partClasses
+     * @param \Doctrine\Common\Annotations\Reader $versionReader
+     * @param VersionReader $versionReader
+     */
+    private function getPartMigrationInfos($partClasses, $versionReader) {
+        $partMigrationInfo = array();
+        
+        foreach ($partClasses as $partName => $className) {
+            $migrationInfoBaker = new ClassMigrationBaker();
+            $migrationInfo = $migrationInfoBaker->bakeMigrationInfo($versionReader, $className);
+            
+            $partMigrationInfo[$partName] = $migrationInfo;
+        }
+        
+        return $partMigrationInfo;
+    }
+    
     public function process(ContainerBuilder $container)
     {
         //$container->getDefinition('evispa_resource_api.api_config_registry');
         $apiConfigs = $container->get('evispa_resource_api.api_config_registry');
         $backendServices = $this->getBackendServices($container);
 
-        $versionReader = new VersionReader(new AnnotationReader());
+        $annotationReader = new AnnotationReader();
+        $versionReader = new VersionReader($annotationReader);
         
         foreach ($apiConfigs->getApiConfigs() as $apiConfig) {
             $resourceClassName = $apiConfig->getResourceClass()->getName();
@@ -145,6 +186,8 @@ class UnicornCompiler implements CompilerPassInterface
             $resourceDef = new Definition('Evispa\ResourceApiBundle\Manager\ResourceManager');
             $resourceDef->addArgument($resourceClassName);
 
+            $resourceDef->addArgument($apiConfig->getParts());            
+            
             $migrationInfoBaker = new ClassMigrationBaker();
             $migrationInfo = $migrationInfoBaker->bakeMigrationInfo($versionReader, $resourceClassName);
             
@@ -155,9 +198,22 @@ class UnicornCompiler implements CompilerPassInterface
             $backendConfigs = $container->get('evispa_resource_api.backend_config_registry');
             $resolvedUnicornInfo = $this->resolveUnicornInfo($container, $apiConfig, $backendConfigs);
             
-            $unicornDef = $this->getUnicornDefinition($container, $resolvedUnicornInfo, $backendServices, $backendConfigs);
+            $partClasses = $this->getResourcePartClasses($resourceClassName, $apiConfig->getParts(), $annotationReader);
+            $partMigrationInfos = $this->getPartMigrationInfos($partClasses, $versionReader);
+            
+            $unicornDef = $this->getUnicornDefinition($container, $resolvedUnicornInfo, $partMigrationInfos, $backendServices, $backendConfigs);
             $unicornDef->setLazy(true);
             $container->addDefinitions(array($unicornDriverId => $unicornDef));
+            
+            $requiredClassOptions = $versionReader->getRequiredClassOptions($resourceClassName);
+            foreach ($partClasses as $partName => $partClassName) {
+                $requiredPartOptions = $versionReader->getRequiredClassOptions($partClassName);
+                foreach ($requiredPartOptions as $optionName => $info) {
+                    $requiredClassOptions[$optionName] = $info;
+                }
+            }
+            
+            $resourceDef->addArgument($requiredClassOptions);
             
             $resourceDef->addArgument(new Reference($unicornDriverId));
 

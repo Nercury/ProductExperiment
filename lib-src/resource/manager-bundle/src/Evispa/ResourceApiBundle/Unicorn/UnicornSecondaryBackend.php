@@ -63,6 +63,21 @@ class UnicornSecondaryBackend
         return $this->backend;
     }
 
+    private function migrateIncommingObject($info, $resultPart, $options) {
+        $partClass = get_class($resultPart);
+        $actions = $info->getInputMigrationActions($partClass);
+
+        if (null === $actions) {
+            throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException('Backend "'.$this->id.'" has returned unknown object "'.$partClass.'".');
+        }
+
+        foreach ($actions as $action) {
+            $resultPart = $action->run($resultPart, $options);
+        }
+        
+        return $resultPart;
+    }
+    
     /**
      * Fetch a single item from this backend.
      *
@@ -71,7 +86,7 @@ class UnicornSecondaryBackend
      *
      * @return array
      */
-    public function fetchOne($slug, $requestedParts = null) {
+    public function fetchOne($slug, $options = array(), $requestedParts = null) {
 
         if (null === $requestedParts) {
 
@@ -105,7 +120,7 @@ class UnicornSecondaryBackend
         return $backendResult;
     }
 
-    public function fetchBySlugs($slugs, $requestedParts = null) {
+    public function fetchBySlugs($slugs, $options = array(), $requestedParts = null) {
         if (null === $requestedParts) {
 
             $requestedParts = array_keys($this->managedParts);
@@ -127,35 +142,21 @@ class UnicornSecondaryBackend
 
         // If it returns a result, it must contain all of the requested parts and correct objects.
 
-        foreach ($backendResults->getObjects() as $backendResult) {
-            $this->validateResultItem($backendResult, $requestedParts);
+        if (null === $backendResults) {
+            throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException('Backend "'.$this->id.'" has returned nothing, array expected.');
+        }
+        
+        foreach ($backendResults as &$backendResult) {
+            foreach ($this->managedParts as $part => $info) {
+                $resultPart = isset($backendResult[$part]) ? $backendResult[$part] : null;
+                if (null === $resultPart) {
+                    continue;
+                }
+                
+                $backendResult[$part] = $this->migrateIncommingObject($info, $resultPart, $options);
+            }
         }
 
         return $backendResults;
-    }
-
-    /**
-     * Throw an exception if a result item contains something bad.
-     *
-     * @param array $item Result item.
-     * @param string[] $requestedParts Array of requested parts.
-     */
-    private function validateResultItem($item, $requestedParts) {
-
-        foreach ($requestedParts as $partName) {
-
-            $part = isset($item[$partName]) ? $item[$partName] : null;
-
-            if (null !== $part) {
-                $partClassName = get_class($part);
-
-                if ($this->managedParts[$partName] !== $partClassName) {
-                    throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException(
-                        'Backend "'.$this->id.'" has returned an incorrect object for "'.$partName.'" part. '.
-                        'Expected "'.$this->managedParts[$partName].'", but got "'.$partClassName.'".'
-                    );
-                }
-            }
-        }
     }
 }

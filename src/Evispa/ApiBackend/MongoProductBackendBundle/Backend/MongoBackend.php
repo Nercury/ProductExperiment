@@ -45,7 +45,7 @@ class MongoBackend implements PrimaryBackendInterface
             $code = new \Evispa\Api\Product\Model\Code\ProductCodeV1();
             $code->code = $product->getCode();
 
-            $result->addPart('product.code', $code);
+            $result->setPart('product.code', $code);
         }
 
         if (in_array('product.route', $requestedParts)) {
@@ -54,14 +54,14 @@ class MongoBackend implements PrimaryBackendInterface
                 $route->slug = $product->getRouteSlug();
             }
 
-            $result->addPart('product.route', $route);
+            $result->setPart('product.route', $route);
         }
 
         if (in_array('product.text', $requestedParts)) {
             $text = new \Evispa\Api\Product\Model\Text\TextV1();
             $text->name = $product->getText();
 
-            $result->addPart('product.text', $text);
+            $result->setPart('product.text', $text);
         }
 
         return $result;

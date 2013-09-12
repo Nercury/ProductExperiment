@@ -5,56 +5,85 @@
 
 namespace Evispa\ResourceApiBundle\Manager;
 
+use Evispa\Api\Resource\Model\ApiResourceInterface;
 use Evispa\ResourceApiBundle\Backend\FetchParameters;
+use Evispa\ResourceApiBundle\Migration\ClassMigrationInfo;
+use Evispa\ResourceApiBundle\Unicorn\Unicorn;
+use LogicException;
 
 class ResourceManager
 {
     /**
      * Primary class of this resource manager.
      *
-     * @var string
+     * @var \ReflectionClass
      */
-    private $className;
+    private $class;
+    
+    /**
+     * Resource parts.
+     * 
+     * @var array 
+     */
+    private $resourceParts;
 
     /**
      * Class migration information.
      *
-     * @var \Evispa\ResourceApiBundle\Migration\ClassMigrationInfo
+     * @var ClassMigrationInfo
      */
-    private $migrationInfo;
+    public $migrationInfo;
+    
+    /**
+     * Required options for resource operations.
+     * 
+     * @var array
+     */
+    private $requiredOptions;
     
     /**
      * Backend driver unicorn.
      *
-     * @var \Evispa\ResourceApiBundle\Unicorn\Unicorn
+     * @var Unicorn
      */
     private $unicorn;
 
+    /**
+     * Used to read/write resource properties.
+     *
+     * @var \Symfony\Component\PropertyAccess\PropertyAccessor
+     */
+    private $propertyAccess;
+    
     public function __construct(
         $className,
-        \Evispa\ResourceApiBundle\Migration\ClassMigrationInfo $migrationInfo,
-        \Evispa\ResourceApiBundle\Unicorn\Unicorn $unicorn
+        $resourceParts,
+        ClassMigrationInfo $migrationInfo,
+        $requiredOptions,
+        Unicorn $unicorn
     ) {
-        $this->className = $className;
+        $this->class = new \ReflectionClass($className);
+        $this->resourceParts = $resourceParts;
         $this->migrationInfo = $migrationInfo;
+        $this->requiredOptions = $requiredOptions;
         $this->unicorn = $unicorn;
-    }
-
-    public function getInputMigrationVersions()
-    {
-        return $this->migrationInfo->inputMigrationVersions;
-    }
-
-    public function getOutputMigrationVersions()
-    {
-        return $this->migrationInfo->outputMigrationVersions;
+        
+        $this->propertyAccess = \Symfony\Component\PropertyAccess\PropertyAccess::createPropertyAccessor();
     }
     
     public function getClassVersion($className) {
         if (!isset($this->migrationInfo->classVersions[$className])) {
-            throw new \LogicException('Class name "'.$className.'" is not known for "'.$className.'" resource manager.');
+            throw new LogicException('Class name "'.$className.'" is not known for "'.$className.'" resource manager.');
         }
         return $this->migrationInfo->classVersions[$className];
+    }
+    
+    private function checkOptions($options) {
+        foreach ($this->requiredOptions as $optionName => $info) {
+            if (!isset($options[$optionName])) {
+                throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException('Required option "'.$optionName.'" was not set. It is required to migrate from "'.$info['from'].'" to "'.$info['to'].'".');
+            }
+        }
     }
     
     /**
@@ -62,13 +91,13 @@ class ResourceManager
      *
      * @param string $slug Resource identifier.
      *
-     * @throws \LogicException
+     * @throws LogicException
      *
-     * @return \Evispa\Api\Resource\Model\ApiResourceInterface|null
+     * @return ApiResourceInterface|null
      */
-    public function fetchOne($slug)
+    public function fetchOne($slug, $options = array())
     {
-        
+        $this->checkOptions($options);
     }
     
     /**
@@ -78,9 +107,11 @@ class ResourceManager
      *
      * @return FetchResult
      */
-    public function fetchAll(FetchParameters $params)
-    {        
-        $resultsObject = $this->unicorn->getPrimaryBackend()->fetchAll($params);
+    public function fetchAll(FetchParameters $params, $options = array())
+    {
+        $this->checkOptions($options);
+        
+        $resultsObject = $this->unicorn->getPrimaryBackend()->fetchAll($params, $options);
 
         $resources = array();
 
@@ -100,8 +131,8 @@ class ResourceManager
 
                 $this->propertyAccess->setValue(
                     $resource,
-                    $this->resourceProperties[$partName],
-                    $this->partVersionConverter[$partName]->migrateFrom($part)
+                    $this->resourceParts[$partName],
+                    $part
                 );
             }
 
@@ -124,14 +155,14 @@ class ResourceManager
 
                         $this->propertyAccess->setValue(
                             $resource,
-                            $this->resourceProperties[$partName],
-                            $this->partVersionConverter[$partName]->migrateFrom($part)
+                            $this->resourceParts[$partName],
+                            $part
                         );
                     }
                 }
             }
         }
 
-        return new FindResult($params, $resources, $resultsObject->getTotalFound());
+        return new FetchResult($params, $resources, $resultsObject->getTotalFound());
     }
 }

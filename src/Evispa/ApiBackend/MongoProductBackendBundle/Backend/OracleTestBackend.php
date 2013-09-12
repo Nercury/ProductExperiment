@@ -16,7 +16,7 @@ use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultsObject;
 class OracleTestBackend implements PrimaryBackendInterface {
     
     public function fetchAll(FetchParameters $params, array $requestedParts) {
-        
+        return array();
     }
 
     public function fetchOne($slug, array $requestedParts) {

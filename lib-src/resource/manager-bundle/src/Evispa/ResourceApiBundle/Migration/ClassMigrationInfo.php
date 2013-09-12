@@ -52,7 +52,7 @@ class ClassMigrationInfo {
         $actions = array();
 
         if (!isset($this->inputMigrationPaths[$className])) {
-            throw new ObjectMigrationException('Invalid input class '.$className.'.');
+            return null;
         }
 
         foreach ($this->inputMigrationPaths[$className] as $pathItems) {
@@ -73,7 +73,7 @@ class ClassMigrationInfo {
         $actions = array();
 
         if (!isset($this->outputMigrationPaths[$className])) {
-            throw new ObjectMigrationException('Invalid output class '.$className.'.');
+            return null;
         }
 
         foreach ($this->outputMigrationPaths[$className] as $pathItems) {

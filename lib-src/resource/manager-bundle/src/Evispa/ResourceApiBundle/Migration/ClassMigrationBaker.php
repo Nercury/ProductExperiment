@@ -19,12 +19,15 @@ class ClassMigrationBaker {
         $info->inputVersions = $versionReader->getAllowedClassInputVersions($resourceClassName);
 
         foreach ($info->inputVersions as $inputVersion => $inputClass) {
-            $pathMethods = $versionPathSearch->find($inputClass, $resourceClassName);
             $migrationPath = array();
+            
+            if ($inputClass !== $resourceClassName) {
+                $pathMethods = $versionPathSearch->find($inputClass, $resourceClassName);
 
-            foreach ($pathMethods as $methodInfo) {
-                $serializedAction = \Evispa\ObjectMigration\Action\ActionSerializer::serializeAction($methodInfo->action);
-                $migrationPath[] = $serializedAction;
+                foreach ($pathMethods as $methodInfo) {
+                    $serializedAction = \Evispa\ObjectMigration\Action\ActionSerializer::serializeAction($methodInfo->action);
+                    $migrationPath[] = $serializedAction;
+                }
             }
 
             $info->inputMigrationPaths[$inputClass][] = $migrationPath;
@@ -33,12 +36,16 @@ class ClassMigrationBaker {
         $info->outputVersions = $versionReader->getAllowedClassOutputVersions($resourceClassName);
 
         foreach ($info->outputVersions as $outputVersion => $outputClass) {
-            $pathMethods = $versionPathSearch->find($resourceClassName, $outputClass);
+            
             $migrationPath = array();
 
-            foreach ($pathMethods as $methodInfo) {
-                $serializedAction = \Evispa\ObjectMigration\Action\ActionSerializer::serializeAction($methodInfo->action);
-                $migrationPath[] = $serializedAction;
+            if ($outputClass !== $resourceClassName) {
+                $pathMethods = $versionPathSearch->find($resourceClassName, $outputClass);
+                
+                foreach ($pathMethods as $methodInfo) {
+                    $serializedAction = \Evispa\ObjectMigration\Action\ActionSerializer::serializeAction($methodInfo->action);
+                    $migrationPath[] = $serializedAction;
+                }
             }
 
             $info->outputMigrationPaths[$outputClass][] = $migrationPath;
