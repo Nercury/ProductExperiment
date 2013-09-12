@@ -96,7 +96,7 @@ class ApiUnicornResolver
             $configSuggestion = $this->buildManagerBackendSuggestion($resourceId, $availableBackends);
 
             throw new BackendConfigurationException(
-                'Resource "'.$resourceId.'" can use only a single primary backend at a time, '.
+                'Resource "'.$resourceId.'" can only use a single primary backend at a time, '.
                 'but multiple are available. '.
                 'Please specify '.$configSuggestion.' in "evispa_resource_api.backend" configuration.'
             );

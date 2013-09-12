@@ -974,12 +974,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/evispa/object-migration.git",
-                "reference": "f54a1c192cd8d1d0dadc785a21bb1019043d363c"
+                "reference": "6fd2f50d24dbfc329464b52debea7b41470047b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/evispa/object-migration/zipball/f54a1c192cd8d1d0dadc785a21bb1019043d363c",
-                "reference": "f54a1c192cd8d1d0dadc785a21bb1019043d363c",
+                "url": "https://api.github.com/repos/evispa/object-migration/zipball/6fd2f50d24dbfc329464b52debea7b41470047b9",
+                "reference": "6fd2f50d24dbfc329464b52debea7b41470047b9",
                 "shasum": ""
             },
             "require": {
@@ -1011,7 +1011,7 @@
                 "source": "https://github.com/evispa/object-migration/tree/master",
                 "issues": "https://github.com/evispa/object-migration/issues"
             },
-            "time": "2013-09-12 15:03:40"
+            "time": "2013-09-12 22:19:01"
         },
         {
             "name": "friendsofsymfony/rest",
