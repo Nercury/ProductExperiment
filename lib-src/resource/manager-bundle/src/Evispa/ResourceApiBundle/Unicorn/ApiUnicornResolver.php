@@ -1,6 +1,6 @@
 <?php
 
-namespace Evispa\ResourceApiBundle\Backend;
+namespace Evispa\ResourceApiBundle\Unicorn;
 
 use Evispa\ResourceApiBundle\Config\ResourceApiConfig;
 use Evispa\ResourceApiBundle\Exception\BackendConfigurationException;
@@ -44,8 +44,8 @@ class ApiUnicornResolver
         $backendManagerConfigs = array();
         foreach ($backendConfigs->getBackendConfigs() as $config) {
             if ($resourceId === $config->getResourceId()) {
-                if (null !== $config->getBackendManager()) {
-                    $availableBackends[$config->getBackendId()] = $config->getBackendManager();
+                if (null !== $config->getPrimaryBackend()) {
+                    $availableBackends[$config->getBackendId()] = $config->getPrimaryBackend();
                     $backendManagerConfigs[$config->getBackendId()] = $config;
                 }
             }
@@ -95,7 +95,10 @@ class ApiUnicornResolver
         $backend = $availableBackends[$backendId];
         $backendConfig = $backendManagerConfigs[$backendId];
 
-        $unicorn = new Unicorn(new UnicornPrimaryBackend($backendConfig->getParts(), $backend));
+        $primaryParts = $backendConfig->getParts();
+        //var_dump($primaryParts);
+
+        $unicorn = new Unicorn(new UnicornPrimaryBackend($backendId, $primaryParts, $backend));
 
         return $unicorn;
     }

@@ -25,7 +25,7 @@
  * @author Darius Krištapavičius <darius@evispa.lt>
  */
 
-namespace Evispa\MongoProductBackendBundle\Document;
+namespace Evispa\ApiBackend\MongoProductBackendBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
@@ -37,7 +37,7 @@ class Product
     /**
      * @MongoDB\Id
      */
-    protected $slug;
+    public $slug;
 
     /**
      * @MongoDB\String
@@ -48,6 +48,11 @@ class Product
      * @MongoDB\String
      */
     protected $text;
+
+    /**
+     * @MongoDB\String
+     */
+    protected $routeSlug;
 
     /**
      * Get slug
@@ -101,5 +106,16 @@ class Product
     public function getText()
     {
         return $this->text;
+    }
+
+    public function getRouteSlug()
+    {
+        return $this->routeSlug;
+    }
+
+    public function setRouteSlug($routeSlug)
+    {
+        $this->routeSlug = $routeSlug;
+        return $this;
     }
 }

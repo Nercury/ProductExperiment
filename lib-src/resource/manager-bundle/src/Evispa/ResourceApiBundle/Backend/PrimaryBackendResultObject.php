@@ -42,18 +42,24 @@ class PrimaryBackendResultObject
     /**
      * @var array
      */
-    private $resourceParts;
+    private $resourceParts = array();
 
     /**
      * @param $resourceSlug
      */
     public function __construct($resourceSlug)
     {
+        if (strlen($resourceSlug) > 24) {
+            throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException('Resource slug length can not exceed 24 symbols.');
+        }
+
         $this->resourceSlug = $resourceSlug;
     }
 
     /**
-     * @return array
+     * Get resource parts.
+     *
+     * @return mixed[]
      */
     public function getResourceParts()
     {
@@ -61,6 +67,8 @@ class PrimaryBackendResultObject
     }
 
     /**
+     * Get resource object slug.
+     *
      * @return String
      */
     public function getResourceSlug()
@@ -69,11 +77,37 @@ class PrimaryBackendResultObject
     }
 
     /**
-     * @param string $partName
-     * @param mixed $part
+     * Add a part to result object.
+     *
+     * @param string $partName Part name.
+     * @param mixed $part Part object.
      */
     public function addPart($partName, $part)
     {
         $this->resourceParts[$partName] = $part;
+    }
+
+    /**
+     * Get part.
+     *
+     * @param string $partName Part name.
+     *
+     * @return mixed
+     */
+    public function getPart($partName) {
+        return isset($this->resourceParts[$partName])
+            ? $this->resourceParts[$partName]
+            : null;
+    }
+
+    /**
+     * Check if specified part is set.
+     *
+     * @param string $partName Part name.
+     *
+     * @return boolean
+     */
+    public function hasPart($partName) {
+        return isset($this->resourceParts[$partName]);
     }
 }

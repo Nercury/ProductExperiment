@@ -31,17 +31,17 @@ namespace Evispa\ResourceApiBundle\Backend;
 interface SecondaryBackendInterface
 {
     /**
-     * Get parts by slug
+     * Get parts by slug.
      *
      * @param string $slug
      * @param array  $requestedParts
      *
      * @return array[] (parts)
      */
-    public function findOne($slug, array $requestedParts);
+    public function fetchOne($slug, array $requestedParts);
 
     /**
-     * Get parts for batch of slugs
+     * Get parts for batch of slugs.
      *
      * Result no need to maintain same slugs order as given in param
      *
@@ -50,5 +50,5 @@ interface SecondaryBackendInterface
      *
      * @return array[string] (array[slug] => parts)
      */
-    public function find(array $slugs, array $requestedParts);
+    public function fetchBySlugs(array $slugs, array $requestedParts);
 }

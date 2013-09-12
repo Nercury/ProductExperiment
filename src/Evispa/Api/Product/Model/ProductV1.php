@@ -52,6 +52,13 @@ class ProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
     public $code;
 
     /**
+     * @JMS\Serializer\Annotation\Type("Evispa\Api\Product\Model\Route\LocalizedRouteV1")
+     *
+     * @var Route\LocalizedRouteV1
+     */
+    public $route;
+
+    /**
      * @JMS\Serializer\Annotation\Type("Evispa\Api\Product\Model\Text\LocalizedTextV1")
      *
      * @var Text\LocalizedTextV1
@@ -71,7 +78,7 @@ class ProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
         $obj->setSlug($other->getSlug());
 
         if (null !== $other->code) {
-            $obj->code = Code\ProductCodeV1::fromCodeV1($other->code, $options);
+            $obj->code = $other->code;
         }
         if (null !== $other->text) {
             $obj->text = Text\LocalizedTextV1::fromTextV1($other->text, $options);
@@ -93,7 +100,7 @@ class ProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
         $obj->setSlug($this->getSlug());
 
         if (null !== $this->code) {
-            $obj->code = $this->code->toCodeV1($options);
+            $obj->code = $this->code->code;
         }
         if (null !== $this->text) {
             $obj->text = $this->text->toTextV1($options);

@@ -60,7 +60,8 @@
             "dev-master": "2.4-dev"
         }
     },
-    "repositories": {
-        "evispapackages" : { "type": "composer", "url" : "http://packages.evispa.lt" }
-    }
+    "repositories": [
+        { "type": "composer", "url" : "http://packages.evispa.lt" },
+        { "type": "vcs", "url" : "https://github.com/evispa/object-migration" }
+    ]
 }

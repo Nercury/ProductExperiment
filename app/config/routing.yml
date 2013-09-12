@@ -1,16 +1,11 @@
-evispa_mongo_product_backend:
-    resource: "@EvispaMongoProductBackendBundle/Controller/"
-    type:     annotation
-    prefix:   /
-
-evispa_resource_api:
-    resource: "@EvispaResourceApiBundle/Controller/"
-    type:     annotation
-    prefix:   /
-
 NelmioApiDocBundle:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
     prefix:   /api/doc
+
+evispa_menu:
+    resource: "@EvispaProductApiBundle/Controller"
+    type:     annotation
+    prefix:   /
 
 evispa_product_resource:
     type: rest

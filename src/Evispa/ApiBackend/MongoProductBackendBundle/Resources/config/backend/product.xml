@@ -16,10 +16,11 @@
             <argument type="collection"> <!-- List of parts managed by this backend -->
                 <!-- key is part identifier, value is public class name -->
                 <argument key="product.code">Evispa\Api\Product\Model\Code\ProductCodeV1</argument>
+                <argument key="product.route">Evispa\Api\Product\Model\Route\RouteV1</argument>
                 <argument key="product.text">Evispa\Api\Product\Model\Text\TextV1</argument>
             </argument>
-            <call method="setBackendManager">
-                <argument type="service" id="evispa_mongo_product_backend.product_backend_manager" />
+            <call method="setPrimaryBackend">
+                <argument type="service" id="evispa_mongo_product_backend.product_backend" />
             </call>
         </service>
 
@@ -32,8 +33,8 @@
                 <argument key="product.code">Evispa\Api\Product\Model\Code\ProductCodeV1</argument>
                 <argument key="product.text">Evispa\Api\Product\Model\Text\TextV1</argument>
             </argument>
-            <call method="setBackendManager">
-                <argument type="service" id="evispa_mongo_product_backend.product_backend_manager" />
+            <call method="setPrimaryBackend">
+                <argument type="service" id="evispa_mongo_product_backend.product_backend" />
             </call>
         </service>
     </services>

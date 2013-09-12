@@ -77,20 +77,13 @@ class ProductsController extends Controller
         $options = array('locale' => $request->getLocale());
 
         $prm = $this->getProductResourceManager($options);
-        $product = $prm->findOne(
+        $product = $prm->fetchOne(
             $slug
         );
 
         if (null === $product) {
             throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException("Product was not found.");
         } else {
-            $resultClass = get_class($product);
-            if ($resultClass !== $prm->getClassName()) {
-                throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException(
-                    "Resource returned incorrect API object."
-                );
-            }
-
             $view = \FOS\RestBundle\View\View::create();
 
             // Find out what client wants. Impossible, but very important.
@@ -133,9 +126,34 @@ class ProductsController extends Controller
         $params->limit = 5;
         $params->offset = ($page - 1) * $params->limit;
 
-        $resourcesObject = $prm->find($params);
+        $resourcesObject = $prm->fetchAll($params);
 
-        return \FOS\RestBundle\View\View::create($resourcesObject);
+        $view = \FOS\RestBundle\View\View::create();
+
+        // Find out what client wants. Impossible, but very important.
+        $expectedVersionAndFormat = $this->getExpectedVersionAndFormat($request, $prm);
+        if (null === $expectedVersionAndFormat) {
+            throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException(
+                'Can not return requested resource in '.$request->getRequestFormat().' format.'
+            );
+        }
+
+        $view->setFormat($expectedVersionAndFormat->getFormat());
+        $vc = $this->getProductVersionConverter($prm);
+
+        // TODO: Change "$results" to proper REST object with links to prev/next.
+
+        $results = array('resources' => array());
+        $results['total'] = $resourcesObject->getTotalFound();
+        $results['parameters'] = $resourcesObject->getParameters();
+
+        foreach ($resourcesObject->getResources() as $resource) {
+            $results['resources'][] = $vc->migrateToVersion($resource, $expectedVersionAndFormat->getVersion());
+        }
+
+        $view->setData($results);
+
+        return $view;
     }
 
     /**

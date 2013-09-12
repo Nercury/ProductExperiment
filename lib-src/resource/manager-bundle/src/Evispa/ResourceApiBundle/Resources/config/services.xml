@@ -8,7 +8,7 @@
         <parameter key="evispa_resource_api.api_config_registry.class">Evispa\ResourceApiBundle\Registry\ApiConfigRegistry</parameter>
         <parameter key="evispa_resource_api.backend_config_registry.class">Evispa\ResourceApiBundle\Registry\ResourceBackendConfigRegistry</parameter>
         <parameter key="evispa_resource_api.managers.class">Evispa\ResourceApiBundle\Registry\ManagerRegistry</parameter>
-        <parameter key="evispa_resource_api.api_unicorn_resolver.class">Evispa\ResourceApiBundle\Backend\ApiUnicornResolver</parameter>
+        <parameter key="evispa_resource_api.api_unicorn_resolver.class">Evispa\ResourceApiBundle\Unicorn\ApiUnicornResolver</parameter>
     </parameters>
 
     <services>

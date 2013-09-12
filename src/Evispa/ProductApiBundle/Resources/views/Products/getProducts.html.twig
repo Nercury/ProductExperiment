@@ -2,7 +2,7 @@
 
 {% block contents %}
 
-{% for product in result.resources %}
+{% for product in resources %}
     <div>
         <div>
             <h2>{{ product.slug }}</h2>
@@ -15,6 +15,6 @@
     <div>No Products to display.</div>
 {% endfor %}
 
-{{ (result.parameters.offset + 1) }} - {{ (result.parameters.offset + result.resources|length) }} of {{ result.totalFound }}
+{{ (parameters.offset + 1) }} - {{ (parameters.offset + resources|length) }} of {{ total }}
 
 {% endblock %}

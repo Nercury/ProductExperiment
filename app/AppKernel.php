@@ -24,7 +24,7 @@ class AppKernel extends Kernel
             new Evispa\ApiDocBundle\EvispaApiDocBundle(),
             new Evispa\ProductApiBundle\EvispaProductApiBundle(),
             new Evispa\ResourceApiBundle\EvispaResourceApiBundle(),
-            new Evispa\MongoProductBackendBundle\EvispaMongoProductBackendBundle(),
+            new Evispa\ApiBackend\MongoProductBackendBundle\EvispaMongoProductBackendBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

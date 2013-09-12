@@ -25,33 +25,24 @@
  * @author Nerijus Arlauskas <nercury@gmail.com>
  */
 
-namespace Evispa\Api\Product\Tests;
+namespace Evispa\Api\Product\Model\Route;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Evispa\Api\Product\Model\Code\CodeV1;
-use Evispa\Api\Product\Model\Code\ProductCodeV1;
-use Evispa\ObjectMigration\VersionConverter;
-use Evispa\ObjectMigration\VersionReader;
-
-class CodeTest extends \PHPUnit_Framework_TestCase
+/**
+ * Object route information.
+ *
+ * This object stores public route "slug" for the object. Note that it is not a link,
+ * just a piece of information about route identifier.
+ *
+ * @Evispa\ObjectMigration\Annotations\Version("vnd.evispa.route.v1")
+ */
+class RouteV1
 {
-    public function testVersionAnnotations() {
-        $converter = new VersionConverter(new VersionReader(new AnnotationReader()), 'Evispa\Api\Product\Model\Code\ProductCodeV1');
-
-        // create object
-
-        $code = new ProductCodeV1();
-        $code->code = "Hello";
-
-        // migrate to another version
-
-<<<<<<< HEAD
-=======
-
->>>>>>> 5163af34daafb7f2ef1e68f153da657db68e5f94
-        $simpleCode = $converter->migrateToVersion($code, 'vnd.evispa.code.v1');
-
-        $this->assertTrue($simpleCode instanceof CodeV1);
-        $this->assertEquals("Hello", $simpleCode->code);
-    }
+    /**
+     * Route slug.
+     *
+     * @JMS\Serializer\Annotation\Type("string")
+     *
+     * @var string
+     */
+    public $slug = null;
 }

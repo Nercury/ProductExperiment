@@ -27,7 +27,6 @@
 
 namespace Evispa\ResourceApiBundle\Tests\Mock;
 
-
 class MockProductText
 {
     public $text;

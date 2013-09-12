@@ -1,6 +1,6 @@
 <?php
 
-namespace Evispa\MongoProductBackendBundle\DependencyInjection;
+namespace Evispa\ApiBackend\MongoProductBackendBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Evispa\MongoProductBackendBundle;
+namespace Evispa\ApiBackend\MongoProductBackendBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

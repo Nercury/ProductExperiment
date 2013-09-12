@@ -1,20 +1,19 @@
 <?php
 
-namespace Evispa\MongoProductBackendBundle\Backend;
+namespace Evispa\ApiBackend\MongoProductBackendBundle\Backend;
 
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
-use Evispa\MongoProductBackendBundle\Document\Product;
+use Evispa\ApiBackend\MongoProductBackendBundle\Document\Product;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface;
 use Evispa\ResourceApiBundle\Backend\FindParameters;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultsObject;
 use Pagerfanta\Adapter\DoctrineODMMongoDBAdapter;
-use Pagerfanta\Pagerfanta;
 
 /**
  * @author nerijus
  */
-class MongoBackendManager implements PrimaryBackendInterface
+class MongoBackend implements PrimaryBackendInterface
 {
     /** @var ManagerRegistry */
     protected $mongodb;
@@ -43,10 +42,19 @@ class MongoBackendManager implements PrimaryBackendInterface
         $result = new PrimaryBackendResultObject($product->getSlug());
 
         if (in_array('product.code', $requestedParts)) {
-            $code = new \Evispa\Api\Product\Model\Code\CodeV1();
+            $code = new \Evispa\Api\Product\Model\Code\ProductCodeV1();
             $code->code = $product->getCode();
 
             $result->addPart('product.code', $code);
+        }
+
+        if (in_array('product.route', $requestedParts)) {
+            $route = new \Evispa\Api\Product\Model\Route\RouteV1();
+            if (null !== $product->getRouteSlug()) {
+                $route->slug = $product->getRouteSlug();
+            }
+
+            $result->addPart('product.route', $route);
         }
 
         if (in_array('product.text', $requestedParts)) {
@@ -65,7 +73,7 @@ class MongoBackendManager implements PrimaryBackendInterface
      *
      * @return PrimaryBackendResultObject|null
      */
-    public function findOne($slug, array $requestedParts)
+    public function fetchOne($slug, array $requestedParts)
     {
         /** @var Product $product */
         $product = $this->mongodb->getRepository('EvispaMongoProductBackendBundle:Product')->find($slug);
@@ -83,7 +91,7 @@ class MongoBackendManager implements PrimaryBackendInterface
      *
      * @return PrimaryBackendResultObject[string]
      */
-    public function find(FindParameters $params, array $requestedParts)
+    public function fetchAll(FindParameters $params, array $requestedParts)
     {
         // just for testing purpose
         $qb = $this->mongodb->getManager()->createQueryBuilder('EvispaMongoProductBackendBundle:Product');

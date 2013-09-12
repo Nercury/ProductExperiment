@@ -32,9 +32,9 @@ use Evispa\ObjectMigration\VersionReader;
 use Evispa\ResourceApiBundle\Backend\FindParameters;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultsObject;
-use Evispa\ResourceApiBundle\Backend\Unicorn;
-use Evispa\ResourceApiBundle\Backend\UnicornPrimaryBackend;
-use Evispa\ResourceApiBundle\Backend\UnicornSecondaryBackend;
+use Evispa\ResourceApiBundle\Unicorn\Unicorn;
+use Evispa\ResourceApiBundle\Unicorn\UnicornPrimaryBackend;
+use Evispa\ResourceApiBundle\Unicorn\UnicornSecondaryBackend;
 use Evispa\ResourceApiBundle\Manager\ResourceManager;
 use Evispa\ResourceApiBundle\Tests\Mock\MockProduct;
 use Evispa\ResourceApiBundle\Tests\Mock\MockPrimaryProductBackend;
@@ -53,11 +53,11 @@ class ResourceManagerTest extends \PHPUnit_Framework_TestCase
         $mockBackend = new MockPrimaryProductBackend();
         $mockBackend->findOneResult['a1'] = new PrimaryBackendResultObject('a1');
 
-        $unicorn = new Unicorn(new UnicornPrimaryBackend(array(), $mockBackend));
+        $unicorn = new Unicorn(new UnicornPrimaryBackend('product.test', array(), $mockBackend));
 
         $manager = new ResourceManager($reader, $versionsReader, array(), $class, array(), $unicorn);
 
-        $product = $manager->findOne('a1');
+        $product = $manager->fetchOne('a1');
 
         $this->assertTrue($product instanceof MockProduct);
         $this->assertEquals('a1', $product->getSlug());
@@ -73,13 +73,14 @@ class ResourceManagerTest extends \PHPUnit_Framework_TestCase
         $mockPrimaryBackend = new MockPrimaryProductBackend();
         $mockPrimaryBackend->findOneResult['a1'] = new PrimaryBackendResultObject('a1');
 
-        $unicorn = new Unicorn(new UnicornPrimaryBackend(array(), $mockPrimaryBackend));
+        $unicorn = new Unicorn(new UnicornPrimaryBackend('product.test', array(), $mockPrimaryBackend));
 
         $mockSecondaryTextBackend = new MockSecondaryProductTextBackend();
         $mockSecondaryTextBackend->findOneResult['a1'] = array('product.text' => new MockProductText('tekstas'));
 
         $unicorn->addSecondaryBackend(
             new UnicornSecondaryBackend(
+                'product.test2',
                 array('product.text' => 'Evispa\ResourceApiBundle\Tests\Mock\MockProductText'),
                 $mockSecondaryTextBackend
             )
@@ -90,7 +91,7 @@ class ResourceManagerTest extends \PHPUnit_Framework_TestCase
         );
 
         /** @var MockProduct $product */
-        $product = $manager->findOne('a1');
+        $product = $manager->fetchOne('a1');
 
         $this->assertTrue($product instanceof MockProduct);
         $this->assertEquals('a1', $product->getSlug());
@@ -115,7 +116,7 @@ class ResourceManagerTest extends \PHPUnit_Framework_TestCase
         $mockBackend->findResult->addObject(new PrimaryBackendResultObject('a5'));
         $mockBackend->findResult->addObject(new PrimaryBackendResultObject('a6'));
 
-        $unicorn = new Unicorn(new UnicornPrimaryBackend(array(), $mockBackend));
+        $unicorn = new Unicorn(new UnicornPrimaryBackend('product.test', array(), $mockBackend));
 
         $manager = new ResourceManager($reader, $versionsReader, array(), $class, array(), $unicorn);
 
@@ -123,7 +124,7 @@ class ResourceManagerTest extends \PHPUnit_Framework_TestCase
         $params->limit = 6;
         $params->offset = 0;
 
-        $products = $manager->find($params);
+        $products = $manager->fetchAll($params);
 
         $this->assertEquals(6, count($products->getResources()));
         $this->assertEquals(6, $products->getTotalFound());
