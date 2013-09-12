@@ -47,12 +47,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/clue/graph.git",
-                "reference": "28fb846066fe2e580000d5b27a414115a36a0c0b"
+                "reference": "d0d548a21b09099a266eacba8e4098aeae6409f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/clue/graph/zipball/28fb846066fe2e580000d5b27a414115a36a0c0b",
-                "reference": "28fb846066fe2e580000d5b27a414115a36a0c0b",
+                "url": "https://api.github.com/repos/clue/graph/zipball/d0d548a21b09099a266eacba8e4098aeae6409f8",
+                "reference": "d0d548a21b09099a266eacba8e4098aeae6409f8",
                 "shasum": ""
             },
             "require": {
@@ -87,7 +87,7 @@
                 "shortest path",
                 "vertex"
             ],
-            "time": "2013-08-16 23:36:14"
+            "time": "2013-09-11 22:52:40"
         },
         {
             "name": "dflydev/markdown",
@@ -895,28 +895,28 @@
         },
         {
             "name": "doctrine/orm",
-            "version": "dev-master",
+            "version": "2.4.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/doctrine2.git",
-                "reference": "4d51a0290bfbe5e038d0bec5224119eba0de6413"
+                "reference": "925a22b71dd2f8bfe2242cb34ae0a40d43f8f008"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/4d51a0290bfbe5e038d0bec5224119eba0de6413",
-                "reference": "4d51a0290bfbe5e038d0bec5224119eba0de6413",
+                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/925a22b71dd2f8bfe2242cb34ae0a40d43f8f008",
+                "reference": "925a22b71dd2f8bfe2242cb34ae0a40d43f8f008",
                 "shasum": ""
             },
             "require": {
                 "doctrine/collections": "~1.1",
-                "doctrine/dbal": ">=2.4-beta,<2.5-dev",
+                "doctrine/dbal": "~2.4",
                 "ext-pdo": "*",
                 "php": ">=5.3.2",
-                "symfony/console": "2.*"
+                "symfony/console": "~2.0"
             },
             "require-dev": {
                 "satooshi/php-coveralls": "dev-master",
-                "symfony/yaml": "2.1"
+                "symfony/yaml": "~2.1"
             },
             "suggest": {
                 "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
@@ -928,7 +928,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.5.x-dev"
+                    "dev-master": "2.4.x-dev"
                 }
             },
             "autoload": {
@@ -966,7 +966,7 @@
                 "database",
                 "orm"
             ],
-            "time": "2013-09-09 10:35:17"
+            "time": "2013-09-08 14:01:38"
         },
         {
             "name": "evispa/object-migration",
@@ -1673,12 +1673,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nelmio/NelmioApiDocBundle.git",
-                "reference": "f690529fc649ebbb4c5921a8b92e81f5726af439"
+                "reference": "9dc3f10828aa3c7a45aab67192ccca2e2d50b3e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nelmio/NelmioApiDocBundle/zipball/f690529fc649ebbb4c5921a8b92e81f5726af439",
-                "reference": "f690529fc649ebbb4c5921a8b92e81f5726af439",
+                "url": "https://api.github.com/repos/nelmio/NelmioApiDocBundle/zipball/9dc3f10828aa3c7a45aab67192ccca2e2d50b3e9",
+                "reference": "9dc3f10828aa3c7a45aab67192ccca2e2d50b3e9",
                 "shasum": ""
             },
             "require": {
@@ -1732,7 +1732,7 @@
                 "documentation",
                 "rest"
             ],
-            "time": "2013-08-29 23:16:09"
+            "time": "2013-09-11 12:13:05"
         },
         {
             "name": "pagerfanta/pagerfanta",
@@ -2033,12 +2033,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioGeneratorBundle.git",
-                "reference": "4a7b126e9c22f858e3584b19ddce6e5bdd7677ee"
+                "reference": "1a722808c73f54fabe4fca7fd659838b13a83a9d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioGeneratorBundle/zipball/4a7b126e9c22f858e3584b19ddce6e5bdd7677ee",
-                "reference": "4a7b126e9c22f858e3584b19ddce6e5bdd7677ee",
+                "url": "https://api.github.com/repos/sensiolabs/SensioGeneratorBundle/zipball/1a722808c73f54fabe4fca7fd659838b13a83a9d",
+                "reference": "1a722808c73f54fabe4fca7fd659838b13a83a9d",
                 "shasum": ""
             },
             "require": {
@@ -2072,7 +2072,7 @@
                 }
             ],
             "description": "This bundle generates code for you",
-            "time": "2013-08-21 18:09:35"
+            "time": "2013-09-11 09:37:40"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -2356,12 +2356,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "599c86509e06ebc06b71b04b445c0a9721c17ec4"
+                "reference": "3e370f66a54fe70bc07aa0ef2eda51c3b5dbde8a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/599c86509e06ebc06b71b04b445c0a9721c17ec4",
-                "reference": "599c86509e06ebc06b71b04b445c0a9721c17ec4",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/3e370f66a54fe70bc07aa0ef2eda51c3b5dbde8a",
+                "reference": "3e370f66a54fe70bc07aa0ef2eda51c3b5dbde8a",
                 "shasum": ""
             },
             "require": {
@@ -2456,7 +2456,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2013-09-08 20:22:53"
+            "time": "2013-09-12 04:30:13"
         },
         {
             "name": "twig/extensions",
