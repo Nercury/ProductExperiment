@@ -2,8 +2,16 @@
 
 namespace Evispa\ResourceApiBundle\DependencyInjection\Compiler;
 
+use Doctrine\Common\Annotations\AnnotationReader;
+use Evispa\ObjectMigration\VersionPath\VersionPathSearch;
+use Evispa\ObjectMigration\VersionReader;
+use Evispa\ResourceApiBundle\Exception\BackendConfigurationException;
+use Evispa\ResourceApiBundle\Migration\ClassMigrationBaker;
+use Evispa\ResourceApiBundle\Unicorn\ApiUnicornResolver;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * @author nerijus
@@ -31,13 +39,13 @@ class UnicornCompiler implements CompilerPassInterface
             }
 
             if (null === $primaryBackendId && null === $secondaryBackendId) {
-                throw new \Evispa\ResourceApiBundle\Exception\BackendConfigurationException(
+                throw new BackendConfigurationException(
                     'Backend "'.$arguments[0].'" configuration should have one backend (either primary or secondary). None found.'
                 );
             }
 
             if (null !== $primaryBackendId && null !== $secondaryBackendId) {
-                throw new \Evispa\ResourceApiBundle\Exception\BackendConfigurationException(
+                throw new BackendConfigurationException(
                     'Backend "'.$arguments[0].'" configuration should have one backend (either primary or secondary). Both found.'
                 );
             }
@@ -59,7 +67,7 @@ class UnicornCompiler implements CompilerPassInterface
             $definedParts = $backendConfigs->getBackendConfig($backendConfigInfo->getId())->getParts();
             $partClasses = $definedParts[$partName];
             if (!is_array($partClasses)) {
-                throw new \Evispa\ResourceApiBundle\Exception\BackendConfigurationException(
+                throw new BackendConfigurationException(
                     'The value of "'.$partName.'" in "'.$backendConfigInfo->getId().'" backend '.
                     'definition should be a collection.'
                 );
@@ -75,15 +83,19 @@ class UnicornCompiler implements CompilerPassInterface
         
         return $managedPartClasses;
     }
-    
-    private function getUnicornDefinition(ContainerBuilder $container, $apiConfig, $backendServices) {
-        $backendConfigs = $container->get('evispa_resource_api.backend_config_registry');
+
+    /**
+     * @return \Evispa\ResourceApiBundle\Unicorn\Config\UnicornConfigInfo
+     */
+    private function resolveUnicornInfo(ContainerBuilder $container, $apiConfig, $backendConfigs) {
         $appApiBackendMap = $container->getParameter('evispa_resource_api_backend_map');
-        $unicornResolver = new \Evispa\ResourceApiBundle\Unicorn\ApiUnicornResolver();
-
+        $unicornResolver = new ApiUnicornResolver();
         $resolvedUnicornInfo = $unicornResolver->getUnicornConfigurationInfo($apiConfig, $backendConfigs, $appApiBackendMap);
-
-        $unicornDef = new \Symfony\Component\DependencyInjection\Definition('Evispa\ResourceApiBundle\Unicorn\Unicorn');
+        return $resolvedUnicornInfo;
+    }
+    
+    private function getUnicornDefinition(ContainerBuilder $container, $resolvedUnicornInfo, $backendServices, $backendConfigs) {
+        $unicornDef = new Definition('Evispa\ResourceApiBundle\Unicorn\Unicorn');
 
         // primary
 
@@ -91,10 +103,10 @@ class UnicornCompiler implements CompilerPassInterface
 
         $managedPartClasses = $this->getManagedPartClasses($primaryBackendConfigInfo, $backendConfigs);
         
-        $unicornPrimaryBackendDef = new \Symfony\Component\DependencyInjection\Definition('Evispa\ResourceApiBundle\Unicorn\UnicornPrimaryBackend');
+        $unicornPrimaryBackendDef = new Definition('Evispa\ResourceApiBundle\Unicorn\UnicornPrimaryBackend');
         $unicornPrimaryBackendDef->addArgument($primaryBackendConfigInfo->getId());
         $unicornPrimaryBackendDef->addArgument($managedPartClasses);
-        $unicornPrimaryBackendDef->addArgument(new \Symfony\Component\DependencyInjection\Reference($backendServices[$primaryBackendConfigInfo->getId()]));
+        $unicornPrimaryBackendDef->addArgument(new Reference($backendServices[$primaryBackendConfigInfo->getId()]));
 
         $unicornDef->addArgument($unicornPrimaryBackendDef);
 
@@ -105,11 +117,11 @@ class UnicornCompiler implements CompilerPassInterface
         $secondaryBackendConfigInfos = $resolvedUnicornInfo->getSecondaryBackendConfigInfos();
         foreach ($secondaryBackendConfigInfos as $secondaryBackendConfigInfo) {
             $managedPartClasses = $this->getManagedPartClasses($secondaryBackendConfigInfo, $backendConfigs);
-            
-            $unicornSecondaryBackendDef = new \Symfony\Component\DependencyInjection\Definition('Evispa\ResourceApiBundle\Unicorn\UnicornSecondaryBackend');
+
+            $unicornSecondaryBackendDef = new Definition('Evispa\ResourceApiBundle\Unicorn\UnicornSecondaryBackend');
             $unicornSecondaryBackendDef->addArgument($secondaryBackendConfigInfo->getId());
             $unicornSecondaryBackendDef->addArgument($managedPartClasses);
-            $unicornSecondaryBackendDef->addArgument(new \Symfony\Component\DependencyInjection\Reference($backendServices[$secondaryBackendConfigInfo->getId()]));
+            $unicornSecondaryBackendDef->addArgument(new Reference($backendServices[$secondaryBackendConfigInfo->getId()]));
 
             $secondaryBackendArray[] = $unicornSecondaryBackendDef;
         }
@@ -125,65 +137,29 @@ class UnicornCompiler implements CompilerPassInterface
         $apiConfigs = $container->get('evispa_resource_api.api_config_registry');
         $backendServices = $this->getBackendServices($container);
 
+        $versionReader = new VersionReader(new AnnotationReader());
+        
         foreach ($apiConfigs->getApiConfigs() as $apiConfig) {
-            $versionReader = new \Evispa\ObjectMigration\VersionReader(new \Doctrine\Common\Annotations\AnnotationReader());
-            $versionPathSearch = new \Evispa\ObjectMigration\VersionPath\VersionPathSearch($versionReader);
-
             $resourceClassName = $apiConfig->getResourceClass()->getName();
 
-            $resourceDef = new \Symfony\Component\DependencyInjection\Definition('Evispa\ResourceApiBundle\Manager\ResourceManager');
+            $resourceDef = new Definition('Evispa\ResourceApiBundle\Manager\ResourceManager');
             $resourceDef->addArgument($resourceClassName);
 
-            $inputMigrationPaths = array();
-            $inputVersions = $versionReader->getAllowedClassInputVersions($resourceClassName);
-            $inputMigrations = array();
-
-            foreach ($inputVersions as $inputVersion => $inputClass) {
-                $pathMethods = $versionPathSearch->find($inputClass, $resourceClassName);
-                $migrationPath = array();
-
-                foreach ($pathMethods as $methodInfo) {
-                    $serializedAction = \Evispa\ObjectMigration\Action\ActionSerializer::serializeAction($methodInfo->action);
-                    $migrationPath[] = $serializedAction;
-                }
-
-                $inputMigrationPaths[$inputClass][] = $migrationPath;
-            }
-
-            $outputMigrationPaths = array();
-            $outputVersions = $versionReader->getAllowedClassOutputVersions($resourceClassName);
-            $outputMigrations = array();
-
-            foreach ($outputVersions as $outputVersion => $outputClass) {
-                $pathMethods = $versionPathSearch->find($resourceClassName, $outputClass);
-                $migrationPath = array();
-
-                foreach ($pathMethods as $methodInfo) {
-                    $serializedAction = \Evispa\ObjectMigration\Action\ActionSerializer::serializeAction($methodInfo->action);
-                    $migrationPath[] = $serializedAction;
-                }
-
-                $outputMigrationPaths[$outputClass][] = $migrationPath;
-            }
-
-            $classVersions = array();
-            foreach ($inputVersions as $version => $className) {
-                $classVersions[$className] = $version;
-            }
+            $migrationInfoBaker = new ClassMigrationBaker();
+            $migrationInfo = $migrationInfoBaker->bakeMigrationInfo($versionReader, $resourceClassName);
             
-            $resourceDef->addArgument($inputVersions);
-            $resourceDef->addArgument($inputMigrationPaths);
-            $resourceDef->addArgument($outputVersions);
-            $resourceDef->addArgument($outputMigrationPaths);
-            $resourceDef->addArgument($classVersions);
+            $resourceDef->addArgument($migrationInfoBaker->bakeServiceDefinition($migrationInfo));
 
             $unicornDriverId = 'resource_api.'.$apiConfig->getResourceId().'.unicorn';
             
-            $unicornDef = $this->getUnicornDefinition($container, $apiConfig, $backendServices);
+            $backendConfigs = $container->get('evispa_resource_api.backend_config_registry');
+            $resolvedUnicornInfo = $this->resolveUnicornInfo($container, $apiConfig, $backendConfigs);
+            
+            $unicornDef = $this->getUnicornDefinition($container, $resolvedUnicornInfo, $backendServices, $backendConfigs);
             $unicornDef->setLazy(true);
             $container->addDefinitions(array($unicornDriverId => $unicornDef));
             
-            $resourceDef->addArgument(new \Symfony\Component\DependencyInjection\Reference($unicornDriverId));
+            $resourceDef->addArgument(new Reference($unicornDriverId));
 
             $container->addDefinitions(array('resource_api.'.$apiConfig->getResourceId() => $resourceDef));
         }

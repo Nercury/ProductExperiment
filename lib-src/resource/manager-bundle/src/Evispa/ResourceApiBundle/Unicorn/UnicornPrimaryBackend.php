@@ -83,7 +83,7 @@ class UnicornPrimaryBackend
         return $backendResult;
     }
 
-    public function fetchAll(\Evispa\ResourceApiBundle\Backend\FindParameters $params, $requestedParts = null) {
+    public function fetchAll(\Evispa\ResourceApiBundle\Backend\FetchParameters $params, $requestedParts = null) {
 
         if (null === $requestedParts) {
 

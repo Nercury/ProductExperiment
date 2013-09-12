@@ -37,7 +37,7 @@
             <argument type="collection"> <!-- List of parts managed by this backend -->
                 <!-- key is part identifier, value is public class name -->
                 <argument type="collection" key="product.code">
-                    <argument>Evispa\Api\Product\Model\Code\ProductCodeV1</argument>
+                    <argument>Evispa\Api\Product\Model\Code\ProductZzzCodeV1</argument>
                 </argument>
                 <argument type="collection" key="product.text">
                     <argument>Evispa\Api\Product\Model\Text\TextV1</argument>

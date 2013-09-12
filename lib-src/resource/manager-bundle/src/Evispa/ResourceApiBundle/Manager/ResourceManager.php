@@ -17,48 +17,11 @@ class ResourceManager
     private $className;
 
     /**
-     * List of available input versions.
+     * Class migration information.
      *
-     * @var array
+     * @var \Evispa\ResourceApiBundle\Migration\ClassMigrationInfo
      */
-    private $inputMigrationVersions;
-
-    /**
-     * Information about actions to execute migrations from specified versions.
-     *
-     * @var type
-     */
-    private $inputMigrationPaths;
-
-    /**
-     * Actual actions to migrate object from specified version.
-     *
-     * @var array
-     */
-    private $inputMigrationActions = array();
-
-    /**
-     * List of available output versions.
-     *
-     * @var array
-     */
-    private $outputMigrationVersions;
-
-    /**
-     * Information about actions to execute migrations to specified versions.
-     *
-     * @var array
-     */
-    private $outputMigrationPaths;
-
-    /**
-     * Actual actions to migrate object to specified version.
-     *
-     * @var array
-     */
-    private $outputMigrationActions = array();
-
-    private $classVersions = array();
+    private $migrationInfo;
     
     /**
      * Backend driver unicorn.
@@ -69,79 +32,29 @@ class ResourceManager
 
     public function __construct(
         $className,
-        $inputMigrationVersions,
-        $inputMigrationPaths,
-        $outputMigrationVersions,
-        $outputMigrationPaths,
-        $classVersions,
-        $unicorn
+        \Evispa\ResourceApiBundle\Migration\ClassMigrationInfo $migrationInfo,
+        \Evispa\ResourceApiBundle\Unicorn\Unicorn $unicorn
     ) {
         $this->className = $className;
-        $this->inputMigrationVersions = $inputMigrationVersions;
-        $this->inputMigrationPaths = $inputMigrationPaths;
-        $this->outputMigrationVersions = $outputMigrationVersions;
-        $this->outputMigrationPaths = $outputMigrationPaths;
-        $this->classVersions = $classVersions;
+        $this->migrationInfo = $migrationInfo;
         $this->unicorn = $unicorn;
     }
 
     public function getInputMigrationVersions()
     {
-        return $this->inputMigrationVersions;
+        return $this->migrationInfo->inputMigrationVersions;
     }
 
     public function getOutputMigrationVersions()
     {
-        return $this->outputMigrationVersions;
-    }
-
-    public function getInputMigrationActions($className) {
-        if (isset($this->inputMigrationActions[$className])) {
-            return $this->inputMigrationActions[$className];
-        }
-
-        $actions = array();
-
-        if (!isset($this->inputMigrationPaths[$className])) {
-            throw new \Evispa\ResourceApiBundle\Exception\ObjectMigrationException('Invalid input class '.$className.'.');
-        }
-
-        foreach ($this->inputMigrationPaths[$className] as $pathItems) {
-            foreach ($pathItems as $itemData) {
-                $actions[] = \Evispa\ObjectMigration\Action\ActionSerializer::deserializeAction($itemData);
-            }
-        }
-
-        $this->inputMigrationActions[$className] = $actions;
-        return $actions;
-    }
-
-    public function getOutputMigrationActions($className) {
-        if (isset($this->outputMigrationActions[$className])) {
-            return $this->outputMigrationActions[$className];
-        }
-
-        $actions = array();
-
-        if (!isset($this->outputMigrationPaths[$className])) {
-            throw new \Evispa\ResourceApiBundle\Exception\ObjectMigrationException('Invalid output class '.$className.'.');
-        }
-
-        foreach ($this->outputMigrationPaths[$className] as $pathItems) {
-            foreach ($pathItems as $itemData) {
-                $actions[] = \Evispa\ObjectMigration\Action\ActionSerializer::deserializeAction($itemData);
-            }
-        }
-
-        $this->outputMigrationActions[$className] = $actions;
-        return $actions;
+        return $this->migrationInfo->outputMigrationVersions;
     }
     
     public function getClassVersion($className) {
-        if (!isset($this->classVersions[$className])) {
+        if (!isset($this->migrationInfo->classVersions[$className])) {
             throw new \LogicException('Class name "'.$className.'" is not known for "'.$className.'" resource manager.');
         }
-        return $this->classVersions[$className];
+        return $this->migrationInfo->classVersions[$className];
     }
     
     /**
@@ -167,6 +80,58 @@ class ResourceManager
      */
     public function fetchAll(FetchParameters $params)
     {        
-        return new FetchResult($params, array(), 0);
+        $resultsObject = $this->unicorn->getPrimaryBackend()->fetchAll($params);
+
+        $resources = array();
+
+        foreach ($resultsObject->getObjects() as $resultObject) {
+
+            // Create a new resource.
+
+            /** @var ApiResourceInterface $resource */
+            $resource = $this->class->newInstance();
+            $resource->setSlug($resultObject->getResourceSlug());
+
+            foreach ($resultObject->getResourceParts() as $partName => $part) {
+
+                if (null === $part) {
+                    continue;
+                }
+
+                $this->propertyAccess->setValue(
+                    $resource,
+                    $this->resourceProperties[$partName],
+                    $this->partVersionConverter[$partName]->migrateFrom($part)
+                );
+            }
+
+            $resources[$resultObject->getResourceSlug()] = $resource;
+        }
+
+        $slugs = array_keys($resources);
+
+        if (0 < count($slugs)) {
+            // set parts form secondary backends
+            foreach ($this->unicorn->getSecondaryBackends() as $unicornBackend) {
+                $resourcesParts = $unicornBackend->fetchBySlugs($slugs);
+
+                foreach ($resourcesParts as $slug => $otherParts) {
+
+                    foreach ($otherParts as $partName => $part) {
+                        if (null === $part) {
+                            continue;
+                        }
+
+                        $this->propertyAccess->setValue(
+                            $resource,
+                            $this->resourceProperties[$partName],
+                            $this->partVersionConverter[$partName]->migrateFrom($part)
+                        );
+                    }
+                }
+            }
+        }
+
+        return new FindResult($params, $resources, $resultsObject->getTotalFound());
     }
 }
