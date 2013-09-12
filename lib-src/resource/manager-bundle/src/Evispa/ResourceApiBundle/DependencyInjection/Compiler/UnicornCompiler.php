@@ -115,7 +115,7 @@ class UnicornCompiler implements CompilerPassInterface
         }
 
         $unicornDef->addArgument($secondaryBackendArray);
-
+        
         return $unicornDef;
     }
 
@@ -177,8 +177,13 @@ class UnicornCompiler implements CompilerPassInterface
             $resourceDef->addArgument($outputMigrationPaths);
             $resourceDef->addArgument($classVersions);
 
-            $unicornRef = $this->getUnicornDefinition($container, $apiConfig, $backendServices);
-            $resourceDef->addArgument($unicornRef);
+            $unicornDriverId = 'resource_api.'.$apiConfig->getResourceId().'.unicorn';
+            
+            $unicornDef = $this->getUnicornDefinition($container, $apiConfig, $backendServices);
+            $unicornDef->setLazy(true);
+            $container->addDefinitions(array($unicornDriverId => $unicornDef));
+            
+            $resourceDef->addArgument(new \Symfony\Component\DependencyInjection\Reference($unicornDriverId));
 
             $container->addDefinitions(array('resource_api.'.$apiConfig->getResourceId() => $resourceDef));
         }
