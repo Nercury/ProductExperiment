@@ -2,9 +2,20 @@
 
 namespace Evispa\ProductApiBundle\Controller;
 
+//use Evispa\Resource\Component\MultipartResource\Annotations\Resource;
+
+use Evispa\ObjectMigration\VersionConverter;
+use Evispa\ProductApiBundle\Rest\ProductData;
 use Evispa\ResourceApiBundle\Backend\FindParameters;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Evispa\ResourceApiBundle\Manager\ResourceManager;
+use Evispa\ResourceApiBundle\VersionParser\AcceptVersionParser;
+use Evispa\ResourceApiBundle\VersionParser\VersionAndFormat;
 use FOS\RestBundle\Request\ParamFetcher;
+use FOS\RestBundle\View\View as RestView;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 use FOS\RestBundle\Controller\Annotations\View;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
@@ -14,7 +25,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-//use Evispa\Resource\Component\MultipartResource\Annotations\Resource;
 
 class ProductsController extends Controller
 {
@@ -22,9 +32,10 @@ class ProductsController extends Controller
      * Get product resource manager.
      *
      * @param array $options
-     * @return \Evispa\ResourceApiBundle\Manager\ResourceManager
+     * @return ResourceManager
      */
-    private function getProductResourceManager($options) {
+    private function getProductResourceManager($options)
+    {
         $prm = $this->get('resource_managers')->getResourceManager('product', $options);
         return $prm;
     }
@@ -32,12 +43,13 @@ class ProductsController extends Controller
     /**
      * Get version converter for Product resource.
      *
-     * @param \Evispa\ResourceApiBundle\Manager\ResourceManager $prm Resource manager.
+     * @param ResourceManager $prm Resource manager.
      *
-     * @return \Evispa\ObjectMigration\VersionConverter
+     * @return VersionConverter
      */
-    private function getProductVersionConverter($prm) {
-        return new \Evispa\ObjectMigration\VersionConverter(
+    private function getProductVersionConverter($prm)
+    {
+        return new VersionConverter(
             $prm->getVersionReader(),
             $prm->getClassName(),
             $prm->getConverterOptions()
@@ -47,14 +59,15 @@ class ProductsController extends Controller
     /**
      * Get version and format for the request.
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param \Evispa\ResourceApiBundle\Manager\ResourceManager $prm
+     * @param Request $request
+     * @param ResourceManager $prm
      *
-     * @return \Evispa\ResourceApiBundle\VersionParser\VersionAndFormat
+     * @return VersionAndFormat
      */
-    private function getExpectedVersionAndFormat($request, \Evispa\ResourceApiBundle\Manager\ResourceManager $prm) {
+    private function getExpectedVersionAndFormat($request, ResourceManager $prm)
+    {
         $versionReader = $prm->getVersionReader();
-        $restVersionParser = new \Evispa\ResourceApiBundle\VersionParser\AcceptVersionParser();
+        $restVersionParser = new AcceptVersionParser();
         return $restVersionParser
             ->setAllowedVersions($versionReader->getAllowedClassOutputVersions($prm->getClassName()))
             ->setRequestedFormat($request->getRequestFormat())
@@ -82,16 +95,16 @@ class ProductsController extends Controller
         );
 
         if (null === $product) {
-            throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException("Product was not found.");
+            throw new NotFoundHttpException("Product was not found.");
         } else {
-            $view = \FOS\RestBundle\View\View::create();
+            $view = RestView::create();
 
             // Find out what client wants. Impossible, but very important.
             $expectedVersionAndFormat = $this->getExpectedVersionAndFormat($request, $prm);
 
             if (null === $expectedVersionAndFormat) {
-                throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException(
-                    'Can not return requested resource in '.$request->getRequestFormat().' format.'
+                throw new NotFoundHttpException(
+                    'Can not return requested resource in ' . $request->getRequestFormat() . ' format.'
                 );
             }
 
@@ -114,7 +127,8 @@ class ProductsController extends Controller
      * @QueryParam(name="count", requirements="\d+", default="50", strict=true, nullable=true, description="Item count limit")
      * @View(templateVar="result")
      */
-    public function getProductsAction(ParamFetcher $paramFetcher) {
+    public function getProductsAction(ParamFetcher $paramFetcher)
+    {
         $page = $paramFetcher->get('page');
 
         $request = $this->getRequest();
@@ -128,13 +142,13 @@ class ProductsController extends Controller
 
         $resourcesObject = $prm->fetchAll($params);
 
-        $view = \FOS\RestBundle\View\View::create();
+        $view = RestView::create();
 
         // Find out what client wants. Impossible, but very important.
         $expectedVersionAndFormat = $this->getExpectedVersionAndFormat($request, $prm);
         if (null === $expectedVersionAndFormat) {
-            throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException(
-                'Can not return requested resource in '.$request->getRequestFormat().' format.'
+            throw new NotFoundHttpException(
+                'Can not return requested resource in ' . $request->getRequestFormat() . ' format.'
             );
         }
 
@@ -162,10 +176,11 @@ class ProductsController extends Controller
      * @ApiDoc
      * @View(templateVar="product")
      */
-    public function postProductsAction() {
+    public function postProductsAction()
+    {
         $request = $this->getRequest();
 
-
+        $data = array();
 
         $fb = $this->createFormBuilder(null, array(
             'csrf_protection' => false
@@ -178,19 +193,19 @@ class ProductsController extends Controller
 
         //var_dump($product); die;
 
-        $view = \FOS\RestBundle\View\View::create();
+        $view = RestView::create();
 
         /*if (false === $request->request->get('form', false)) {
             if ('html' !== $view->getFormat()) {
                 $form->addError(new \Symfony\Component\Form\FormError('Submit form data based on specified parameters.'));
             }
         } else {*/
-            $form->bind($request);
-            $data = $form->getData();
-            if ($form->isValid()) {
+        $form->bind($request);
+        $data = $form->getData();
+        if ($form->isValid()) {
 
-                return new \Symfony\Component\HttpFoundation\Response($this->get('serializer')->serialize($data, 'json'));
-            }
+            return new Response($this->get('serializer')->serialize($data, 'json'));
+        }
         //}
 
         $view->setData($form);
@@ -205,10 +220,11 @@ class ProductsController extends Controller
      * @ApiDoc
      * @@Resource("product", action="update")
      */
-    public function putProductAction(\Symfony\Component\HttpFoundation\Request $request, $slug) {
-        $data = new \Evispa\ProductApiBundle\Rest\ProductData();
-        $data->setSlug('pav1');
-        $data["name"] = "Pavadinimas";
+    public function putProductAction(Request $request, $slug)
+    {
+        $data = new ProductData();
+        $data->setSlug($slug);
+        $data["name"] = "Title";
 
         $fb = $this->createFormBuilder(null, array(
             'csrf_protection' => false
@@ -224,10 +240,10 @@ class ProductsController extends Controller
             $form->submit($request);
             $data = $form->getData();
             if ($form->isValid()) {
-                return new \Symfony\Component\HttpFoundation\Response($this->get('serializer')->serialize($data, 'json'));
+                return new Response($this->get('serializer')->serialize($data, 'json'));
             }
         }
 
-        return \FOS\RestBundle\View\View::create($form, 400);
+        return RestView::create($form, 400);
     }
 }
