@@ -15,9 +15,15 @@
             <argument>product</argument> <!-- Resource identifier -->
             <argument type="collection"> <!-- List of parts managed by this backend -->
                 <!-- key is part identifier, value is public class name -->
-                <argument key="product.code">Evispa\Api\Product\Model\Code\ProductCodeV1</argument>
-                <argument key="product.route">Evispa\Api\Product\Model\Route\RouteV1</argument>
-                <argument key="product.text">Evispa\Api\Product\Model\Text\TextV1</argument>
+                <argument type="collection" key="product.code">
+                    <argument>Evispa\Api\Product\Model\Code\ProductCodeV1</argument>
+                </argument>
+                <argument type="collection" key="product.route">
+                    <argument>Evispa\Api\Product\Model\Route\RouteV1</argument>
+                </argument>
+                <argument key="product.text">
+                    <argument>Evispa\Api\Product\Model\Text\TextV1</argument>
+                </argument>
             </argument>
             <call method="setPrimaryBackend">
                 <argument type="service" id="evispa_mongo_product_backend.product_backend" />
@@ -35,6 +41,19 @@
             </argument>
             <call method="setPrimaryBackend">
                 <argument type="service" id="evispa_mongo_product_backend.product_backend" />
+            </call>
+        </service>
+
+        <service id="evispa_mongo_product_backend.secondary_product_backend_config" class="%evispa_mongo_product_backend.backend_config.class%">
+            <tag name="resource_backend_config" />
+            <argument>mongo.secondary.product</argument> <!-- Backend identifier -->
+            <argument>product</argument> <!-- Resource identifier -->
+            <argument type="collection"> <!-- List of parts managed by this backend -->
+                <!-- key is part identifier, value is public class name -->
+                <argument key="product.route">Evispa\Api\Product\Model\Route\RouteV1</argument>
+            </argument>
+            <call method="setSecondaryBackend">
+                <argument type="service" id="evispa_mongo_product_backend.secondary_product_backend" />
             </call>
         </service>
     </services>

@@ -111,4 +111,6 @@ nelmio_api_doc: ~
 evispa_resource_api:
     backend:
         product:
-            manager: mongo.product
+            primary: mongo.product
+            parts:
+                product.text: secondary.mongo.product

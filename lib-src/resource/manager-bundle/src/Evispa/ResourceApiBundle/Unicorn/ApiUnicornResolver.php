@@ -11,19 +11,29 @@ use Evispa\ResourceApiBundle\Registry\ResourceBackendConfigRegistry;
  */
 class ApiUnicornResolver
 {
-    private function buildManagerBackendSuggestion($resourceId, $availableBackendManagers) {
-        $managersKeys = array_keys($availableBackendManagers);
-        $configSuggestion = '"' . $resourceId . '.manager: ' . $managersKeys[0] . '"';
+    private function buildChoiceSuggestion($choices) {
+        $choicesKeys = array_keys($choices);
+        $configSuggestion = '"' . $choices[$choicesKeys[0]] . '"';
 
-        for ($i = 1; $i < count($managersKeys); $i++) {
-            if (count($managersKeys) > $i + 1) {
-                $configSuggestion .= ', "' . $resourceId . '.manager: ' . $managersKeys[$i] . '"';
+        for ($i = 1; $i < count($choicesKeys); $i++) {
+            if (count($choicesKeys) > $i + 1) {
+                $configSuggestion .= ', "' . $choices[$choicesKeys[$i]] . '"';
             } else {
-                $configSuggestion .= ' or "' . $resourceId . '.manager: ' . $managersKeys[$i] . '"';
+                $configSuggestion .= ' or "' . $choices[$choicesKeys[$i]] . '"';
             }
         }
 
         return $configSuggestion;
+    }
+
+    private function buildManagerBackendSuggestion($resourceId, $availableBackendManagers) {
+        $choices = array();
+
+        foreach ($availableBackendManagers as $managerName => $_) {
+            $choices[] = $resourceId . '.manager: ' . $managerName;
+        }
+
+        return $this->buildChoiceSuggestion($choices);
     }
 
     /**
@@ -33,7 +43,7 @@ class ApiUnicornResolver
      * @param ResourceBackendConfigRegistry $backendConfigs
      * @param array $appApiBackendMap
      *
-     * @return Unicorn
+     * @return Config\UnicornConfigInfo
      */
     public function makeUnicorn(ResourceApiConfig $apiConfig, ResourceBackendConfigRegistry $backendConfigs, array $appApiBackendMap) {
 
@@ -62,8 +72,8 @@ class ApiUnicornResolver
         // Check for strict backend.
 
         if (null !== $productBackendMap) {
-            if (isset($productBackendMap['manager']) && !empty($productBackendMap['manager'])) {
-                $requiredManager = $productBackendMap['manager'];
+            if (isset($productBackendMap['primary']) && !empty($productBackendMap['primary'])) {
+                $requiredManager = $productBackendMap['primary'];
                 if (!isset($availableBackends[$requiredManager])) {
                     $configSuggestion = $this->buildManagerBackendSuggestion($resourceId, $availableBackends);
                     throw new BackendConfigurationException(
@@ -92,14 +102,53 @@ class ApiUnicornResolver
 
         $backendManagerIds = array_keys($availableBackends);
         $backendId = $backendManagerIds[0];
-        $backend = $availableBackends[$backendId];
         $backendConfig = $backendManagerConfigs[$backendId];
 
         $primaryParts = $backendConfig->getParts();
-        //var_dump($primaryParts);
 
-        $unicorn = new Unicorn(new UnicornPrimaryBackend($backendId, $primaryParts, $backend));
+        $secondaryConfigs = array();
+        $secondaryParts = array();
+        foreach ($backendConfigs->getBackendConfigs() as $config) {
+            if ($resourceId === $config->getResourceId()) {
+                if (null !== $config->getSecondaryBackend()) {
+                    $secondaryConfigs[$config->getBackendId()] = $config;
+                    foreach ($config->getParts() as $partId => $_) {
+                        $secondaryParts[$config->getBackendId()][$partId] = true;
+                    }
+                }
+            }
+        }
 
-        return $unicorn;
+        $resourceParts = $apiConfig->getParts();
+
+        // Resolve used parts.
+        $prefefinedPartMap = $productBackendMap['parts'];
+
+        // Validate predefined map for existing ids.
+        foreach ($prefefinedPartMap as $id => $_) {
+            if (!isset($resourceParts[$id])) {
+                foreach ($resourceParts as $existingId => $_) {
+                    if (false !== strpos($existingId, $id)) {
+                        throw new BackendConfigurationException(
+                            'Configured resource part "'.$id.'" was not found on "'.$resourceId.'" resource. '.
+                            'Did you mean "'.$existingId.'"?'
+                        );
+                    }
+                }
+                throw new BackendConfigurationException(
+                    'Configured resource part "'.$id.'" was not found on "'.$resourceId.'" resource. '.
+                    'Use either '.$this->buildChoiceSuggestion(array_keys($resourceParts)).'.'
+                );
+            }
+        }
+
+
+        //var_dump($prefefinedPartMap); die;
+
+        $primaryBackendConfigInfo = new Config\PrimaryBackendConfigInfo($backendId, $primaryParts);
+
+        $unicornInfo = new Config\UnicornConfigInfo($primaryBackendConfigInfo);
+
+        return $unicornInfo;
     }
 }

@@ -9,7 +9,7 @@ class ResourceBackendConfig
 {
     private $backendId;
     private $resourceId;
-    private $parts;
+    private $parts = array();
 
     /**
      *

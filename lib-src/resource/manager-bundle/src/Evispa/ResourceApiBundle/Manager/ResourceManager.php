@@ -1,282 +1,133 @@
 <?php
-
-namespace Evispa\ResourceApiBundle\Manager;
-
-use Doctrine\Common\Annotations\Reader;
-use Evispa\Api\Resource\Model\ApiResourceInterface;
-use Evispa\ObjectMigration\VersionConverter;
-use Evispa\ObjectMigration\VersionReader;
-use Evispa\ResourceApiBundle\Backend\FindParameters;
-use Evispa\ResourceApiBundle\Unicorn\Unicorn;
-use Evispa\ResourceApiBundle\Unicorn\UnicornPrimaryBackend;
-use Symfony\Component\Form\Exception\LogicException;
-
 /**
  * @author nerijus
  */
+
+namespace Evispa\ResourceApiBundle\Manager;
+
 class ResourceManager
 {
     /**
-     * Used to read/write resource properties.
+     * Primary class of this resource manager.
      *
-     * @var \Symfony\Component\PropertyAccess\PropertyAccessor
+     * @var string
      */
-    private $propertyAccess;
+    private $className;
 
     /**
-     * @var \ReflectionClass
-     */
-    private $class;
-
-    /**
-     * Resource property list from config, (property.id) => (property).
+     * List of available input versions.
      *
      * @var array
      */
-    private $resourceProperties;
+    private $inputMigrationVersions;
 
     /**
-     * Version reader.
+     * Information about actions to execute migrations from specified versions.
      *
-     * @var VersionReader
+     * @var type
      */
-    private $versionReader;
+    private $inputMigrationPaths;
 
     /**
-     * Version converter for each resource part.
+     * Actual actions to migrate object from specified version.
      *
-     * @var VersionConverter[]
+     * @var array
      */
-    private $partVersionConverter;
+    private $inputMigrationActions = array();
 
     /**
-     * Unicorn - backend configuration set.
+     * List of available output versions.
      *
-     * @var Unicorn
+     * @var array
+     */
+    private $outputMigrationVersions;
+
+    /**
+     * Information about actions to execute migrations to specified versions.
+     *
+     * @var array
+     */
+    private $outputMigrationPaths;
+
+    /**
+     * Actual actions to migrate object to specified version.
+     *
+     * @var array
+     */
+    private $outputMigrationActions = array();
+
+    /**
+     * Backend driver unicorn.
+     *
+     * @var \Evispa\ResourceApiBundle\Unicorn\Unicorn
      */
     private $unicorn;
 
-    /**
-     * Used converter options.
-     *
-     * @var array
-     */
-    private $converterOptions;
-
-    /**
-     * @param Reader           $reader
-     * @param VersionReader    $versionReader
-     * @param array            $converterOptions
-     * @param \ReflectionClass $class
-     * @param array            $resourceProperties
-     * @param Unicorn          $unicorn
-     *
-     * @throws \Symfony\Component\Form\Exception\LogicException
-     */
     public function __construct(
-        Reader $reader,
-        VersionReader $versionReader,
-        array $converterOptions,
-        \ReflectionClass $class,
-        array $resourceProperties,
-        Unicorn $unicorn
+        $className,
+        $inputMigrationVersions,
+        $inputMigrationPaths,
+        $outputMigrationVersions,
+        $outputMigrationPaths,
+        $unicorn
     ) {
-        $this->versionReader = $versionReader;
-        $this->propertyAccess = \Symfony\Component\PropertyAccess\PropertyAccess::createPropertyAccessor();
-        $this->class = $class;
-        $this->resourceProperties = $resourceProperties;
+        $this->className = $className;
+        $this->inputMigrationVersions = $inputMigrationVersions;
+        $this->inputMigrationPaths = $inputMigrationPaths;
+        $this->outputMigrationVersions = $outputMigrationVersions;
+        $this->outputMigrationPaths = $outputMigrationPaths;
         $this->unicorn = $unicorn;
-        $this->converterOptions = $converterOptions;
-
-        foreach ($this->resourceProperties as $partName => $propertyName) {
-            $property = $reader->getPropertyAnnotation(
-                $this->class->getProperty($propertyName),
-                'JMS\Serializer\Annotation\Type'
-            );
-
-            if (null === $property) {
-                throw new LogicException(
-                    'Resource "' . $this->class->getName() .
-                    '" property "' . $propertyName .
-                    '" should have JMS\Serializer\Annotation\Type annotation.'
-                );
-            }
-
-            $this->partVersionConverter[$partName] = new VersionConverter(
-                $versionReader,
-                $property->name,
-                $converterOptions
-            );
-        }
     }
 
-    /**
-     * Get the name of managed class.
-     *
-     * @return string
-     */
-    public function getClassName()
+    public function getInputMigrationVersions()
     {
-        return $this->class->getName();
+        return $this->inputMigrationVersions;
     }
 
-    /**
-     * Get version reader used by this manager.
-     *
-     * @return VersionReader
-     */
-    public function getVersionReader()
+    public function getOutputMigrationVersions()
     {
-        return $this->versionReader;
+        return $this->outputMigrationVersions;
     }
 
-    /**
-     * Get used converter options.
-     *
-     * @return array
-     */
-    public function getConverterOptions()
-    {
-        return $this->converterOptions;
-    }
-
-    /**
-     * Find a single resource object.
-     *
-     * @param string $slug Resource identifier.
-     *
-     * @throws \LogicException
-     *
-     * @return \Evispa\Api\Resource\Model\ApiResourceInterface|null
-     */
-    public function fetchOne($slug)
-    {
-        $resultObject = $this->unicorn->getPrimaryBackend()->fetchOne($slug);
-
-        if (null === $resultObject) {
-            return null;
+    public function getInputMigrationActions($className) {
+        if (isset($this->inputMigrationActions[$className])) {
+            return $this->inputMigrationActions[$className];
         }
 
-        // Create a new resource.
+        $actions = array();
 
-        /** @var ApiResourceInterface $resource */
-        $resource = $this->class->newInstance();
-        $resource->setSlug($resultObject->getResourceSlug());
-
-        foreach ($resultObject->getResourceParts() as $partName => $part) {
-
-            if (null === $part) {
-                continue;
-            }
-
-            $this->propertyAccess->setValue(
-                $resource,
-                $this->resourceProperties[$partName],
-                $this->partVersionConverter[$partName]->migrateFrom($part)
-            );
+        if (!isset($this->inputMigrationPaths[$className])) {
+            throw new \Evispa\ResourceApiBundle\Exception\ObjectMigrationException('Invalid input class '.$className.'.');
         }
 
-        // set parts form secondary backends
-        foreach ($this->unicorn->getSecondaryBackends() as $unicornBackend) {
-            $otherParts = $unicornBackend->fetchOne($slug);
-
-            foreach ($otherParts as $partName => $part) {
-                if (null === $part) {
-                    continue;
-                }
-
-                $this->propertyAccess->setValue(
-                    $resource,
-                    $this->resourceProperties[$partName],
-                    $this->partVersionConverter[$partName]->migrateFrom($part)
-                );
+        foreach ($this->inputMigrationPaths[$className] as $pathItems) {
+            foreach ($pathItems as $itemData) {
+                $actions[] = \Evispa\ObjectMigration\Action\ActionSerializer::deserializeAction($itemData);
             }
         }
 
-        return $resource;
+        $this->inputMigrationActions[$className] = $actions;
+        return $actions;
     }
 
-    /**
-     * Find batch of resources
-     *
-     * @param FindParameters $params
-     *
-     * @return FindResult
-     */
-    public function fetchAll(FindParameters $params)
-    {
-        $resultsObject = $this->unicorn->getPrimaryBackend()->fetchAll($params);
-
-        $resources = array();
-
-        foreach ($resultsObject->getObjects() as $resultObject) {
-
-            // Create a new resource.
-
-            /** @var ApiResourceInterface $resource */
-            $resource = $this->class->newInstance();
-            $resource->setSlug($resultObject->getResourceSlug());
-
-            foreach ($resultObject->getResourceParts() as $partName => $part) {
-
-                if (null === $part) {
-                    continue;
-                }
-
-                $this->propertyAccess->setValue(
-                    $resource,
-                    $this->resourceProperties[$partName],
-                    $this->partVersionConverter[$partName]->migrateFrom($part)
-                );
-            }
-
-            $resources[$resultObject->getResourceSlug()] = $resource;
+    public function getOutputMigrationActions($className) {
+        if (isset($this->outputMigrationActions[$className])) {
+            return $this->outputMigrationActions[$className];
         }
 
-        $slugs = array_keys($resources);
+        $actions = array();
 
-        if (0 < count($slugs)) {
-            // set parts form secondary backends
-            foreach ($this->unicorn->getSecondaryBackends() as $unicornBackend) {
-                $resourcesParts = $unicornBackend->fetchBySlugs($slugs);
+        if (!isset($this->outputMigrationPaths[$className])) {
+            throw new \Evispa\ResourceApiBundle\Exception\ObjectMigrationException('Invalid output class '.$className.'.');
+        }
 
-                foreach ($resourcesParts as $slug => $otherParts) {
-
-                    foreach ($otherParts as $partName => $part) {
-                        if (null === $part) {
-                            continue;
-                        }
-
-                        $this->propertyAccess->setValue(
-                            $resource,
-                            $this->resourceProperties[$partName],
-                            $this->partVersionConverter[$partName]->migrateFrom($part)
-                        );
-                    }
-                }
+        foreach ($this->outputMigrationPaths[$className] as $pathItems) {
+            foreach ($pathItems as $itemData) {
+                $actions[] = \Evispa\ObjectMigration\Action\ActionSerializer::deserializeAction($itemData);
             }
         }
 
-        return new FindResult($params, $resources, $resultsObject->getTotalFound());
-    }
-
-    /**
-     * Create and get a new resource object, no persist to the db.
-     *
-     * @return \Evispa\Api\Resource\Model\ApiResourceInterface
-     */
-    public function getNew()
-    {
-
-    }
-
-    /**
-     * Save a resource object to the database.
-     *
-     * @param \Evispa\Api\Resource\Model\ApiResourceInterface $resource
-     */
-    public function saveOne($resource)
-    {
-
+        $this->outputMigrationActions[$className] = $actions;
+        return $actions;
     }
 }

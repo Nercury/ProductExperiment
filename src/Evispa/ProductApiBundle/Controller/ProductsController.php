@@ -115,6 +115,12 @@ class ProductsController extends Controller
      * @View(templateVar="result")
      */
     public function getProductsAction(ParamFetcher $paramFetcher) {
+        var_dump($this->get('resource.product'));
+
+        var_dump($this->get('resource.product')->getOutputMigrationActions('Evispa\Api\Product\Model\SimpleProductV1'));
+
+         die;
+
         $page = $paramFetcher->get('page');
 
         $request = $this->getRequest();
