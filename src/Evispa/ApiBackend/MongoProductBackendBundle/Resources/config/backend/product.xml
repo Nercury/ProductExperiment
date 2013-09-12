@@ -44,7 +44,7 @@
                 </argument>
             </argument>
             <call method="setPrimaryBackend">
-                <argument type="service" id="evispa_mongo_product_backend.product_backend" />
+                <argument type="service" id="evispa_mongo_product_backend.oracle_test_backend" />
             </call>
         </service>
 

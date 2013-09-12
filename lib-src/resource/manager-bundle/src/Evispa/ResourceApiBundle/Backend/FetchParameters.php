@@ -32,7 +32,7 @@ namespace Evispa\ResourceApiBundle\Backend;
  *
  * @package Evispa\ResourceApiBundle\Backend
  */
-class FindParameters
+class FetchParameters
 {
     /**
      * @var int

@@ -166,32 +166,21 @@ class UnicornCompiler implements CompilerPassInterface
                 $outputMigrationPaths[$outputClass][] = $migrationPath;
             }
 
+            $classVersions = array();
+            foreach ($inputVersions as $version => $className) {
+                $classVersions[$className] = $version;
+            }
+            
             $resourceDef->addArgument($inputVersions);
             $resourceDef->addArgument($inputMigrationPaths);
             $resourceDef->addArgument($outputVersions);
             $resourceDef->addArgument($outputMigrationPaths);
+            $resourceDef->addArgument($classVersions);
 
             $unicornRef = $this->getUnicornDefinition($container, $apiConfig, $backendServices);
             $resourceDef->addArgument($unicornRef);
 
-            $container->addDefinitions(array('resource.product' => $resourceDef));
-
-            //$unicornInfo = $unicornResolver->makeUnicorn($apiConfig, $backendConfigs, $appApiBackendMap);
-
-            //var_dump($unicornInfo);
+            $container->addDefinitions(array('resource_api.'.$apiConfig->getResourceId() => $resourceDef));
         }
-
-        /*$def = new \Symfony\Component\DependencyInjection\Definition('Evispa\ResourceApiBundle\Unicorn\UnicornPrimaryBackend');
-        $def->setPublic(false);
-        $def->addArgument($def)*/
-
-        //$container->addDefinitions(array('testa.product' => $def));
-
-        //$container->addClassResource(new \ReflectionClass( 'Evispa\ResourceApiBundle\Registry\ManagerRegistry'));
-
-        /*var_dump($apiConfig->getApiConfigs());
-        var_dump($container->get('evispa_resource_api.backend_config_registry')->getBackendConfigs());
-
-        die;*/
     }
 }

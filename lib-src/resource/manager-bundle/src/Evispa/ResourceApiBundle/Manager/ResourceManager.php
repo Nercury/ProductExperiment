@@ -5,6 +5,8 @@
 
 namespace Evispa\ResourceApiBundle\Manager;
 
+use Evispa\ResourceApiBundle\Backend\FetchParameters;
+
 class ResourceManager
 {
     /**
@@ -56,6 +58,8 @@ class ResourceManager
      */
     private $outputMigrationActions = array();
 
+    private $classVersions = array();
+    
     /**
      * Backend driver unicorn.
      *
@@ -69,6 +73,7 @@ class ResourceManager
         $inputMigrationPaths,
         $outputMigrationVersions,
         $outputMigrationPaths,
+        $classVersions,
         $unicorn
     ) {
         $this->className = $className;
@@ -76,6 +81,7 @@ class ResourceManager
         $this->inputMigrationPaths = $inputMigrationPaths;
         $this->outputMigrationVersions = $outputMigrationVersions;
         $this->outputMigrationPaths = $outputMigrationPaths;
+        $this->classVersions = $classVersions;
         $this->unicorn = $unicorn;
     }
 
@@ -129,5 +135,38 @@ class ResourceManager
 
         $this->outputMigrationActions[$className] = $actions;
         return $actions;
+    }
+    
+    public function getClassVersion($className) {
+        if (!isset($this->classVersions[$className])) {
+            throw new \LogicException('Class name "'.$className.'" is not known for "'.$className.'" resource manager.');
+        }
+        return $this->classVersions[$className];
+    }
+    
+    /**
+     * Find a single resource object.
+     *
+     * @param string $slug Resource identifier.
+     *
+     * @throws \LogicException
+     *
+     * @return \Evispa\Api\Resource\Model\ApiResourceInterface|null
+     */
+    public function fetchOne($slug)
+    {
+        
+    }
+    
+    /**
+     * Find batch of resources
+     *
+     * @param FetchParameters $params
+     *
+     * @return FetchResult
+     */
+    public function fetchAll(FetchParameters $params)
+    {        
+        return new FetchResult($params, array(), 0);
     }
 }

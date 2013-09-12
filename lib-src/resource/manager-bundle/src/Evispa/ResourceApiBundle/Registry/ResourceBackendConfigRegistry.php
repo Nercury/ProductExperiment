@@ -18,6 +18,21 @@ class ResourceBackendConfigRegistry
         if (isset($this->backendConfigs[$backendId])) {
             throw new LogicException('Backend with id "'.$backendId.'" is already defined.');
         }
+        
+        foreach ($this->backendConfigs as $backendConfig) {
+            if (null !== $backendConfig->getPrimaryBackend() && $backendConfig->getPrimaryBackend() === $resourceBackendConfig->getPrimaryBackend()) {
+                throw new \Evispa\ResourceApiBundle\Exception\BackendConfigurationException(
+                    'Can not share the same primary backend among "'.$backendConfig->getBackendId().'" and '.
+                    '"'.$resourceBackendConfig->getBackendId().'" configurations. Please fix this hack attempt :)'
+                );
+            }
+            if (null !== $backendConfig->getSecondaryBackend() && $backendConfig->getSecondaryBackend() === $resourceBackendConfig->getSecondaryBackend()) {
+                throw new \Evispa\ResourceApiBundle\Exception\BackendConfigurationException(
+                    'Can not share the same secondary backend among "'.$backendConfig->getBackendId().'" and '.
+                    '"'.$resourceBackendConfig->getBackendId().'" configurations. Please fix this hack attempt :)'
+                );
+            }
+        }
 
         $this->backendConfigs[$backendId] = $resourceBackendConfig;
     }

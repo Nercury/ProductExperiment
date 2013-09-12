@@ -2,7 +2,7 @@
 
 namespace Evispa\ProductApiBundle\Controller;
 
-use Evispa\ResourceApiBundle\Backend\FindParameters;
+use Evispa\ResourceApiBundle\Backend\FetchParameters;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Request\ParamFetcher;
 
@@ -24,24 +24,9 @@ class ProductsController extends Controller
      * @param array $options
      * @return \Evispa\ResourceApiBundle\Manager\ResourceManager
      */
-    private function getProductResourceManager($options) {
-        $prm = $this->get('resource_managers')->getResourceManager('product', $options);
+    private function getProductResourceManager() {
+        $prm = $this->get('resource_api.product');
         return $prm;
-    }
-
-    /**
-     * Get version converter for Product resource.
-     *
-     * @param \Evispa\ResourceApiBundle\Manager\ResourceManager $prm Resource manager.
-     *
-     * @return \Evispa\ObjectMigration\VersionConverter
-     */
-    private function getProductVersionConverter($prm) {
-        return new \Evispa\ObjectMigration\VersionConverter(
-            $prm->getVersionReader(),
-            $prm->getClassName(),
-            $prm->getConverterOptions()
-        );
     }
 
     /**
@@ -53,14 +38,13 @@ class ProductsController extends Controller
      * @return \Evispa\ResourceApiBundle\VersionParser\VersionAndFormat
      */
     private function getExpectedVersionAndFormat($request, \Evispa\ResourceApiBundle\Manager\ResourceManager $prm) {
-        $versionReader = $prm->getVersionReader();
         $restVersionParser = new \Evispa\ResourceApiBundle\VersionParser\AcceptVersionParser();
         return $restVersionParser
-            ->setAllowedVersions($versionReader->getAllowedClassOutputVersions($prm->getClassName()))
+            ->setAllowedVersions($prm->getOutputMigrationVersions())
             ->setRequestedFormat($request->getRequestFormat())
-            ->setDefault('html', $versionReader->getClassVersion('Evispa\Api\Product\Model\ProductV1'))
-            ->setDefault('json', $versionReader->getClassVersion('Evispa\Api\Product\Model\SimpleProductV1'))
-            ->setDefault('xml', $versionReader->getClassVersion('Evispa\Api\Product\Model\SimpleProductV1'))
+            ->setDefault('html', $prm->getClassVersion('Evispa\Api\Product\Model\ProductV1'))
+            ->setDefault('json', $prm->getClassVersion('Evispa\Api\Product\Model\SimpleProductV1'))
+            ->setDefault('xml', $prm->getClassVersion('Evispa\Api\Product\Model\SimpleProductV1'))
             ->parseVersionAndFormat($request->getAcceptableContentTypes());
     }
 
@@ -76,7 +60,7 @@ class ProductsController extends Controller
 
         $options = array('locale' => $request->getLocale());
 
-        $prm = $this->getProductResourceManager($options);
+        $prm = $this->getProductResourceManager();
         $product = $prm->fetchOne(
             $slug
         );
@@ -115,20 +99,14 @@ class ProductsController extends Controller
      * @View(templateVar="result")
      */
     public function getProductsAction(ParamFetcher $paramFetcher) {
-        var_dump($this->get('resource.product'));
-
-        var_dump($this->get('resource.product')->getOutputMigrationActions('Evispa\Api\Product\Model\SimpleProductV1'));
-
-         die;
-
         $page = $paramFetcher->get('page');
 
         $request = $this->getRequest();
 
         $options = array('locale' => $request->getLocale());
-        $prm = $this->getProductResourceManager($options);
+        $prm = $this->getProductResourceManager();
 
-        $params = new FindParameters();
+        $params = new FetchParameters();
         $params->limit = 5;
         $params->offset = ($page - 1) * $params->limit;
 
@@ -145,7 +123,6 @@ class ProductsController extends Controller
         }
 
         $view->setFormat($expectedVersionAndFormat->getFormat());
-        $vc = $this->getProductVersionConverter($prm);
 
         // TODO: Change "$results" to proper REST object with links to prev/next.
 

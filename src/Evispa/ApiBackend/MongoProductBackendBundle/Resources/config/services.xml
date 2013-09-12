@@ -6,12 +6,17 @@
 
     <parameters>
         <parameter key="evispa_mongo_product_backend.product_backend.class">Evispa\ApiBackend\MongoProductBackendBundle\Backend\MongoBackend</parameter>
+        <parameter key="evispa_mongo_product_backend.oracle_test_backend.class">Evispa\ApiBackend\MongoProductBackendBundle\Backend\OracleTestBackend</parameter>
         <parameter key="evispa_mongo_product_backend.secondary_product_backend.class">Evispa\ApiBackend\MongoProductBackendBundle\Backend\SecondaryTestBackend</parameter>
     </parameters>
 
     <services>
         <service id="evispa_mongo_product_backend.product_backend" class="%evispa_mongo_product_backend.product_backend.class%">
             <argument type="service" id="doctrine_mongodb" />
+        </service>
+        
+        <service id="evispa_mongo_product_backend.oracle_test_backend" class="%evispa_mongo_product_backend.oracle_test_backend.class%">
+            
         </service>
 
         <service id="evispa_mongo_product_backend.secondary_product_backend" class="%evispa_mongo_product_backend.secondary_product_backend.class%">

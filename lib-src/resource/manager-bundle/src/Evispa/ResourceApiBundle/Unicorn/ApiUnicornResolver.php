@@ -60,6 +60,8 @@ class ApiUnicornResolver
                 }
             }
         }
+        
+        $allPrimaryBackends = $availableBackends;
 
         // Check for backend managers.
 
@@ -94,7 +96,7 @@ class ApiUnicornResolver
             $configSuggestion = $this->buildManagerBackendSuggestion($resourceId, $availableBackends);
 
             throw new BackendConfigurationException(
-                'Resource "'.$resourceId.'" can use only a single backend at a time, '.
+                'Resource "'.$resourceId.'" can use only a single primary backend at a time, '.
                 'but multiple are available. '.
                 'Please specify '.$configSuggestion.' in "evispa_resource_api.backend" configuration.'
             );
@@ -105,7 +107,7 @@ class ApiUnicornResolver
         $backendConfig = $backendManagerConfigs[$backendId];
 
         $primaryParts = $backendConfig->getParts();
-
+        
         $secondaryConfigs = array();
         
         // Build available backend part array for both primary and secondary backends.
@@ -155,24 +157,44 @@ class ApiUnicornResolver
                     $allowedBackendsForPart[$possibleBackendId] = true;
                 }
             }
-            
+
             if (!isset($backendParts[$mappedBackendId])) {
-                if (0 === count($allowedBackendsForPart)) {
+                if (isset($allPrimaryBackends[$mappedBackendId])) {
+                    if (0 === count($allowedBackendsForPart)) {
+                        throw new BackendConfigurationException(
+                            'Backend "'.$mappedBackendId.'" was assigned to manage "'.$resourceId.'" resource\'s part "'.$id.'", '.
+                            'but this backend is primary, and only a single primary can be configured for a resource. You can '.
+                            'either change primary from "'.$backendId.'" to "'.$mappedBackendId.'" or remove this configuration '.
+                            'from "evispa_resource_api.backend.'.$resourceId.'.parts".'
+                        );
+                    }
+                    
                     throw new BackendConfigurationException(
-                        'Resource part "'.$id.'" for "'.$resourceId.'" resource can not be mapped to "'.$mappedBackendId.'" '.
-                        'backend, because it does not exist. This configuration most likelly should be removed.'
+                        'Backend "'.$mappedBackendId.'" was assigned to manage "'.$resourceId.'" resource\'s part "'.$id.'", '.
+                        'but this backend is primary, and only a single primary can be configured for a resource. '.
+                        'However, you can either change primary backend from "'.$backendId.'" to "'.$mappedBackendId.'" or '.
+                        'change backend for this part to '.$this->buildChoiceSuggestion(array_keys($allowedBackendsForPart)).'.'
+                    );
+                } else {
+                    if (0 === count($allowedBackendsForPart)) {
+                        throw new BackendConfigurationException(
+                            'Backend "'.$mappedBackendId.'" was assigned to manage "'.$resourceId.'" resource\'s part "'.$id.'", '.
+                            'but this backend was not found.'
+                        );
+                    }
+
+                    throw new BackendConfigurationException(
+                        'Backend "'.$mappedBackendId.'" was assigned to manage "'.$resourceId.'" resource\'s part "'.$id.'", '.
+                        'but this backend was not found. '.
+                        'However you change it to '.$this->buildChoiceSuggestion(array_keys($allowedBackendsForPart)).'.'
                     );
                 }
-                
-                throw new BackendConfigurationException(
-                    'Configured backend "'.$mappedBackendId.'" can not be assigned to "'.$resourceId.'" resource, '.
-                    'because it does not exist. Use '.$this->buildChoiceSuggestion(array_keys($allowedBackendsForPart)).' instead.'
-                );
             } else {
                 if (!isset($allowedBackendsForPart[$mappedBackendId])) {
                     throw new BackendConfigurationException(
-                        'Configured backend "'.$mappedBackendId.'" can not be assigned to "'.$resourceId.'" resource, '.
-                        'because it can not manage specified "'.$id.'" part. Use '.$this->buildChoiceSuggestion(array_keys($allowedBackendsForPart)).' instead.'
+                        'Backend "'.$mappedBackendId.'" was assigned to manage "'.$resourceId.'" resource\'s part "'.$id.'", '.
+                        'but such functionality is not yet implemented. Implement it and get some cookies! '.
+                        'However, if you are extra lazy, change it to '.$this->buildChoiceSuggestion(array_keys($allowedBackendsForPart)).' and hope for the best.'
                     );
                 }
             }
@@ -202,7 +224,7 @@ class ApiUnicornResolver
                     $configSuggestion = $this->buildChoiceSuggestion(array_keys($backendsThatCanManageThePart));
                     
                     throw new BackendConfigurationException(
-                        'Resource part "'.$partName.'" of "'.$resourceId.'" can use only a single backend at a time, '.
+                        'Resource part "'.$partName.'" of "'.$resourceId.'" can only use a single backend at a time, '.
                         'but multiple are available. '.
                         'Please specify '.$configSuggestion.' in "evispa_resource_api.backend.'.$resourceId.'.parts" configuration.'
                     );

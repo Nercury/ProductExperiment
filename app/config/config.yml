@@ -109,10 +109,9 @@ fos_rest:
 nelmio_api_doc: ~
 
 evispa_resource_api:
-    backend:
-        product:
-            primary: mongo.product
-            parts:
-                product.text: mongo.product
-                product.route: mongo.secondary.product
+  backend:
+    product:
+      primary: mongo.product
+      parts:
+        product.route: mongo.secondary.product
                 
