@@ -98,11 +98,6 @@ class ProductsController extends Controller
                 $product = $action->run($product);
             }
 
-            //new VersionConverter(new VersionReader(new AnnotationReader()), get_class(), );
-
-//            $vc = $this->getProductVersionConverter($prm);
-//            $product = $vc->migrateToVersion($product, $expectedVersionAndFormat->getVersion());
-
             var_dump($product);
 
             $view->setData($product);
