@@ -27,10 +27,12 @@
 
 namespace Evispa\Api\Product\Model;
 
+use Evispa\Api\Resource\Model\ApiResourceInterface;
+
 /**
  * @Evispa\ObjectMigration\Annotations\Version("vnd.evispa.product.v1")
  */
-class ProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
+class ProductV1 implements ApiResourceInterface
 {
     private $slug;
 
@@ -68,11 +70,14 @@ class ProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
     /**
      * @Evispa\ObjectMigration\Annotations\Migration(from="Evispa\Api\Product\Model\SimpleProductV1", require={"locale"})
      *
-     * @param CodeV1 $old Old version of code part.
+     * @param SimpleProductV1 $other
+     * @param $options
+     * @internal param \Evispa\Api\Product\Model\CodeV1 $old Old version of code part.
      *
      * @return self
      */
-    public static function fromSimpleProductV1(\Evispa\Api\Product\Model\SimpleProductV1 $other, $options) {
+    public static function fromSimpleProductV1(SimpleProductV1 $other, $options)
+    {
         $obj = new self();
 
         $obj->setSlug($other->getSlug());
@@ -90,11 +95,12 @@ class ProductV1 implements \Evispa\Api\Resource\Model\ApiResourceInterface
     /**
      * @Evispa\ObjectMigration\Annotations\Migration(to="Evispa\Api\Product\Model\SimpleProductV1", require={"locale"})
      *
-     * @param CodeV1 $old Old version of code part.
+     * @param $options
      *
      * @return self
      */
-    public function toSimpleProductV1($options) {
+    public function toSimpleProductV1($options)
+    {
         $obj = new SimpleProductV1();
 
         $obj->setSlug($this->getSlug());

@@ -200,7 +200,7 @@ class ProductsController extends Controller
                 $form->addError(new \Symfony\Component\Form\FormError('Submit form data based on specified parameters.'));
             }
         } else {*/
-        $form->bind($request);
+        $form->submit($request);
         $data = $form->getData();
         if ($form->isValid()) {
 
