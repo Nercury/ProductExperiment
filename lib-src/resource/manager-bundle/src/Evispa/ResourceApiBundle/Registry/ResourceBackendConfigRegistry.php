@@ -3,6 +3,7 @@
 namespace Evispa\ResourceApiBundle\Registry;
 
 use Evispa\ResourceApiBundle\Config\ResourceBackendConfig;
+use Evispa\ResourceApiBundle\Exception\BackendConfigurationException;
 use LogicException;
 
 /**
@@ -21,13 +22,13 @@ class ResourceBackendConfigRegistry
         
         foreach ($this->backendConfigs as $backendConfig) {
             if (null !== $backendConfig->getPrimaryBackend() && $backendConfig->getPrimaryBackend() === $resourceBackendConfig->getPrimaryBackend()) {
-                throw new \Evispa\ResourceApiBundle\Exception\BackendConfigurationException(
+                throw new BackendConfigurationException(
                     'Can not share the same primary backend among "'.$backendConfig->getBackendId().'" and '.
                     '"'.$resourceBackendConfig->getBackendId().'" configurations. Please fix this hack attempt :)'
                 );
             }
             if (null !== $backendConfig->getSecondaryBackend() && $backendConfig->getSecondaryBackend() === $resourceBackendConfig->getSecondaryBackend()) {
-                throw new \Evispa\ResourceApiBundle\Exception\BackendConfigurationException(
+                throw new BackendConfigurationException(
                     'Can not share the same secondary backend among "'.$backendConfig->getBackendId().'" and '.
                     '"'.$resourceBackendConfig->getBackendId().'" configurations. Please fix this hack attempt :)'
                 );

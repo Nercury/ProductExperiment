@@ -28,6 +28,7 @@
 namespace Evispa\ResourceApiBundle\Unicorn;
 
 use Evispa\ResourceApiBundle\Backend\SecondaryBackendInterface;
+use Evispa\ResourceApiBundle\Exception\ResourceRequestException;
 
 /**
  * Class UnicornSecondaryBackend
@@ -68,7 +69,7 @@ class UnicornSecondaryBackend
         $actions = $info->getInputMigrationActions($partClass);
 
         if (null === $actions) {
-            throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException('Backend "'.$this->id.'" has returned unknown object "'.$partClass.'".');
+            throw new ResourceRequestException('Backend "'.$this->id.'" has returned unknown object "'.$partClass.'".');
         }
 
         foreach ($actions as $action) {
@@ -98,7 +99,7 @@ class UnicornSecondaryBackend
 
             foreach ($requestedParts as $partName) {
                 if (!isset($this->managedParts[$partName])) {
-                    throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException(
+                    throw new ResourceRequestException(
                         'Requested part "'.$partName.'" is not managed by "'.$this->id.'" backend.'
                     );
                 }
@@ -131,7 +132,7 @@ class UnicornSecondaryBackend
 
             foreach ($requestedParts as $partName) {
                 if (!isset($this->managedParts[$partName])) {
-                    throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException(
+                    throw new ResourceRequestException(
                         'Requested part "'.$partName.'" is not managed by "'.$this->id.'" backend.'
                     );
                 }
@@ -143,7 +144,7 @@ class UnicornSecondaryBackend
         // If it returns a result, it must contain all of the requested parts and correct objects.
 
         if (null === $backendResults) {
-            throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException('Backend "'.$this->id.'" has returned nothing, array expected.');
+            throw new ResourceRequestException('Backend "'.$this->id.'" has returned nothing, array expected.');
         }
         
         foreach ($backendResults as &$backendResult) {

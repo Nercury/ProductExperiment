@@ -1,6 +1,8 @@
 <?php
 
 namespace Evispa\ResourceApiBundle\Config;
+use Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface;
+use Evispa\ResourceApiBundle\Backend\SecondaryBackendInterface;
 
 /**
  * @author nerijus
@@ -24,17 +26,18 @@ class ResourceBackendConfig
      * @param string $backendId Backend identifier.
      * @param string $resourceId Managed resource.
      * @param string[] $parts
-     * @param \Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface $primaryBackend
-     * @param \Evispa\ResourceApiBundle\Backend\SecondaryBackendInterface $secondaryBackend
+     * @param PrimaryBackendInterface $primaryBackend
+     * @param SecondaryBackendInterface $secondaryBackend
      * @return \self
      */
     public static function create(
         $backendId,
         $resourceId,
         $parts,
-        \Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface $primaryBackend = null,
-        \Evispa\ResourceApiBundle\Backend\SecondaryBackendInterface $secondaryBackend = null
-    ) {
+        PrimaryBackendInterface $primaryBackend = null,
+        SecondaryBackendInterface $secondaryBackend = null
+    )
+    {
         $new = new self($backendId, $resourceId, $parts);
         $new->primaryBackend = $primaryBackend;
         $new->secondaryBackend = $secondaryBackend;
@@ -56,7 +59,7 @@ class ResourceBackendConfig
     }
 
     /**
-     * @return \Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface
+     * @return PrimaryBackendInterface
      */
     public function getPrimaryBackend()
     {
@@ -64,7 +67,7 @@ class ResourceBackendConfig
     }
 
     /**
-     * @return \Evispa\ResourceApiBundle\Backend\SecondaryBackendInterface
+     * @return SecondaryBackendInterface
      */
     public function getSecondaryBackend()
     {
@@ -74,10 +77,10 @@ class ResourceBackendConfig
     /**
      * Set primary backend manager.
      *
-     * @param \Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface $backendManager
-     * @return \Evispa\ResourceApiBundle\Config\ResourceBackendConfig
+     * @param PrimaryBackendInterface $backendManager
+     * @return ResourceBackendConfig
      */
-    public function setPrimaryBackend(\Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface $backendManager)
+    public function setPrimaryBackend(PrimaryBackendInterface $backendManager)
     {
         $this->primaryBackend = $backendManager;
         return $this;
@@ -86,10 +89,10 @@ class ResourceBackendConfig
     /**
      * Set secondary backend manager.
      *
-     * @param \Evispa\ResourceApiBundle\Backend\SecondaryBackendInterface $partManager
-     * @return \Evispa\ResourceApiBundle\Config\ResourceBackendConfig
+     * @param SecondaryBackendInterface $partManager
+     * @return ResourceBackendConfig
      */
-    public function setSecondaryBackend(\Evispa\ResourceApiBundle\Backend\SecondaryBackendInterface $partManager)
+    public function setSecondaryBackend(SecondaryBackendInterface $partManager)
     {
         $this->secondaryBackend = $partManager;
         return $this;

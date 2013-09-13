@@ -2,7 +2,10 @@
 
 namespace Evispa\ResourceApiBundle\Unicorn;
 
+use Evispa\ResourceApiBundle\Backend\FetchParameters;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface;
+use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject;
+use Evispa\ResourceApiBundle\Exception\ResourceRequestException;
 
 /**
  * @author nerijus
@@ -22,7 +25,8 @@ class UnicornPrimaryBackend
     private $backend = null;
 
     /**
-     * @param array                   $managedParts
+     * @param $id
+     * @param array $managedParts
      * @param PrimaryBackendInterface $backend
      */
     public function __construct($id, array $managedParts, PrimaryBackendInterface $backend)
@@ -39,19 +43,20 @@ class UnicornPrimaryBackend
     {
         return $this->backend;
     }
-    
-    private function migrateIncommingObject($info, $resultPart, $options) {
+
+    private function migrateIncommingObject($info, $resultPart, $options)
+    {
         $partClass = get_class($resultPart);
         $actions = $info->getInputMigrationActions($partClass);
 
         if (null === $actions) {
-            throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException('Backend "'.$this->id.'" has returned unknown object "'.$partClass.'".');
+            throw new ResourceRequestException('Backend "' . $this->id . '" has returned unknown object "' . $partClass . '".');
         }
 
         foreach ($actions as $action) {
             $resultPart = $action->run($resultPart, $options);
         }
-        
+
         return $resultPart;
     }
 
@@ -59,11 +64,14 @@ class UnicornPrimaryBackend
      * Fetch a single item from this backend.
      *
      * @param string $slug Item identifier.
+     * @param array $options
      * @param array|null $requestedParts Part array. If this is null, use all the parts.
      *
-     * @return \Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject
+     * @throws ResourceRequestException
+     * @return PrimaryBackendResultObject
      */
-    public function fetchOne($slug, $options = array(), $requestedParts = null) {
+    public function fetchOne($slug, $options = array(), $requestedParts = null)
+    {
 
         if (null === $requestedParts) {
 
@@ -75,8 +83,8 @@ class UnicornPrimaryBackend
 
             foreach ($requestedParts as $partName) {
                 if (!isset($this->managedParts[$partName])) {
-                    throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException(
-                        'Requested part "'.$partName.'" is not managed by "'.$this->id.'" backend.'
+                    throw new ResourceRequestException(
+                        'Requested part "' . $partName . '" is not managed by "' . $this->id . '" backend.'
                     );
                 }
             }
@@ -97,7 +105,8 @@ class UnicornPrimaryBackend
         return $backendResult;
     }
 
-    public function fetchAll(\Evispa\ResourceApiBundle\Backend\FetchParameters $params, $options = array(), $requestedParts = null) {
+    public function fetchAll(FetchParameters $params, $options = array(), $requestedParts = null)
+    {
 
         if (null === $requestedParts) {
 
@@ -109,8 +118,8 @@ class UnicornPrimaryBackend
 
             foreach ($requestedParts as $partName) {
                 if (!isset($this->managedParts[$partName])) {
-                    throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException(
-                        'Requested part "'.$partName.'" is not managed by "'.$this->id.'" backend.'
+                    throw new ResourceRequestException(
+                        'Requested part "' . $partName . '" is not managed by "' . $this->id . '" backend.'
                     );
                 }
             }
@@ -118,25 +127,24 @@ class UnicornPrimaryBackend
 
         $backendResults = $this->backend->fetchAll($params, $requestedParts);
 
-        
-        
+
         // If it returns a result, it must contain all of the requested parts and correct objects.
 
         if (null === $backendResults) {
-            throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException('Backend "'.$this->id.'" has returned nothing, PrimaryBackendResultsObject expected.');
+            throw new ResourceRequestException('Backend "' . $this->id . '" has returned nothing, PrimaryBackendResultsObject expected.');
         } elseif (is_array($backendResults)) {
-            throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException('Backend "'.$this->id.'" has returned an array, PrimaryBackendResultsObject expected.');
+            throw new ResourceRequestException('Backend "' . $this->id . '" has returned an array, PrimaryBackendResultsObject expected.');
         }
-        
+
         foreach ($backendResults->getObjects() as $backendResult) {
             foreach ($this->managedParts as $part => $info) {
                 $resultPart = $backendResult->getPart($part);
                 if (null === $resultPart) {
                     continue;
                 }
-                
+
                 $backendResult->setPart($part, $this->migrateIncommingObject($info, $resultPart, $options));
-            }            
+            }
         }
 
         return $backendResults;

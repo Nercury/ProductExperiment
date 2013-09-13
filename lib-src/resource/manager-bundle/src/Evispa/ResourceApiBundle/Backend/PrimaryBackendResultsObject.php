@@ -51,7 +51,7 @@ class PrimaryBackendResultsObject
     }
 
     /**
-     * @return \Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject[]
+     * @return PrimaryBackendResultObject
      */
     public function getObjects()
     {

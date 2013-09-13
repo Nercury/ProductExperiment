@@ -54,8 +54,8 @@
             <argument>product</argument> <!-- Resource identifier -->
             <argument type="collection"> <!-- List of parts managed by this backend -->
                 <!-- key is part identifier, value is public class name -->
-                <argument type="collection" key="product.route">
-                    <argument>Evispa\Api\Product\Model\Route\RouteV1</argument>
+                <argument type="collection" key="product.text">
+                    <argument>Evispa\Api\Product\Model\Text\TextV1</argument>
                 </argument>
             </argument>
             <call method="setSecondaryBackend">

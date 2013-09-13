@@ -26,6 +26,7 @@
  */
 
 namespace Evispa\ResourceApiBundle\Backend;
+use Evispa\ResourceApiBundle\Exception\ResourceRequestException;
 
 /**
  * Class PrimaryBackendResultObject
@@ -46,11 +47,12 @@ class PrimaryBackendResultObject
 
     /**
      * @param $resourceSlug
+     * @throws ResourceRequestException
      */
     public function __construct($resourceSlug)
     {
         if (strlen($resourceSlug) > 24) {
-            throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException('Resource slug length can not exceed 24 symbols.');
+            throw new ResourceRequestException('Resource slug length can not exceed 24 symbols.');
         }
 
         $this->resourceSlug = $resourceSlug;
@@ -94,7 +96,8 @@ class PrimaryBackendResultObject
      *
      * @return mixed
      */
-    public function getPart($partName) {
+    public function getPart($partName)
+    {
         return isset($this->resourceParts[$partName])
             ? $this->resourceParts[$partName]
             : null;
@@ -107,7 +110,8 @@ class PrimaryBackendResultObject
      *
      * @return boolean
      */
-    public function hasPart($partName) {
+    public function hasPart($partName)
+    {
         return isset($this->resourceParts[$partName]);
     }
 }

@@ -47,9 +47,10 @@ class FetchResult
     private $totalFound;
 
     /**
-     * @param FindParameters    $parameters
+     * @param FindParameters $parameters
      * @param ResourceInterface $resources
-     * @param Integer           $total
+     * @param $totalFound
+     * @internal param int $total
      */
     public function __construct($parameters, $resources, $totalFound)
     {
@@ -67,7 +68,7 @@ class FetchResult
     }
 
     /**
-     * @return \Symfony\Component\Config\Resource\ResourceInterface
+     * @return ResourceInterface
      */
     public function getResources()
     {

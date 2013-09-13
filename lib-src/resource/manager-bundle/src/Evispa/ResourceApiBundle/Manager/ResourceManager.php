@@ -7,9 +7,11 @@ namespace Evispa\ResourceApiBundle\Manager;
 
 use Evispa\Api\Resource\Model\ApiResourceInterface;
 use Evispa\ResourceApiBundle\Backend\FetchParameters;
+use Evispa\ResourceApiBundle\Exception\ResourceRequestException;
 use Evispa\ResourceApiBundle\Migration\ClassMigrationInfo;
 use Evispa\ResourceApiBundle\Unicorn\Unicorn;
-use LogicException;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class ResourceManager
 {
@@ -19,11 +21,11 @@ class ResourceManager
      * @var \ReflectionClass
      */
     private $class;
-    
+
     /**
      * Resource parts.
-     * 
-     * @var array 
+     *
+     * @var array
      */
     private $resourceParts;
 
@@ -33,14 +35,14 @@ class ResourceManager
      * @var ClassMigrationInfo
      */
     public $migrationInfo;
-    
+
     /**
      * Required options for resource operations.
-     * 
+     *
      * @var array
      */
     private $requiredOptions;
-    
+
     /**
      * Backend driver unicorn.
      *
@@ -51,47 +53,42 @@ class ResourceManager
     /**
      * Used to read/write resource properties.
      *
-     * @var \Symfony\Component\PropertyAccess\PropertyAccessor
+     * @var PropertyAccessor
      */
     private $propertyAccess;
-    
+
     public function __construct(
         $className,
         $resourceParts,
         ClassMigrationInfo $migrationInfo,
         $requiredOptions,
         Unicorn $unicorn
-    ) {
+    )
+    {
         $this->class = new \ReflectionClass($className);
         $this->resourceParts = $resourceParts;
         $this->migrationInfo = $migrationInfo;
         $this->requiredOptions = $requiredOptions;
         $this->unicorn = $unicorn;
-        
-        $this->propertyAccess = \Symfony\Component\PropertyAccess\PropertyAccess::createPropertyAccessor();
+
+        $this->propertyAccess = PropertyAccess::createPropertyAccessor();
     }
-    
-    public function getClassVersion($className) {
-        if (!isset($this->migrationInfo->classVersions[$className])) {
-            throw new LogicException('Class name "'.$className.'" is not known for "'.$className.'" resource manager.');
-        }
-        return $this->migrationInfo->classVersions[$className];
-    }
-    
-    private function checkOptions($options) {
+
+
+    private function checkOptions($options)
+    {
         foreach ($this->requiredOptions as $optionName => $info) {
             if (!isset($options[$optionName])) {
-                throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException('Required option "'.$optionName.'" was not set. It is required to migrate from "'.$info['from'].'" to "'.$info['to'].'".');
+                throw new ResourceRequestException('Required option "' . $optionName . '" was not set. It is required to migrate from "' . $info['from'] . '" to "' . $info['to'] . '".');
             }
         }
     }
-    
+
     /**
      * Find a single resource object.
      *
      * @param string $slug Resource identifier.
-     *
-     * @throws LogicException
+     * @param array $options
      *
      * @return ApiResourceInterface|null
      */
@@ -99,18 +96,19 @@ class ResourceManager
     {
         $this->checkOptions($options);
     }
-    
+
     /**
      * Find batch of resources
      *
      * @param FetchParameters $params
+     * @param array $options
      *
      * @return FetchResult
      */
     public function fetchAll(FetchParameters $params, $options = array())
     {
         $this->checkOptions($options);
-        
+
         $resultsObject = $this->unicorn->getPrimaryBackend()->fetchAll($params, $options);
 
         $resources = array();
@@ -144,20 +142,25 @@ class ResourceManager
         if (0 < count($slugs)) {
             // set parts form secondary backends
             foreach ($this->unicorn->getSecondaryBackends() as $unicornBackend) {
-                $resourcesParts = $unicornBackend->fetchBySlugs($slugs);
+                $resourcesParts = $unicornBackend->fetchBySlugs($slugs, $options);
 
                 foreach ($resourcesParts as $slug => $otherParts) {
 
-                    foreach ($otherParts as $partName => $part) {
-                        if (null === $part) {
-                            continue;
-                        }
+                    if (isset($resources[$slug])) {
 
-                        $this->propertyAccess->setValue(
-                            $resource,
-                            $this->resourceParts[$partName],
-                            $part
-                        );
+                        $resource = $resources[$slug];
+
+                        foreach ($otherParts as $partName => $part) {
+                            if (null === $part) {
+                                continue;
+                            }
+
+                            $this->propertyAccess->setValue(
+                                $resource,
+                                $this->resourceParts[$partName],
+                                $part
+                            );
+                        }
                     }
                 }
             }

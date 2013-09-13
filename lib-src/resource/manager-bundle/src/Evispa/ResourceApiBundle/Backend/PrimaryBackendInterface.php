@@ -11,7 +11,7 @@ interface PrimaryBackendInterface
      * Return PrimaryBackendResultObject or null if not found
      *
      * @param string $slug
-     * @param array  $requestedParts
+     * @param array $requestedParts
      *
      * @return PrimaryBackendResultObject|null
      */
@@ -20,8 +20,8 @@ interface PrimaryBackendInterface
     /**
      * Return array (empty if not found)
      *
-     * @param FindParameters $params
-     * @param array          $requestedParts
+     * @param FetchParameters|FindParameters $params
+     * @param array $requestedParts
      *
      * @return PrimaryBackendResultsObject
      */

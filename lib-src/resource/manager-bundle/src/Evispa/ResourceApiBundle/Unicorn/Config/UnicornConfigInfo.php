@@ -22,7 +22,8 @@ class UnicornConfigInfo
      *
      * @param SecondaryBackendConfigInfo $configInfo
      */
-    public function addSecondaryBackendConfigInfo(SecondaryBackendConfigInfo $configInfo) {
+    public function addSecondaryBackendConfigInfo(SecondaryBackendConfigInfo $configInfo)
+    {
         $this->secondaryBackendConfigInfos[] = $configInfo;
     }
 

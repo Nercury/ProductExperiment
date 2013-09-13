@@ -23,7 +23,8 @@ class AcceptVersionParser
      *
      * @return self
      */
-    public function addKnownFormat($format) {
+    public function addKnownFormat($format)
+    {
         $this->knownFormats[$format] = true;
         return $this;
     }
@@ -35,7 +36,8 @@ class AcceptVersionParser
      *
      * @return self
      */
-    public function setRequestedFormat($format) {
+    public function setRequestedFormat($format)
+    {
         $this->requestedFormat = $format;
         return $this;
     }
@@ -48,7 +50,8 @@ class AcceptVersionParser
      *
      * @return self
      */
-    public function setDefault($format, $version) {
+    public function setDefault($format, $version)
+    {
         $this->formatDefaults[$format] = $version;
         return $this;
     }
@@ -60,7 +63,8 @@ class AcceptVersionParser
      *
      * @return self
      */
-    public function setAllowedVersions($versions) {
+    public function setAllowedVersions($versions)
+    {
         $this->allowedVersions = $versions;
         return $this;
     }
@@ -72,7 +76,8 @@ class AcceptVersionParser
      *
      * @return VersionAndFormat
      */
-    public function parseVersionAndFormat($acceptedContentTypes) {
+    public function parseVersionAndFormat($acceptedContentTypes)
+    {
         $parsedVersion = null;
         $parsedFormat = null;
 

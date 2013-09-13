@@ -34,7 +34,7 @@ interface SecondaryBackendInterface
      * Get parts by slug.
      *
      * @param string $slug
-     * @param array  $requestedParts
+     * @param array $requestedParts
      *
      * @return array[] (parts)
      */

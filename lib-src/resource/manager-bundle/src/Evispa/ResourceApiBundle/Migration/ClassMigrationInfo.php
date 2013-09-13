@@ -89,4 +89,11 @@ class ClassMigrationInfo
         return $actions;
     }
 
+    public function getClassVersion($className)
+    {
+        if (!isset($this->classVersions[$className])) {
+            throw new \Exception('Class name "' . $className . '" is not known for "' . $className . '" resource manager.');
+        }
+        return $this->classVersions[$className];
+    }
 }

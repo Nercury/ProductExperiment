@@ -11,11 +11,12 @@ class ApiConfigRegistry
 {
     protected $apiConfigs = array();
 
-    public function registerApiConfig(ResourceApiConfig $resourceApiConfig) {
+    public function registerApiConfig(ResourceApiConfig $resourceApiConfig)
+    {
         $resourceId = $resourceApiConfig->getResourceId();
 
         if (isset($this->apiConfigs[$resourceId])) {
-            throw new \LogicException('Resource "'.$resourceId.'" can not be registered for "'.$resourceApiConfig->getResourceClass().'", because it is already registered for "'.$this->apiConfigs[$resourceApiConfig->getResourceId()]->getResourceClass().'".');
+            throw new \LogicException('Resource "' . $resourceId . '" can not be registered for "' . $resourceApiConfig->getResourceClass() . '", because it is already registered for "' . $this->apiConfigs[$resourceApiConfig->getResourceId()]->getResourceClass() . '".');
         }
 
         $this->apiConfigs[$resourceId] = $resourceApiConfig;
@@ -24,7 +25,8 @@ class ApiConfigRegistry
     /**
      * @return ResourceApiConfig[]
      */
-    public function getApiConfigs() {
+    public function getApiConfigs()
+    {
         return $this->apiConfigs;
     }
 
@@ -35,7 +37,8 @@ class ApiConfigRegistry
      *
      * @return ResourceApiConfig
      */
-    public function getResourceConfig($resourceId) {
+    public function getResourceConfig($resourceId)
+    {
         if (isset($this->apiConfigs[$resourceId])) {
             return $this->apiConfigs[$resourceId];
         }

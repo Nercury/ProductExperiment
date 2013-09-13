@@ -10,6 +10,8 @@ use Evispa\ResourceApiBundle\Backend\FindParameters;
 use Evispa\ResourceApiBundle\Unicorn\Unicorn;
 use Evispa\ResourceApiBundle\Unicorn\UnicornPrimaryBackend;
 use Symfony\Component\Form\Exception\LogicException;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 /**
  * @author nerijus
@@ -19,7 +21,7 @@ class OldResourceManager
     /**
      * Used to read/write resource properties.
      *
-     * @var \Symfony\Component\PropertyAccess\PropertyAccessor
+     * @var PropertyAccessor
      */
     private $propertyAccess;
 
@@ -64,14 +66,14 @@ class OldResourceManager
     private $converterOptions;
 
     /**
-     * @param Reader           $reader
-     * @param VersionReader    $versionReader
-     * @param array            $converterOptions
+     * @param Reader $reader
+     * @param VersionReader $versionReader
+     * @param array $converterOptions
      * @param \ReflectionClass $class
-     * @param array            $resourceProperties
-     * @param Unicorn          $unicorn
+     * @param array $resourceProperties
+     * @param Unicorn $unicorn
      *
-     * @throws \Symfony\Component\Form\Exception\LogicException
+     * @throws LogicException
      */
     public function __construct(
         Reader $reader,
@@ -80,9 +82,10 @@ class OldResourceManager
         \ReflectionClass $class,
         array $resourceProperties,
         Unicorn $unicorn
-    ) {
+    )
+    {
         $this->versionReader = $versionReader;
-        $this->propertyAccess = \Symfony\Component\PropertyAccess\PropertyAccess::createPropertyAccessor();
+        $this->propertyAccess = PropertyAccess::createPropertyAccessor();
         $this->class = $class;
         $this->resourceProperties = $resourceProperties;
         $this->unicorn = $unicorn;
@@ -147,7 +150,7 @@ class OldResourceManager
      *
      * @throws \LogicException
      *
-     * @return \Evispa\Api\Resource\Model\ApiResourceInterface|null
+     * @return ApiResourceInterface|null
      */
     public function fetchOne($slug)
     {
@@ -263,7 +266,7 @@ class OldResourceManager
     /**
      * Create and get a new resource object, no persist to the db.
      *
-     * @return \Evispa\Api\Resource\Model\ApiResourceInterface
+     * @return ApiResourceInterface
      */
     public function getNew()
     {
@@ -273,7 +276,7 @@ class OldResourceManager
     /**
      * Save a resource object to the database.
      *
-     * @param \Evispa\Api\Resource\Model\ApiResourceInterface $resource
+     * @param ApiResourceInterface $resource
      */
     public function saveOne($resource)
     {

@@ -3,6 +3,9 @@
 namespace Evispa\ApiBackend\MongoProductBackendBundle\Backend;
 
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+use Evispa\Api\Product\Model\Code\ProductCodeV1;
+use Evispa\Api\Product\Model\Route\RouteV1;
+use Evispa\Api\Product\Model\Text\TextV1;
 use Evispa\ApiBackend\MongoProductBackendBundle\Document\Product;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface;
 use Evispa\ResourceApiBundle\Backend\FetchParameters;
@@ -33,7 +36,7 @@ class MongoBackend implements PrimaryBackendInterface
 
     /**
      * @param Product $product
-     * @param array   $requestedParts
+     * @param array $requestedParts
      *
      * @return PrimaryBackendResultObject
      */
@@ -42,14 +45,14 @@ class MongoBackend implements PrimaryBackendInterface
         $result = new PrimaryBackendResultObject($product->getSlug());
 
         if (in_array('product.code', $requestedParts)) {
-            $code = new \Evispa\Api\Product\Model\Code\ProductCodeV1();
+            $code = new ProductCodeV1();
             $code->code = $product->getCode();
 
             $result->setPart('product.code', $code);
         }
 
         if (in_array('product.route', $requestedParts)) {
-            $route = new \Evispa\Api\Product\Model\Route\RouteV1();
+            $route = new RouteV1();
             if (null !== $product->getRouteSlug()) {
                 $route->slug = $product->getRouteSlug();
             }
@@ -58,7 +61,7 @@ class MongoBackend implements PrimaryBackendInterface
         }
 
         if (in_array('product.text', $requestedParts)) {
-            $text = new \Evispa\Api\Product\Model\Text\TextV1();
+            $text = new TextV1();
             $text->name = $product->getText();
 
             $result->setPart('product.text', $text);
@@ -69,7 +72,7 @@ class MongoBackend implements PrimaryBackendInterface
 
     /**
      * @param string $slug
-     * @param array  $requestedParts
+     * @param array $requestedParts
      *
      * @return PrimaryBackendResultObject|null
      */
@@ -87,7 +90,7 @@ class MongoBackend implements PrimaryBackendInterface
 
     /**
      * @param FetchParameters $params
-     * @param array          $requestedParts
+     * @param array $requestedParts
      *
      * @return PrimaryBackendResultObject[string]
      */

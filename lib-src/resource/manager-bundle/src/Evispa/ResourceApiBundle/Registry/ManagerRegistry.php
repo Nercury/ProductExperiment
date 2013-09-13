@@ -4,6 +4,9 @@ namespace Evispa\ResourceApiBundle\Registry;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Evispa\ObjectMigration\VersionReader;
+use Evispa\ResourceApiBundle\Config\ResourceApiConfig;
+use Evispa\ResourceApiBundle\Manager\ResourceManager;
+use Evispa\ResourceApiBundle\Unicorn\ApiUnicornResolver;
 
 /**
  * @author nerijus
@@ -23,7 +26,7 @@ class ManagerRegistry
     protected $backendConfigRegistry;
 
     /**
-     * @var \Evispa\ResourceApiBundle\Unicorn\ApiUnicornResolver
+     * @var ApiUnicornResolver
      */
     protected $unicornResolver;
 
@@ -54,7 +57,7 @@ class ManagerRegistry
         $this->apiBackendMapConfiguration = $mapConfiguration;
     }
 
-    protected function loadManagerForConfig(\Evispa\ResourceApiBundle\Config\ResourceApiConfig $config, array $options)
+    protected function loadManagerForConfig(ResourceApiConfig $config, array $options)
     {
         $reader = new AnnotationReader();
         $versionReader = new VersionReader($reader);
@@ -65,7 +68,7 @@ class ManagerRegistry
             $this->apiBackendMapConfiguration
         );
 
-        $manager = new \Evispa\ResourceApiBundle\Manager\ResourceManager(
+        $manager = new ResourceManager(
             $reader, $versionReader, $options, $config->getResourceClass(), $config->getParts(), $unicorn
         );
 
@@ -76,9 +79,9 @@ class ManagerRegistry
      * Get resource manager.
      *
      * @param string $resourceId
-     * @param array  $options
+     * @param array $options
      *
-     * @return \Evispa\ResourceApiBundle\Manager\ResourceManager
+     * @return ResourceManager
      */
     public function getResourceManager($resourceId, array $options = array())
     {

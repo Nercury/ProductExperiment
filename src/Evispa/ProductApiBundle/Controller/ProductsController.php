@@ -49,9 +49,9 @@ class ProductsController extends Controller
         return $restVersionParser
             ->setAllowedVersions($prm->migrationInfo->outputVersions)
             ->setRequestedFormat($request->getRequestFormat())
-            ->setDefault('html', $prm->getClassVersion('Evispa\Api\Product\Model\ProductV1'))
-            ->setDefault('json', $prm->getClassVersion('Evispa\Api\Product\Model\SimpleProductV1'))
-            ->setDefault('xml', $prm->getClassVersion('Evispa\Api\Product\Model\SimpleProductV1'))
+            ->setDefault('html', $prm->migrationInfo->getClassVersion('Evispa\Api\Product\Model\ProductV1'))
+            ->setDefault('json', $prm->migrationInfo->getClassVersion('Evispa\Api\Product\Model\SimpleProductV1'))
+            ->setDefault('xml', $prm->migrationInfo->getClassVersion('Evispa\Api\Product\Model\SimpleProductV1'))
             ->parseVersionAndFormat($request->getAcceptableContentTypes());
     }
 
