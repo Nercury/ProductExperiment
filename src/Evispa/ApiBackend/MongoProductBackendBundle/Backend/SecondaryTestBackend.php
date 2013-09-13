@@ -26,7 +26,16 @@ class SecondaryTestBackend implements SecondaryBackendInterface
 
     public function fetchOne($slug, array $requestedParts)
     {
+        $results = array();
 
+        if (in_array('product.text', $requestedParts)) {
+            $text = new TextV1();
+            $text->name = 'dfsdf';
+
+            $results['product.text'] = $text;
+        }
+
+        return $results;
     }
 
     public function getNew(array $requestedParts)

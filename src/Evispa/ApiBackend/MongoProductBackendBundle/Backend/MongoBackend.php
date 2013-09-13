@@ -210,7 +210,6 @@ class MongoBackend implements PrimaryBackendInterface
                 $text = $cyclope->backendObject->getPart('product.text');
 
                 if (null !== $text) {
-                    var_dump($text);
                     $cyclope->entity->setText($text->name);
                 }
             }
