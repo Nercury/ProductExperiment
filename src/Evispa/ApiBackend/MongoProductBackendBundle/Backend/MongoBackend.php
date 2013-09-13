@@ -5,7 +5,7 @@ namespace Evispa\ApiBackend\MongoProductBackendBundle\Backend;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Evispa\ApiBackend\MongoProductBackendBundle\Document\Product;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface;
-use Evispa\ResourceApiBundle\Backend\FindParameters;
+use Evispa\ResourceApiBundle\Backend\FetchParameters;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultsObject;
 use Pagerfanta\Adapter\DoctrineODMMongoDBAdapter;
@@ -45,7 +45,7 @@ class MongoBackend implements PrimaryBackendInterface
             $code = new \Evispa\Api\Product\Model\Code\ProductCodeV1();
             $code->code = $product->getCode();
 
-            $result->addPart('product.code', $code);
+            $result->setPart('product.code', $code);
         }
 
         if (in_array('product.route', $requestedParts)) {
@@ -54,14 +54,14 @@ class MongoBackend implements PrimaryBackendInterface
                 $route->slug = $product->getRouteSlug();
             }
 
-            $result->addPart('product.route', $route);
+            $result->setPart('product.route', $route);
         }
 
         if (in_array('product.text', $requestedParts)) {
             $text = new \Evispa\Api\Product\Model\Text\TextV1();
             $text->name = $product->getText();
 
-            $result->addPart('product.text', $text);
+            $result->setPart('product.text', $text);
         }
 
         return $result;
@@ -86,12 +86,12 @@ class MongoBackend implements PrimaryBackendInterface
     }
 
     /**
-     * @param FindParameters $params
+     * @param FetchParameters $params
      * @param array          $requestedParts
      *
      * @return PrimaryBackendResultObject[string]
      */
-    public function fetchAll(FindParameters $params, array $requestedParts)
+    public function fetchAll(FetchParameters $params, array $requestedParts)
     {
         // just for testing purpose
         $qb = $this->mongodb->getManager()->createQueryBuilder('EvispaMongoProductBackendBundle:Product');

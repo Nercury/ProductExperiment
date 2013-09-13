@@ -1,211 +1,117 @@
 <?php
-
-namespace Evispa\ResourceApiBundle\Manager;
-
-use Doctrine\Common\Annotations\Reader;
-use Evispa\Api\Resource\Model\ApiResourceInterface;
-use Evispa\ObjectMigration\VersionConverter;
-use Evispa\ObjectMigration\VersionReader;
-use Evispa\ResourceApiBundle\Backend\FindParameters;
-use Evispa\ResourceApiBundle\Unicorn\Unicorn;
-use Evispa\ResourceApiBundle\Unicorn\UnicornPrimaryBackend;
-use Symfony\Component\Form\Exception\LogicException;
-
 /**
  * @author nerijus
  */
+
+namespace Evispa\ResourceApiBundle\Manager;
+
+use Evispa\Api\Resource\Model\ApiResourceInterface;
+use Evispa\ResourceApiBundle\Backend\FetchParameters;
+use Evispa\ResourceApiBundle\Migration\ClassMigrationInfo;
+use Evispa\ResourceApiBundle\Unicorn\Unicorn;
+use LogicException;
+
 class ResourceManager
 {
     /**
-     * Used to read/write resource properties.
+     * Primary class of this resource manager.
      *
-     * @var \Symfony\Component\PropertyAccess\PropertyAccessor
-     */
-    private $propertyAccess;
-
-    /**
      * @var \ReflectionClass
      */
     private $class;
+    
+    /**
+     * Resource parts.
+     * 
+     * @var array 
+     */
+    private $resourceParts;
 
     /**
-     * Resource property list from config, (property.id) => (property).
+     * Class migration information.
      *
+     * @var ClassMigrationInfo
+     */
+    public $migrationInfo;
+    
+    /**
+     * Required options for resource operations.
+     * 
      * @var array
      */
-    private $resourceProperties;
-
+    private $requiredOptions;
+    
     /**
-     * Version reader.
-     *
-     * @var VersionReader
-     */
-    private $versionReader;
-
-    /**
-     * Version converter for each resource part.
-     *
-     * @var VersionConverter[]
-     */
-    private $partVersionConverter;
-
-    /**
-     * Unicorn - backend configuration set.
+     * Backend driver unicorn.
      *
      * @var Unicorn
      */
     private $unicorn;
 
     /**
-     * Used converter options.
+     * Used to read/write resource properties.
      *
-     * @var array
+     * @var \Symfony\Component\PropertyAccess\PropertyAccessor
      */
-    private $converterOptions;
-
-    /**
-     * @param Reader           $reader
-     * @param VersionReader    $versionReader
-     * @param array            $converterOptions
-     * @param \ReflectionClass $class
-     * @param array            $resourceProperties
-     * @param Unicorn          $unicorn
-     *
-     * @throws \Symfony\Component\Form\Exception\LogicException
-     */
+    private $propertyAccess;
+    
     public function __construct(
-        Reader $reader,
-        VersionReader $versionReader,
-        array $converterOptions,
-        \ReflectionClass $class,
-        array $resourceProperties,
+        $className,
+        $resourceParts,
+        ClassMigrationInfo $migrationInfo,
+        $requiredOptions,
         Unicorn $unicorn
     ) {
-        $this->versionReader = $versionReader;
-        $this->propertyAccess = \Symfony\Component\PropertyAccess\PropertyAccess::createPropertyAccessor();
-        $this->class = $class;
-        $this->resourceProperties = $resourceProperties;
+        $this->class = new \ReflectionClass($className);
+        $this->resourceParts = $resourceParts;
+        $this->migrationInfo = $migrationInfo;
+        $this->requiredOptions = $requiredOptions;
         $this->unicorn = $unicorn;
-        $this->converterOptions = $converterOptions;
-
-        foreach ($this->resourceProperties as $partName => $propertyName) {
-            $property = $reader->getPropertyAnnotation(
-                $this->class->getProperty($propertyName),
-                'JMS\Serializer\Annotation\Type'
-            );
-
-            if (null === $property) {
-                throw new LogicException(
-                    'Resource "' . $this->class->getName() .
-                    '" property "' . $propertyName .
-                    '" should have JMS\Serializer\Annotation\Type annotation.'
-                );
+        
+        $this->propertyAccess = \Symfony\Component\PropertyAccess\PropertyAccess::createPropertyAccessor();
+    }
+    
+    public function getClassVersion($className) {
+        if (!isset($this->migrationInfo->classVersions[$className])) {
+            throw new LogicException('Class name "'.$className.'" is not known for "'.$className.'" resource manager.');
+        }
+        return $this->migrationInfo->classVersions[$className];
+    }
+    
+    private function checkOptions($options) {
+        foreach ($this->requiredOptions as $optionName => $info) {
+            if (!isset($options[$optionName])) {
+                throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException('Required option "'.$optionName.'" was not set. It is required to migrate from "'.$info['from'].'" to "'.$info['to'].'".');
             }
-
-            $this->partVersionConverter[$partName] = new VersionConverter(
-                $versionReader,
-                $property->name,
-                $converterOptions
-            );
         }
     }
-
-    /**
-     * Get the name of managed class.
-     *
-     * @return string
-     */
-    public function getClassName()
-    {
-        return $this->class->getName();
-    }
-
-    /**
-     * Get version reader used by this manager.
-     *
-     * @return VersionReader
-     */
-    public function getVersionReader()
-    {
-        return $this->versionReader;
-    }
-
-    /**
-     * Get used converter options.
-     *
-     * @return array
-     */
-    public function getConverterOptions()
-    {
-        return $this->converterOptions;
-    }
-
+    
     /**
      * Find a single resource object.
      *
      * @param string $slug Resource identifier.
      *
-     * @throws \LogicException
+     * @throws LogicException
      *
-     * @return \Evispa\Api\Resource\Model\ApiResourceInterface|null
+     * @return ApiResourceInterface|null
      */
-    public function fetchOne($slug)
+    public function fetchOne($slug, $options = array())
     {
-        $resultObject = $this->unicorn->getPrimaryBackend()->fetchOne($slug);
-
-        if (null === $resultObject) {
-            return null;
-        }
-
-        // Create a new resource.
-
-        /** @var ApiResourceInterface $resource */
-        $resource = $this->class->newInstance();
-        $resource->setSlug($resultObject->getResourceSlug());
-
-        foreach ($resultObject->getResourceParts() as $partName => $part) {
-
-            if (null === $part) {
-                continue;
-            }
-
-            $this->propertyAccess->setValue(
-                $resource,
-                $this->resourceProperties[$partName],
-                $this->partVersionConverter[$partName]->migrateFrom($part)
-            );
-        }
-
-        // set parts form secondary backends
-        foreach ($this->unicorn->getSecondaryBackends() as $unicornBackend) {
-            $otherParts = $unicornBackend->fetchOne($slug);
-
-            foreach ($otherParts as $partName => $part) {
-                if (null === $part) {
-                    continue;
-                }
-
-                $this->propertyAccess->setValue(
-                    $resource,
-                    $this->resourceProperties[$partName],
-                    $this->partVersionConverter[$partName]->migrateFrom($part)
-                );
-            }
-        }
-
-        return $resource;
+        $this->checkOptions($options);
     }
-
+    
     /**
      * Find batch of resources
      *
-     * @param FindParameters $params
+     * @param FetchParameters $params
      *
-     * @return FindResult
+     * @return FetchResult
      */
-    public function fetchAll(FindParameters $params)
+    public function fetchAll(FetchParameters $params, $options = array())
     {
-        $resultsObject = $this->unicorn->getPrimaryBackend()->fetchAll($params);
+        $this->checkOptions($options);
+        
+        $resultsObject = $this->unicorn->getPrimaryBackend()->fetchAll($params, $options);
 
         $resources = array();
 
@@ -225,8 +131,8 @@ class ResourceManager
 
                 $this->propertyAccess->setValue(
                     $resource,
-                    $this->resourceProperties[$partName],
-                    $this->partVersionConverter[$partName]->migrateFrom($part)
+                    $this->resourceParts[$partName],
+                    $part
                 );
             }
 
@@ -249,34 +155,14 @@ class ResourceManager
 
                         $this->propertyAccess->setValue(
                             $resource,
-                            $this->resourceProperties[$partName],
-                            $this->partVersionConverter[$partName]->migrateFrom($part)
+                            $this->resourceParts[$partName],
+                            $part
                         );
                     }
                 }
             }
         }
 
-        return new FindResult($params, $resources, $resultsObject->getTotalFound());
-    }
-
-    /**
-     * Create and get a new resource object, no persist to the db.
-     *
-     * @return \Evispa\Api\Resource\Model\ApiResourceInterface
-     */
-    public function getNew()
-    {
-
-    }
-
-    /**
-     * Save a resource object to the database.
-     *
-     * @param \Evispa\Api\Resource\Model\ApiResourceInterface $resource
-     */
-    public function saveOne($resource)
-    {
-
+        return new FetchResult($params, $resources, $resultsObject->getTotalFound());
     }
 }

@@ -2,24 +2,20 @@
 
 namespace Evispa\ProductApiBundle\Controller;
 
-//use Evispa\Resource\Component\MultipartResource\Annotations\Resource;
-
-use Evispa\ObjectMigration\VersionConverter;
 use Evispa\ProductApiBundle\Rest\ProductData;
-use Evispa\ResourceApiBundle\Backend\FindParameters;
+use Evispa\ResourceApiBundle\Backend\FetchParameters;
 use Evispa\ResourceApiBundle\Manager\ResourceManager;
 use Evispa\ResourceApiBundle\VersionParser\AcceptVersionParser;
 use Evispa\ResourceApiBundle\VersionParser\VersionAndFormat;
-use FOS\RestBundle\Request\ParamFetcher;
-use FOS\RestBundle\View\View as RestView;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use FOS\RestBundle\Request\ParamFetcher;
 
 use FOS\RestBundle\Controller\Annotations\View;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\Annotations\Post;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -31,29 +27,12 @@ class ProductsController extends Controller
     /**
      * Get product resource manager.
      *
-     * @param array $options
      * @return ResourceManager
      */
-    private function getProductResourceManager($options)
+    private function getProductResourceManager()
     {
-        $prm = $this->get('resource_managers')->getResourceManager('product', $options);
+        $prm = $this->get('resource_api.product');
         return $prm;
-    }
-
-    /**
-     * Get version converter for Product resource.
-     *
-     * @param ResourceManager $prm Resource manager.
-     *
-     * @return VersionConverter
-     */
-    private function getProductVersionConverter($prm)
-    {
-        return new VersionConverter(
-            $prm->getVersionReader(),
-            $prm->getClassName(),
-            $prm->getConverterOptions()
-        );
     }
 
     /**
@@ -66,14 +45,13 @@ class ProductsController extends Controller
      */
     private function getExpectedVersionAndFormat($request, ResourceManager $prm)
     {
-        $versionReader = $prm->getVersionReader();
         $restVersionParser = new AcceptVersionParser();
         return $restVersionParser
-            ->setAllowedVersions($versionReader->getAllowedClassOutputVersions($prm->getClassName()))
+            ->setAllowedVersions($prm->migrationInfo->outputVersions)
             ->setRequestedFormat($request->getRequestFormat())
-            ->setDefault('html', $versionReader->getClassVersion('Evispa\Api\Product\Model\ProductV1'))
-            ->setDefault('json', $versionReader->getClassVersion('Evispa\Api\Product\Model\SimpleProductV1'))
-            ->setDefault('xml', $versionReader->getClassVersion('Evispa\Api\Product\Model\SimpleProductV1'))
+            ->setDefault('html', $prm->getClassVersion('Evispa\Api\Product\Model\ProductV1'))
+            ->setDefault('json', $prm->getClassVersion('Evispa\Api\Product\Model\SimpleProductV1'))
+            ->setDefault('xml', $prm->getClassVersion('Evispa\Api\Product\Model\SimpleProductV1'))
             ->parseVersionAndFormat($request->getAcceptableContentTypes());
     }
 
@@ -89,7 +67,7 @@ class ProductsController extends Controller
 
         $options = array('locale' => $request->getLocale());
 
-        $prm = $this->getProductResourceManager($options);
+        $prm = $this->getProductResourceManager();
         $product = $prm->fetchOne(
             $slug
         );
@@ -97,7 +75,7 @@ class ProductsController extends Controller
         if (null === $product) {
             throw new NotFoundHttpException("Product was not found.");
         } else {
-            $view = RestView::create();
+            $view = \FOS\RestBundle\View\View::create();
 
             // Find out what client wants. Impossible, but very important.
             $expectedVersionAndFormat = $this->getExpectedVersionAndFormat($request, $prm);
@@ -134,15 +112,15 @@ class ProductsController extends Controller
         $request = $this->getRequest();
 
         $options = array('locale' => $request->getLocale());
-        $prm = $this->getProductResourceManager($options);
+        $prm = $this->getProductResourceManager();
 
-        $params = new FindParameters();
+        $params = new FetchParameters();
         $params->limit = 5;
         $params->offset = ($page - 1) * $params->limit;
 
-        $resourcesObject = $prm->fetchAll($params);
+        $resourcesObject = $prm->fetchAll($params, $options);
 
-        $view = RestView::create();
+        $view = \FOS\RestBundle\View\View::create();
 
         // Find out what client wants. Impossible, but very important.
         $expectedVersionAndFormat = $this->getExpectedVersionAndFormat($request, $prm);
@@ -153,7 +131,6 @@ class ProductsController extends Controller
         }
 
         $view->setFormat($expectedVersionAndFormat->getFormat());
-        $vc = $this->getProductVersionConverter($prm);
 
         // TODO: Change "$results" to proper REST object with links to prev/next.
 
@@ -162,7 +139,13 @@ class ProductsController extends Controller
         $results['parameters'] = $resourcesObject->getParameters();
 
         foreach ($resourcesObject->getResources() as $resource) {
-            $results['resources'][] = $vc->migrateToVersion($resource, $expectedVersionAndFormat->getVersion());
+            $outputClassName = $prm->migrationInfo->outputVersions[$expectedVersionAndFormat->getVersion()];
+            $actions = $prm->migrationInfo->getOutputMigrationActions($outputClassName);
+            foreach ($actions as $action) {
+                $resource = $action->run($resource, $options);
+            }
+
+            $results['resources'][] = $resource;
         }
 
         $view->setData($results);
@@ -180,7 +163,6 @@ class ProductsController extends Controller
     {
         $request = $this->getRequest();
 
-        $data = array();
 
         $fb = $this->createFormBuilder(null, array(
             'csrf_protection' => false
@@ -188,12 +170,13 @@ class ProductsController extends Controller
         $fb->add('slug', 'text');
         $fb->add('name', 'text');
 
+        $data = array();
         $form = $fb->getForm();
         $form->setData($data);
 
         //var_dump($product); die;
 
-        $view = RestView::create();
+        $view = \FOS\RestBundle\View\View::create();
 
         /*if (false === $request->request->get('form', false)) {
             if ('html' !== $view->getFormat()) {
@@ -223,8 +206,8 @@ class ProductsController extends Controller
     public function putProductAction(Request $request, $slug)
     {
         $data = new ProductData();
-        $data->setSlug($slug);
-        $data["name"] = "Title";
+        $data->setSlug('pav1');
+        $data["name"] = "Pavadinimas";
 
         $fb = $this->createFormBuilder(null, array(
             'csrf_protection' => false
@@ -244,6 +227,6 @@ class ProductsController extends Controller
             }
         }
 
-        return RestView::create($form, 400);
+        return \FOS\RestBundle\View\View::create($form, 400);
     }
 }

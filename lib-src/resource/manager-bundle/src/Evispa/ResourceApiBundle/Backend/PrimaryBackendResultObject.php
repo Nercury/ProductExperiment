@@ -82,7 +82,7 @@ class PrimaryBackendResultObject
      * @param string $partName Part name.
      * @param mixed $part Part object.
      */
-    public function addPart($partName, $part)
+    public function setPart($partName, $part)
     {
         $this->resourceParts[$partName] = $part;
     }

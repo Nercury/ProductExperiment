@@ -22,6 +22,13 @@ class ApiConfigRegistry
     }
 
     /**
+     * @return ResourceApiConfig[]
+     */
+    public function getApiConfigs() {
+        return $this->apiConfigs;
+    }
+
+    /**
      * Get resource api configuration.
      *
      * @param string $resourceId Resource identifier.

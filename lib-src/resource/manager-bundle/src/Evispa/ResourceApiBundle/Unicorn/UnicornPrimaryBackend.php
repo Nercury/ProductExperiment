@@ -39,6 +39,21 @@ class UnicornPrimaryBackend
     {
         return $this->backend;
     }
+    
+    private function migrateIncommingObject($info, $resultPart, $options) {
+        $partClass = get_class($resultPart);
+        $actions = $info->getInputMigrationActions($partClass);
+
+        if (null === $actions) {
+            throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException('Backend "'.$this->id.'" has returned unknown object "'.$partClass.'".');
+        }
+
+        foreach ($actions as $action) {
+            $resultPart = $action->run($resultPart, $options);
+        }
+        
+        return $resultPart;
+    }
 
     /**
      * Fetch a single item from this backend.
@@ -48,7 +63,7 @@ class UnicornPrimaryBackend
      *
      * @return \Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject
      */
-    public function fetchOne($slug, $requestedParts = null) {
+    public function fetchOne($slug, $options = array(), $requestedParts = null) {
 
         if (null === $requestedParts) {
 
@@ -69,7 +84,6 @@ class UnicornPrimaryBackend
 
         $backendResult = $this->backend->fetchOne($slug, $requestedParts);
 
-
         // If primary backend returns null, it means that item does not exist in database.
 
         if (null === $backendResult) {
@@ -83,7 +97,7 @@ class UnicornPrimaryBackend
         return $backendResult;
     }
 
-    public function fetchAll(\Evispa\ResourceApiBundle\Backend\FindParameters $params, $requestedParts = null) {
+    public function fetchAll(\Evispa\ResourceApiBundle\Backend\FetchParameters $params, $options = array(), $requestedParts = null) {
 
         if (null === $requestedParts) {
 
@@ -104,42 +118,27 @@ class UnicornPrimaryBackend
 
         $backendResults = $this->backend->fetchAll($params, $requestedParts);
 
+        
+        
         // If it returns a result, it must contain all of the requested parts and correct objects.
 
+        if (null === $backendResults) {
+            throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException('Backend "'.$this->id.'" has returned nothing, PrimaryBackendResultsObject expected.');
+        } elseif (is_array($backendResults)) {
+            throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException('Backend "'.$this->id.'" has returned an array, PrimaryBackendResultsObject expected.');
+        }
+        
         foreach ($backendResults->getObjects() as $backendResult) {
-            $this->validateResultItem($backendResult, $requestedParts);
+            foreach ($this->managedParts as $part => $info) {
+                $resultPart = $backendResult->getPart($part);
+                if (null === $resultPart) {
+                    continue;
+                }
+                
+                $backendResult->setPart($part, $this->migrateIncommingObject($info, $resultPart, $options));
+            }            
         }
 
         return $backendResults;
-    }
-
-    /**
-     * Throw an exception if a result item contains something bad.
-     *
-     * @param \Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject $item Result item.
-     * @param string[] $requestedParts Array of requested parts.
-     */
-    private function validateResultItem(\Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject $item, $requestedParts) {
-        if (null === $item->getResourceSlug() || false === $item->getResourceSlug() || '' === $item->getResourceSlug()) {
-            throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException(
-                'Backend "'.$this->id.'" should not return results with empty slug.'
-            );
-        }
-
-        foreach ($requestedParts as $partName) {
-
-            $part = $item->getPart($partName);
-
-            if (null !== $part) {
-                $partClassName = get_class($part);
-
-                if ($this->managedParts[$partName] !== $partClassName) {
-                    throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException(
-                        'Backend "'.$this->id.'" has returned an incorrect object for "'.$partName.'" part. '.
-                        'Expected "'.$this->managedParts[$partName].'", but got "'.$partClassName.'".'
-                    );
-                }
-            }
-        }
     }
 }
