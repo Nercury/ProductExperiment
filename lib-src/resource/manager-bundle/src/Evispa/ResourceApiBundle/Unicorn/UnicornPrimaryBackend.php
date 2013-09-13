@@ -99,6 +99,15 @@ class UnicornPrimaryBackend
             return null;
         }
 
+        foreach ($this->managedParts as $part => $info) {
+            $resultPart = $backendResult->getPart($part);
+            if (null === $resultPart) {
+                continue;
+            }
+
+            $backendResult->setPart($part, $this->migrateIncommingObject($info, $resultPart, $options));
+        }
+
         return $backendResult;
     }
 

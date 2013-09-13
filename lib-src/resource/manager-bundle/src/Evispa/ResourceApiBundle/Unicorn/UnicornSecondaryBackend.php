@@ -114,6 +114,15 @@ class UnicornSecondaryBackend
             return null;
         }
 
+        foreach ($this->managedParts as $part => $info) {
+            $resultPart = isset($backendResult[$part]) ? $backendResult[$part] : null;
+            if (null === $resultPart) {
+                continue;
+            }
+
+            $backendResult[$part] = $this->migrateIncommingObject($info, $resultPart, $options);
+        }
+
         // If it returns a result, it must contain all of the requested parts and correct objects.
 
         return $backendResult;

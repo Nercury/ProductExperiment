@@ -100,8 +100,6 @@ class ProductsController extends Controller
                 $product = $action->run($product, $options);
             }
 
-            var_dump($product); die;
-
             $view->setData($product);
         }
 
