@@ -90,7 +90,7 @@ class MongoBackend implements PrimaryBackendInterface
 
     /**
      * @param FetchParameters $params
-     * @param array          $requestedParts
+     * @param array           $requestedParts
      *
      * @return PrimaryBackendObject[string]
      */
@@ -110,14 +110,38 @@ class MongoBackend implements PrimaryBackendInterface
         return $results;
     }
 
-	public function getNew(array $requestedParts)
+    public function getNew(array $requestedParts)
     {
         var_dump($requestedParts);
 
         $mongoProduct = new Product();
+
         return $this->createResult($mongoProduct, $requestedParts);
     }
-	
+
+    /**
+     * @param string[] $slugs
+     *
+     * @return \Evispa\ApiBackend\MongoProductBackendBundle\Document\Product[]
+     */
+    private function fetchProducts(array $slugs)
+    {
+        $result = array();
+
+        /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
+        $qb = $this->mongodb->getManager()->createQueryBuilder('EvispaMongoProductBackendBundle:Product');
+        $qb->field('slug')->in($slugs);
+
+        /** @var Product[] $products */
+        $products = $qb->getQuery()->execute();
+
+        foreach ($products as $product) {
+            $result[$product->getSlug()] = $product;
+        }
+
+        return $result;
+    }
+
     /**
      * @param PrimaryBackendObject[] $objects
      * @param array                  $parts
@@ -206,15 +230,15 @@ class MongoBackend implements PrimaryBackendInterface
     }
 
     /**
-     * Save primary backend object
-     *
      * @param PrimaryBackendObject $object
      * @param array                $saveParts
      *
-     * @return mixed
+     * @return mixed|void
      */
     public function save(PrimaryBackendObject $object, array $saveParts)
     {
-        // TODO: Implement save() method.
+        $objects = $this->saveAll(array($object), $saveParts);
+
+        return end($objects);
     }
 }

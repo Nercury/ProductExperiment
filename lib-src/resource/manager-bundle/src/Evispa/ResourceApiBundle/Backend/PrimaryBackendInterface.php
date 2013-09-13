@@ -13,7 +13,7 @@ interface PrimaryBackendInterface
      * @param string $slug
      * @param array  $requestedParts
      *
-     * @return PrimaryBackendResultObject|null
+     * @return PrimaryBackendObject|null
      */
     public function fetchOne($slug, array $requestedParts);
 
