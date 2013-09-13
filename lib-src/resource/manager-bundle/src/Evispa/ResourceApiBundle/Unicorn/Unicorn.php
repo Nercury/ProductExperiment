@@ -21,7 +21,7 @@ class Unicorn
 
     /**
      * @param UnicornPrimaryBackend $primaryBackend
-     * @param array                 $backends
+     * @param array $backends
      */
     public function __construct(UnicornPrimaryBackend $primaryBackend, $backends = array())
     {

@@ -2,65 +2,56 @@
 
 namespace Evispa\ProductApiBundle\Controller;
 
-use Evispa\ResourceApiBundle\Backend\FindParameters;
+use Evispa\ProductApiBundle\Rest\ProductData;
+use Evispa\ResourceApiBundle\Backend\FetchParameters;
+use Evispa\ResourceApiBundle\Manager\ResourceManager;
+use Evispa\ResourceApiBundle\VersionParser\AcceptVersionParser;
+use Evispa\ResourceApiBundle\VersionParser\VersionAndFormat;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Request\ParamFetcher;
 
 use FOS\RestBundle\Controller\Annotations\View;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\Annotations\Post;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-//use Evispa\Resource\Component\MultipartResource\Annotations\Resource;
 
 class ProductsController extends Controller
 {
     /**
      * Get product resource manager.
      *
-     * @param array $options
-     * @return \Evispa\ResourceApiBundle\Manager\ResourceManager
+     * @return ResourceManager
      */
-    private function getProductResourceManager($options) {
-        $prm = $this->get('resource_managers')->getResourceManager('product', $options);
+    private function getProductResourceManager()
+    {
+        $prm = $this->get('resource_api.product');
         return $prm;
-    }
-
-    /**
-     * Get version converter for Product resource.
-     *
-     * @param \Evispa\ResourceApiBundle\Manager\ResourceManager $prm Resource manager.
-     *
-     * @return \Evispa\ObjectMigration\VersionConverter
-     */
-    private function getProductVersionConverter($prm) {
-        return new \Evispa\ObjectMigration\VersionConverter(
-            $prm->getVersionReader(),
-            $prm->getClassName(),
-            $prm->getConverterOptions()
-        );
     }
 
     /**
      * Get version and format for the request.
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param \Evispa\ResourceApiBundle\Manager\ResourceManager $prm
+     * @param Request $request
+     * @param ResourceManager $prm
      *
-     * @return \Evispa\ResourceApiBundle\VersionParser\VersionAndFormat
+     * @return VersionAndFormat
      */
-    private function getExpectedVersionAndFormat($request, \Evispa\ResourceApiBundle\Manager\ResourceManager $prm) {
-        $versionReader = $prm->getVersionReader();
-        $restVersionParser = new \Evispa\ResourceApiBundle\VersionParser\AcceptVersionParser();
+    private function getExpectedVersionAndFormat($request, ResourceManager $prm)
+    {
+        $restVersionParser = new AcceptVersionParser();
         return $restVersionParser
-            ->setAllowedVersions($versionReader->getAllowedClassOutputVersions($prm->getClassName()))
+            ->setAllowedVersions($prm->migrationInfo->outputVersions)
             ->setRequestedFormat($request->getRequestFormat())
-            ->setDefault('html', $versionReader->getClassVersion('Evispa\Api\Product\Model\ProductV1'))
-            ->setDefault('json', $versionReader->getClassVersion('Evispa\Api\Product\Model\SimpleProductV1'))
-            ->setDefault('xml', $versionReader->getClassVersion('Evispa\Api\Product\Model\SimpleProductV1'))
+            ->setDefault('html', $prm->migrationInfo->getClassVersion('Evispa\Api\Product\Model\ProductV1'))
+            ->setDefault('json', $prm->migrationInfo->getClassVersion('Evispa\Api\Product\Model\SimpleProductV1'))
+            ->setDefault('xml', $prm->migrationInfo->getClassVersion('Evispa\Api\Product\Model\SimpleProductV1'))
             ->parseVersionAndFormat($request->getAcceptableContentTypes());
     }
 
@@ -76,13 +67,13 @@ class ProductsController extends Controller
 
         $options = array('locale' => $request->getLocale());
 
-        $prm = $this->getProductResourceManager($options);
+        $prm = $this->getProductResourceManager();
         $product = $prm->fetchOne(
             $slug
         );
 
         if (null === $product) {
-            throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException("Product was not found.");
+            throw new NotFoundHttpException("Product was not found.");
         } else {
             $view = \FOS\RestBundle\View\View::create();
 
@@ -90,8 +81,8 @@ class ProductsController extends Controller
             $expectedVersionAndFormat = $this->getExpectedVersionAndFormat($request, $prm);
 
             if (null === $expectedVersionAndFormat) {
-                throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException(
-                    'Can not return requested resource in '.$request->getRequestFormat().' format.'
+                throw new NotFoundHttpException(
+                    'Can not return requested resource in ' . $request->getRequestFormat() . ' format.'
                 );
             }
 
@@ -114,32 +105,32 @@ class ProductsController extends Controller
      * @QueryParam(name="count", requirements="\d+", default="50", strict=true, nullable=true, description="Item count limit")
      * @View(templateVar="result")
      */
-    public function getProductsAction(ParamFetcher $paramFetcher) {
+    public function getProductsAction(ParamFetcher $paramFetcher)
+    {
         $page = $paramFetcher->get('page');
 
         $request = $this->getRequest();
 
         $options = array('locale' => $request->getLocale());
-        $prm = $this->getProductResourceManager($options);
+        $prm = $this->getProductResourceManager();
 
-        $params = new FindParameters();
+        $params = new FetchParameters();
         $params->limit = 5;
         $params->offset = ($page - 1) * $params->limit;
 
-        $resourcesObject = $prm->fetchAll($params);
+        $resourcesObject = $prm->fetchAll($params, $options);
 
         $view = \FOS\RestBundle\View\View::create();
 
         // Find out what client wants. Impossible, but very important.
         $expectedVersionAndFormat = $this->getExpectedVersionAndFormat($request, $prm);
         if (null === $expectedVersionAndFormat) {
-            throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException(
-                'Can not return requested resource in '.$request->getRequestFormat().' format.'
+            throw new NotFoundHttpException(
+                'Can not return requested resource in ' . $request->getRequestFormat() . ' format.'
             );
         }
 
         $view->setFormat($expectedVersionAndFormat->getFormat());
-        $vc = $this->getProductVersionConverter($prm);
 
         // TODO: Change "$results" to proper REST object with links to prev/next.
 
@@ -148,7 +139,13 @@ class ProductsController extends Controller
         $results['parameters'] = $resourcesObject->getParameters();
 
         foreach ($resourcesObject->getResources() as $resource) {
-            $results['resources'][] = $vc->migrateToVersion($resource, $expectedVersionAndFormat->getVersion());
+            $outputClassName = $prm->migrationInfo->outputVersions[$expectedVersionAndFormat->getVersion()];
+            $actions = $prm->migrationInfo->getOutputMigrationActions($outputClassName);
+            foreach ($actions as $action) {
+                $resource = $action->run($resource, $options);
+            }
+
+            $results['resources'][] = $resource;
         }
 
         $view->setData($results);
@@ -162,9 +159,9 @@ class ProductsController extends Controller
      * @ApiDoc
      * @View(templateVar="product")
      */
-    public function postProductsAction() {
+    public function postProductsAction()
+    {
         $request = $this->getRequest();
-
 
 
         $fb = $this->createFormBuilder(null, array(
@@ -173,6 +170,7 @@ class ProductsController extends Controller
         $fb->add('slug', 'text');
         $fb->add('name', 'text');
 
+        $data = array();
         $form = $fb->getForm();
         $form->setData($data);
 
@@ -185,12 +183,12 @@ class ProductsController extends Controller
                 $form->addError(new \Symfony\Component\Form\FormError('Submit form data based on specified parameters.'));
             }
         } else {*/
-            $form->bind($request);
-            $data = $form->getData();
-            if ($form->isValid()) {
+        $form->submit($request);
+        $data = $form->getData();
+        if ($form->isValid()) {
 
-                return new \Symfony\Component\HttpFoundation\Response($this->get('serializer')->serialize($data, 'json'));
-            }
+            return new Response($this->get('serializer')->serialize($data, 'json'));
+        }
         //}
 
         $view->setData($form);
@@ -205,8 +203,9 @@ class ProductsController extends Controller
      * @ApiDoc
      * @@Resource("product", action="update")
      */
-    public function putProductAction(\Symfony\Component\HttpFoundation\Request $request, $slug) {
-        $data = new \Evispa\ProductApiBundle\Rest\ProductData();
+    public function putProductAction(Request $request, $slug)
+    {
+        $data = new ProductData();
         $data->setSlug('pav1');
         $data["name"] = "Pavadinimas";
 
@@ -224,7 +223,7 @@ class ProductsController extends Controller
             $form->submit($request);
             $data = $form->getData();
             if ($form->isValid()) {
-                return new \Symfony\Component\HttpFoundation\Response($this->get('serializer')->serialize($data, 'json'));
+                return new Response($this->get('serializer')->serialize($data, 'json'));
             }
         }
 

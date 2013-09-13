@@ -13,21 +13,29 @@ interface PrimaryBackendInterface
      * @param string $slug
      * @param array  $requestedParts
      *
-     * @return PrimaryBackendObject|null
+     * @return PrimaryBackendResultObject|null
      */
     public function fetchOne($slug, array $requestedParts);
 
     /**
      * Return array (empty if not found)
      *
-     * @param FindParameters $params
+     * @param FetchParameters|FindParameters $params
      * @param array          $requestedParts
      *
      * @return PrimaryBackendResultsObject
      */
-    public function fetchAll(FindParameters $params, array $requestedParts);
+    public function fetchAll(FetchParameters $params, array $requestedParts);
 
     /**
+     *
+     * @param array $requestedParts
+     * 
+     * @return PrimaryBackendResultsObject
+     */
+    public function getNew(array $requestedParts);
+	
+	/**
      * Save primary backend object
      *
      * @param PrimaryBackendObject $object

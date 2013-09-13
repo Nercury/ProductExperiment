@@ -27,15 +27,15 @@
 
 namespace Evispa\ResourceApiBundle\Manager;
 
-use Evispa\ResourceApiBundle\Backend\FindParameters;
+use Evispa\ResourceApiBundle\Backend\FetchParameters;
 use Symfony\Component\Config\Resource\ResourceInterface;
 
 /**
  * Class FindResult
  *
- * @package Evispa\ResourceApiBundle\Backend
+ * @package Evispa\ResourceApiBundle\Manager
  */
-class FindResult
+class FetchResult
 {
     /** @var FindParameters */
     private $parameters;
@@ -47,9 +47,10 @@ class FindResult
     private $totalFound;
 
     /**
-     * @param FindParameters    $parameters
+     * @param FindParameters $parameters
      * @param ResourceInterface $resources
-     * @param Integer           $total
+     * @param $totalFound
+     * @internal param int $total
      */
     public function __construct($parameters, $resources, $totalFound)
     {
@@ -59,7 +60,7 @@ class FindResult
     }
 
     /**
-     * @return FindParameters
+     * @return FetchParameters
      */
     public function getParameters()
     {
@@ -67,7 +68,7 @@ class FindResult
     }
 
     /**
-     * @return \Symfony\Component\Config\Resource\ResourceInterface
+     * @return ResourceInterface
      */
     public function getResources()
     {

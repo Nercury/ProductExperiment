@@ -46,7 +46,11 @@ class PrimaryBackendObject
      */
     private $resourceParts = array();
 
-    public function __construct($resourceSlug = null)
+    /**
+     * @param $resourceSlug
+     * @throws ResourceRequestException
+     */
+    public function __construct($resourceSlug)
     {
         $this->setResourceSlug($resourceSlug);
     }
@@ -89,9 +93,9 @@ class PrimaryBackendObject
      * Add a part to result object.
      *
      * @param string $partName Part name.
-     * @param mixed  $part     Part object.
+     * @param mixed $part Part object.
      */
-    public function addPart($partName, $part)
+    public function setPart($partName, $part)
     {
         $this->resourceParts[$partName] = $part;
     }

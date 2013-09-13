@@ -22,8 +22,8 @@ class AppKernel extends Kernel
             new FSC\HateoasBundle\FSCHateoasBundle(),
             new Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
             new Evispa\ApiDocBundle\EvispaApiDocBundle(),
-            new Evispa\ProductApiBundle\EvispaProductApiBundle(),
             new Evispa\ResourceApiBundle\EvispaResourceApiBundle(),
+            new Evispa\ProductApiBundle\EvispaProductApiBundle(),
             new Evispa\ApiBackend\MongoProductBackendBundle\EvispaMongoProductBackendBundle(),
         );
 

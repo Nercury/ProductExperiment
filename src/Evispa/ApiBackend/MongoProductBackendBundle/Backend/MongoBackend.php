@@ -3,9 +3,12 @@
 namespace Evispa\ApiBackend\MongoProductBackendBundle\Backend;
 
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+use Evispa\Api\Product\Model\Code\ProductCodeV1;
+use Evispa\Api\Product\Model\Route\RouteV1;
+use Evispa\Api\Product\Model\Text\TextV1;
 use Evispa\ApiBackend\MongoProductBackendBundle\Document\Product;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface;
-use Evispa\ResourceApiBundle\Backend\FindParameters;
+use Evispa\ResourceApiBundle\Backend\FetchParameters;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendObject;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultsObject;
 use Pagerfanta\Adapter\DoctrineODMMongoDBAdapter;
@@ -42,26 +45,26 @@ class MongoBackend implements PrimaryBackendInterface
         $result = new PrimaryBackendObject($product->getSlug());
 
         if (in_array('product.code', $requestedParts)) {
-            $code = new \Evispa\Api\Product\Model\Code\ProductCodeV1();
+            $code = new ProductCodeV1();
             $code->code = $product->getCode();
 
-            $result->addPart('product.code', $code);
+            $result->setPart('product.code', $code);
         }
 
         if (in_array('product.route', $requestedParts)) {
-            $route = new \Evispa\Api\Product\Model\Route\RouteV1();
+            $route = new RouteV1();
             if (null !== $product->getRouteSlug()) {
                 $route->slug = $product->getRouteSlug();
             }
 
-            $result->addPart('product.route', $route);
+            $result->setPart('product.route', $route);
         }
 
         if (in_array('product.text', $requestedParts)) {
-            $text = new \Evispa\Api\Product\Model\Text\TextV1();
+            $text = new TextV1();
             $text->name = $product->getText();
 
-            $result->addPart('product.text', $text);
+            $result->setPart('product.text', $text);
         }
 
         return $result;
@@ -86,12 +89,12 @@ class MongoBackend implements PrimaryBackendInterface
     }
 
     /**
-     * @param FindParameters $params
+     * @param FetchParameters $params
      * @param array          $requestedParts
      *
      * @return PrimaryBackendObject[string]
      */
-    public function fetchAll(FindParameters $params, array $requestedParts)
+    public function fetchAll(FetchParameters $params, array $requestedParts)
     {
         // just for testing purpose
         $qb = $this->mongodb->getManager()->createQueryBuilder('EvispaMongoProductBackendBundle:Product');
@@ -107,42 +110,14 @@ class MongoBackend implements PrimaryBackendInterface
         return $results;
     }
 
-    /**
-     * @param PrimaryBackendObject $object
-     * @param array                $saveParts
-     *
-     * @return mixed|void
-     */
-    public function save(PrimaryBackendObject $object, array $saveParts)
+	public function getNew(array $requestedParts)
     {
-        $objects = $this->saveAll(array($object), $saveParts);
+        var_dump($requestedParts);
 
-        return end($objects);
+        $mongoProduct = new Product();
+        return $this->createResult($mongoProduct, $requestedParts);
     }
-
-    /**
-     * @param string[] $slugs
-     *
-     * @return \Evispa\ApiBackend\MongoProductBackendBundle\Document\Product[]
-     */
-    private function fetchProducts(array $slugs)
-    {
-        $result = array();
-
-        /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
-        $qb = $this->mongodb->getManager()->createQueryBuilder('EvispaMongoProductBackendBundle:Product');
-        $qb->field('slug')->in($slugs);
-
-        /** @var Product[] $products */
-        $products = $qb->getQuery()->execute();
-
-        foreach ($products as $product) {
-            $result[$product->getSlug()] = $product;
-        }
-
-        return $result;
-    }
-
+	
     /**
      * @param PrimaryBackendObject[] $objects
      * @param array                  $parts
@@ -228,5 +203,18 @@ class MongoBackend implements PrimaryBackendInterface
         }
 
         return $results;
+    }
+
+    /**
+     * Save primary backend object
+     *
+     * @param PrimaryBackendObject $object
+     * @param array                $saveParts
+     *
+     * @return mixed
+     */
+    public function save(PrimaryBackendObject $object, array $saveParts)
+    {
+        // TODO: Implement save() method.
     }
 }

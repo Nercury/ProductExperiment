@@ -33,5 +33,6 @@ namespace Evispa\Api\Resource\Model;
 interface ApiResourceInterface
 {
     public function getSlug();
+
     public function setSlug($slug);
 }

@@ -28,6 +28,7 @@
 namespace Evispa\ResourceApiBundle\Unicorn;
 
 use Evispa\ResourceApiBundle\Backend\SecondaryBackendInterface;
+use Evispa\ResourceApiBundle\Exception\ResourceRequestException;
 
 /**
  * Class UnicornSecondaryBackend
@@ -63,6 +64,21 @@ class UnicornSecondaryBackend
         return $this->backend;
     }
 
+    private function migrateIncommingObject($info, $resultPart, $options) {
+        $partClass = get_class($resultPart);
+        $actions = $info->getInputMigrationActions($partClass);
+
+        if (null === $actions) {
+            throw new ResourceRequestException('Backend "'.$this->id.'" has returned unknown object "'.$partClass.'".');
+        }
+
+        foreach ($actions as $action) {
+            $resultPart = $action->run($resultPart, $options);
+        }
+
+        return $resultPart;
+    }
+
     /**
      * Fetch a single item from this backend.
      *
@@ -71,7 +87,7 @@ class UnicornSecondaryBackend
      *
      * @return array
      */
-    public function fetchOne($slug, $requestedParts = null) {
+    public function fetchOne($slug, $options = array(), $requestedParts = null) {
 
         if (null === $requestedParts) {
 
@@ -83,7 +99,7 @@ class UnicornSecondaryBackend
 
             foreach ($requestedParts as $partName) {
                 if (!isset($this->managedParts[$partName])) {
-                    throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException(
+                    throw new ResourceRequestException(
                         'Requested part "'.$partName.'" is not managed by "'.$this->id.'" backend.'
                     );
                 }
@@ -105,7 +121,7 @@ class UnicornSecondaryBackend
         return $backendResult;
     }
 
-    public function fetchBySlugs($slugs, $requestedParts = null) {
+    public function fetchBySlugs($slugs, $options = array(), $requestedParts = null) {
         if (null === $requestedParts) {
 
             $requestedParts = array_keys($this->managedParts);
@@ -116,7 +132,7 @@ class UnicornSecondaryBackend
 
             foreach ($requestedParts as $partName) {
                 if (!isset($this->managedParts[$partName])) {
-                    throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException(
+                    throw new ResourceRequestException(
                         'Requested part "'.$partName.'" is not managed by "'.$this->id.'" backend.'
                     );
                 }
@@ -127,35 +143,57 @@ class UnicornSecondaryBackend
 
         // If it returns a result, it must contain all of the requested parts and correct objects.
 
-        foreach ($backendResults->getObjects() as $backendResult) {
-            $this->validateResultItem($backendResult, $requestedParts);
+        if (null === $backendResults) {
+            throw new ResourceRequestException('Backend "'.$this->id.'" has returned nothing, array expected.');
+        }
+
+        foreach ($backendResults as &$backendResult) {
+            foreach ($this->managedParts as $part => $info) {
+                $resultPart = isset($backendResult[$part]) ? $backendResult[$part] : null;
+                if (null === $resultPart) {
+                    continue;
+                }
+
+                $backendResult[$part] = $this->migrateIncommingObject($info, $resultPart, $options);
+            }
         }
 
         return $backendResults;
     }
 
-    /**
-     * Throw an exception if a result item contains something bad.
-     *
-     * @param array $item Result item.
-     * @param string[] $requestedParts Array of requested parts.
-     */
-    private function validateResultItem($item, $requestedParts) {
+    public function getNew($options = array(), $requestedParts = null) {
+        if (null === $requestedParts) {
 
-        foreach ($requestedParts as $partName) {
+            $requestedParts = array_keys($this->managedParts);
 
-            $part = isset($item[$partName]) ? $item[$partName] : null;
+        } else {
 
-            if (null !== $part) {
-                $partClassName = get_class($part);
+            // Make sure all requested parts exist in managed parts, otherwise bad things can happen.
 
-                if ($this->managedParts[$partName] !== $partClassName) {
-                    throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException(
-                        'Backend "'.$this->id.'" has returned an incorrect object for "'.$partName.'" part. '.
-                        'Expected "'.$this->managedParts[$partName].'", but got "'.$partClassName.'".'
+            foreach ($requestedParts as $partName) {
+                if (!isset($this->managedParts[$partName])) {
+                    throw new ResourceRequestException(
+                        'Requested part "'.$partName.'" is not managed by "'.$this->id.'" backend.'
                     );
                 }
             }
         }
+
+        $backendResult = $this->backend->getNew($requestedParts);
+
+        if (null === $backendResult) {
+            return null;
+        }
+
+        foreach ($this->managedParts as $part => $info) {
+            $resultPart = isset($backendResult[$part]) ? $backendResult[$part] : null;
+            if (null === $resultPart) {
+                continue;
+            }
+
+            $backendResult[$part] = $this->migrateIncommingObject($info, $resultPart, $options);
+        }
+
+        return $backendResult;
     }
 }

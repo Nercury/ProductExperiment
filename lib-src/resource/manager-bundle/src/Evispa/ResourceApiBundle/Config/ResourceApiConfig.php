@@ -27,6 +27,8 @@ class ResourceApiConfig
      *
      * @param string $resourceId Resource identifier, i.e. "product".
      * @param string $resourceClass Resource class name, i.e "Vendor\Product".
+     * @param $parts
+     * @throws \LogicException
      */
     function __construct($resourceId, $resourceClass, $parts)
     {
@@ -37,7 +39,7 @@ class ResourceApiConfig
         $requiredInterface = 'Evispa\Api\Resource\Model\ApiResourceInterface';
 
         if (!$this->resourceClass->implementsInterface($requiredInterface)) {
-            throw new \LogicException('Root resource class "'.$resourceClass.'" must implement "'.$requiredInterface.'" interface.');
+            throw new \LogicException('Root resource class "' . $resourceClass . '" must implement "' . $requiredInterface . '" interface.');
         }
     }
 

@@ -30,7 +30,10 @@
         "doctrine/mongodb": "1.0.3",
         "doctrine/mongodb-odm": "*",
         "doctrine/mongodb-odm-bundle": "*",
-        "evispa/object-migration": "@dev"
+        "evispa/object-migration": "@dev",
+        "ocramius/proxy-manager": "*",
+        "ocramius/generated-hydrator": "*",
+        "symfony/proxy-manager-bridge": "*"
     },
 	"scripts": {
         "post-install-cmd": [

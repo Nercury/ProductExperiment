@@ -62,11 +62,13 @@ class ProductCodeV1
     /**
      * @Evispa\ObjectMigration\Annotations\Migration(from="Evispa\Api\Product\Model\Code\CodeV1")
      *
-     * @param CodeV1 $old Old version of code part.
+     * @param CodeV1 $other
+     * @param $options
      *
      * @return self
      */
-    public static function fromCodeV1(CodeV1 $other, $options) {
+    public static function fromCodeV1(CodeV1 $other, $options)
+    {
         $code = new self();
 
         $code->code = $other->code;
@@ -77,9 +79,11 @@ class ProductCodeV1
     /**
      * @Evispa\ObjectMigration\Annotations\Migration(to="Evispa\Api\Product\Model\Code\CodeV1")
      *
+     * @param $options
      * @return CodeV1
      */
-    public function toCodeV1($options) {
+    public function toCodeV1($options)
+    {
         $other = new CodeV1();
 
         $other->code = $this->code;

@@ -41,18 +41,20 @@ class LocalizedTextV1
      * @JMS\Serializer\Annotation\XmlKeyValuePairs
      * @JMS\Serializer\Annotation\XmlList(inline = true)
      *
-     * @var Evispa\Api\Product\Model\Text\TextV1[]
+     * @var TextV1[]
      */
     public $items = array();
 
     /**
      * @Evispa\ObjectMigration\Annotations\Migration(from="Evispa\Api\Product\Model\Text\TextV1", require={"locale"})
      *
-     * @param TextV1 $old Old version of text part.
+     * @param TextV1 $other
+     * @param $options
      *
      * @return self
      */
-    public static function fromTextV1(TextV1 $other, $options) {
+    public static function fromTextV1(TextV1 $other, $options)
+    {
         $locale = $options['locale'];
 
         $new = new self();
@@ -65,9 +67,11 @@ class LocalizedTextV1
     /**
      * @Evispa\ObjectMigration\Annotations\Migration(to="Evispa\Api\Product\Model\Text\TextV1", require={"locale"})
      *
+     * @param $options
      * @return TextV1
      */
-    public function toTextV1($options) {
+    public function toTextV1($options)
+    {
         $locale = $options['locale'];
 
         if (isset($this->items[$locale])) {

@@ -3,6 +3,7 @@
 namespace Evispa\ResourceApiBundle\Registry;
 
 use Evispa\ResourceApiBundle\Config\ResourceBackendConfig;
+use Evispa\ResourceApiBundle\Exception\BackendConfigurationException;
 use LogicException;
 
 /**
@@ -18,6 +19,21 @@ class ResourceBackendConfigRegistry
         if (isset($this->backendConfigs[$backendId])) {
             throw new LogicException('Backend with id "'.$backendId.'" is already defined.');
         }
+        
+        foreach ($this->backendConfigs as $backendConfig) {
+            if (null !== $backendConfig->getPrimaryBackend() && $backendConfig->getPrimaryBackend() === $resourceBackendConfig->getPrimaryBackend()) {
+                throw new BackendConfigurationException(
+                    'Can not share the same primary backend among "'.$backendConfig->getBackendId().'" and '.
+                    '"'.$resourceBackendConfig->getBackendId().'" configurations. Please fix this hack attempt :)'
+                );
+            }
+            if (null !== $backendConfig->getSecondaryBackend() && $backendConfig->getSecondaryBackend() === $resourceBackendConfig->getSecondaryBackend()) {
+                throw new BackendConfigurationException(
+                    'Can not share the same secondary backend among "'.$backendConfig->getBackendId().'" and '.
+                    '"'.$resourceBackendConfig->getBackendId().'" configurations. Please fix this hack attempt :)'
+                );
+            }
+        }
 
         $this->backendConfigs[$backendId] = $resourceBackendConfig;
     }
@@ -28,5 +44,9 @@ class ResourceBackendConfigRegistry
     public function getBackendConfigs()
     {
         return $this->backendConfigs;
+    }
+    
+    public function getBackendConfig($id) {
+        return isset($this->backendConfigs[$id]) ? $this->backendConfigs[$id] : null;
     }
 }
