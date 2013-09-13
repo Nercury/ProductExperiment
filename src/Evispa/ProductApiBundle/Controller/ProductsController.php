@@ -2,6 +2,9 @@
 
 namespace Evispa\ProductApiBundle\Controller;
 
+use Doctrine\Common\Annotations\AnnotationReader;
+use Evispa\ObjectMigration\VersionConverter;
+use Evispa\ObjectMigration\VersionReader;
 use Evispa\ProductApiBundle\Rest\ProductData;
 use Evispa\ResourceApiBundle\Backend\FetchParameters;
 use Evispa\ResourceApiBundle\Manager\ResourceManager;
@@ -32,13 +35,14 @@ class ProductsController extends Controller
     private function getProductResourceManager()
     {
         $prm = $this->get('resource_api.product');
+
         return $prm;
     }
 
     /**
      * Get version and format for the request.
      *
-     * @param Request $request
+     * @param Request         $request
      * @param ResourceManager $prm
      *
      * @return VersionAndFormat
@@ -46,6 +50,7 @@ class ProductsController extends Controller
     private function getExpectedVersionAndFormat($request, ResourceManager $prm)
     {
         $restVersionParser = new AcceptVersionParser();
+
         return $restVersionParser
             ->setAllowedVersions($prm->migrationInfo->outputVersions)
             ->setRequestedFormat($request->getRequestFormat())
@@ -69,7 +74,8 @@ class ProductsController extends Controller
 
         $prm = $this->getProductResourceManager();
         $product = $prm->fetchOne(
-            $slug
+            $slug,
+            $options
         );
 
         if (null === $product) {
@@ -88,8 +94,16 @@ class ProductsController extends Controller
 
             $view->setFormat($expectedVersionAndFormat->getFormat());
 
-            $vc = $this->getProductVersionConverter($prm);
-            $product = $vc->migrateToVersion($product, $expectedVersionAndFormat->getVersion());
+            foreach ($prm->migrationInfo->getOutputMigrationActions('Evispa\Api\Product\Model\ProductV1') as $action) {
+                $product = $action->run($product);
+            }
+
+            //new VersionConverter(new VersionReader(new AnnotationReader()), get_class(), );
+
+//            $vc = $this->getProductVersionConverter($prm);
+//            $product = $vc->migrateToVersion($product, $expectedVersionAndFormat->getVersion());
+
+            var_dump($product);
 
             $view->setData($product);
         }
@@ -133,7 +147,6 @@ class ProductsController extends Controller
         $view->setFormat($expectedVersionAndFormat->getFormat());
 
         // TODO: Change "$results" to proper REST object with links to prev/next.
-
         $results = array('resources' => array());
         $results['total'] = $resourcesObject->getTotalFound();
         $results['parameters'] = $resourcesObject->getParameters();
@@ -164,9 +177,12 @@ class ProductsController extends Controller
         $request = $this->getRequest();
 
 
-        $fb = $this->createFormBuilder(null, array(
-            'csrf_protection' => false
-        ));
+        $fb = $this->createFormBuilder(
+            null,
+            array(
+                'csrf_protection' => false
+            )
+        );
         $fb->add('slug', 'text');
         $fb->add('name', 'text');
 
@@ -209,12 +225,19 @@ class ProductsController extends Controller
         $data->setSlug('pav1');
         $data["name"] = "Pavadinimas";
 
-        $fb = $this->createFormBuilder(null, array(
-            'csrf_protection' => false
-        ));
-        $fb->add('name', 'text', array(
-            'property_path' => '[name]'
-        ));
+        $fb = $this->createFormBuilder(
+            null,
+            array(
+                'csrf_protection' => false
+            )
+        );
+        $fb->add(
+            'name',
+            'text',
+            array(
+                'property_path' => '[name]'
+            )
+        );
 
         $form = $fb->getForm();
         $form->setData($data);

@@ -63,8 +63,7 @@ class ResourceManager
         ClassMigrationInfo $migrationInfo,
         $requiredOptions,
         Unicorn $unicorn
-    )
-    {
+    ) {
         $this->class = new \ReflectionClass($className);
         $this->resourceParts = $resourceParts;
         $this->migrationInfo = $migrationInfo;
@@ -88,20 +87,67 @@ class ResourceManager
      * Find a single resource object.
      *
      * @param string $slug Resource identifier.
-     * @param array $options
+     * @param array  $options
      *
      * @return ApiResourceInterface|null
      */
     public function fetchOne($slug, $options = array())
     {
         $this->checkOptions($options);
+
+        $resultObject = $this->unicorn->getPrimaryBackend()->fetchOne($slug, $options);
+
+        if (null === $resultObject) {
+            return null;
+        }
+
+        // Create a new resource.
+
+        /** @var ApiResourceInterface $resource */
+        $resource = $this->class->newInstance();
+        $resource->setSlug($resultObject->getResourceSlug());
+
+        foreach ($resultObject->getResourceParts() as $partName => $part) {
+            if (null === $part) {
+                continue;
+            }
+
+            $this->propertyAccess->setValue(
+                $resource,
+                $this->resourceParts[$partName],
+                $part
+            );
+        }
+
+        // set parts form secondary backends
+        foreach ($this->unicorn->getSecondaryBackends() as $unicornBackend) {
+            $otherParts = $unicornBackend->fetchOne($slug, $options);
+
+            if (null !== $otherParts) {
+
+                foreach ($otherParts as $partName => $part) {
+                    if (null === $part) {
+                        continue;
+                    }
+
+                    $this->propertyAccess->setValue(
+                        $resource,
+                        $this->resourceParts[$partName],
+                        $part
+                    );
+                }
+
+            }
+        }
+
+        return $resource;
     }
 
     /**
      * Find batch of resources
      *
      * @param FetchParameters $params
-     * @param array $options
+     * @param array           $options
      *
      * @return FetchResult
      */
@@ -169,7 +215,8 @@ class ResourceManager
         return new FetchResult($params, $resources, $resultsObject->getTotalFound());
     }
 
-    public function getNew($options = array()) {
+    public function getNew($options = array())
+    {
         $this->checkOptions($options);
 
         /** @var ApiResourceInterface $resource */

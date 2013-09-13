@@ -191,21 +191,28 @@ class MongoBackend implements PrimaryBackendInterface
                 /** @var \Evispa\Api\Product\Model\Code\ProductCodeV1 $code */
                 $code = $cyclope->backendObject->getPart('product.code');
 
-                $cyclope->entity->setCode($code->code);
+                if (null !== $code) {
+                    $cyclope->entity->setCode($code->code);
+                }
             }
 
             if (in_array('product.route', $parts)) {
                 /** @var \Evispa\Api\Product\Model\Route\RouteV1 $route */
                 $route = $cyclope->backendObject->getPart('product.route');
 
-                $cyclope->entity->setRouteSlug($route->slug);
+                if (null !== $route) {
+                    $cyclope->entity->setRouteSlug($route->slug);
+                }
             }
 
             if (in_array('product.text', $parts)) {
                 /** @var \Evispa\Api\Product\Model\Text\TextV1 $text */
                 $text = $cyclope->backendObject->getPart('product.text');
 
-                $cyclope->entity->setText($text->name);
+                if (null !== $text) {
+                    var_dump($text);
+                    $cyclope->entity->setText($text->name);
+                }
             }
 
             if (false === $this->mongodb->getManager()->contains($cyclope->entity)) {

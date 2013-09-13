@@ -116,8 +116,6 @@ class UnicornSecondaryBackend
 
         // If it returns a result, it must contain all of the requested parts and correct objects.
 
-        $this->validateResultItem($backendResult, $requestedParts);
-
         return $backendResult;
     }
 

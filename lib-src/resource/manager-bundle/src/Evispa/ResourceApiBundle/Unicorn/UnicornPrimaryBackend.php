@@ -4,6 +4,7 @@ namespace Evispa\ResourceApiBundle\Unicorn;
 
 use Evispa\ResourceApiBundle\Backend\FetchParameters;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface;
+use Evispa\ResourceApiBundle\Backend\PrimaryBackendObject;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject;
 use Evispa\ResourceApiBundle\Exception\ResourceRequestException;
 
@@ -68,7 +69,7 @@ class UnicornPrimaryBackend
      * @param array|null $requestedParts Part array. If this is null, use all the parts.
      *
      * @throws ResourceRequestException
-     * @return PrimaryBackendResultObject
+     * @return PrimaryBackendObject
      */
     public function fetchOne($slug, $options = array(), $requestedParts = null)
     {
@@ -97,10 +98,6 @@ class UnicornPrimaryBackend
         if (null === $backendResult) {
             return null;
         }
-
-        // If it returns a result, it must contain all of the requested parts and correct objects.
-
-        $this->validateResultItem($backendResult, $requestedParts);
 
         return $backendResult;
     }
