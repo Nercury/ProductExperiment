@@ -28,4 +28,17 @@ class SecondaryTestBackend implements SecondaryBackendInterface
     {
 
     }
+
+    public function getNew(array $requestedParts)
+    {
+        $result = array();
+
+        if (in_array('product.text', $requestedParts)) {
+            $text = new TextV1();
+            $text->name = 'Super Tekstas';
+            $result['product.text'] = $text;
+        }
+
+        return $result;
+    }
 }

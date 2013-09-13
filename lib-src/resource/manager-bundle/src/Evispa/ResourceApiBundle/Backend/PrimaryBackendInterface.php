@@ -26,4 +26,12 @@ interface PrimaryBackendInterface
      * @return PrimaryBackendResultsObject
      */
     public function fetchAll(FetchParameters $params, array $requestedParts);
+
+    /**
+     *
+     * @param array $requestedParts
+     * 
+     * @return PrimaryBackendResultsObject
+     */
+    public function getNew(array $requestedParts);
 }

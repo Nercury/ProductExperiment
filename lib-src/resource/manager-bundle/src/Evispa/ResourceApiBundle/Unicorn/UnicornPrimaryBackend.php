@@ -149,4 +149,41 @@ class UnicornPrimaryBackend
 
         return $backendResults;
     }
+
+    public function getNew($options = array(), $requestedParts = null)
+    {
+        if (null === $requestedParts) {
+
+            $requestedParts = array_keys($this->managedParts);
+
+        } else {
+
+            // Make sure all requested parts exist in managed parts, otherwise bad things can happen.
+
+            foreach ($requestedParts as $partName) {
+                if (!isset($this->managedParts[$partName])) {
+                    throw new ResourceRequestException(
+                        'Requested part "' . $partName . '" is not managed by "' . $this->id . '" backend.'
+                    );
+                }
+            }
+        }
+
+        $backendResult = $this->backend->getNew($requestedParts);
+
+        if (null === $backendResult) {
+            return null;
+        }
+
+        foreach ($this->managedParts as $part => $info) {
+            $resultPart = $backendResult->getPart($part);
+            if (null === $resultPart) {
+                continue;
+            }
+
+            $backendResult->setPart($part, $this->migrateIncommingObject($info, $resultPart, $options));
+        }
+
+        return $backendResult;
+    }
 }

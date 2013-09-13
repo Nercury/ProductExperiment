@@ -83,7 +83,8 @@ class ProductV1 implements ApiResourceInterface
         $obj->setSlug($other->getSlug());
 
         if (null !== $other->code) {
-            $obj->code = $other->code;
+            $obj->code = new Code\CodeV1();
+            $obj->code->code = $other->code;
         }
         if (null !== $other->text) {
             $obj->text = Text\LocalizedTextV1::fromTextV1($other->text, $options);

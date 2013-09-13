@@ -168,4 +168,43 @@ class ResourceManager
 
         return new FetchResult($params, $resources, $resultsObject->getTotalFound());
     }
+
+    public function getNew($options = array()) {
+        $this->checkOptions($options);
+
+        /** @var ApiResourceInterface $resource */
+        $resource = $this->class->newInstance();
+
+        $resultObject = $this->unicorn->getPrimaryBackend()->getNew($options);
+        foreach ($resultObject->getResourceParts() as $partName => $part) {
+
+            if (null === $part) {
+                continue;
+            }
+
+            $this->propertyAccess->setValue(
+                $resource,
+                $this->resourceParts[$partName],
+                $part
+            );
+        }
+
+        foreach ($this->unicorn->getSecondaryBackends() as $unicornBackend) {
+            $otherParts = $unicornBackend->getNew($options);
+
+            foreach ($otherParts as $partName => $part) {
+                if (null === $part) {
+                    continue;
+                }
+
+                $this->propertyAccess->setValue(
+                    $resource,
+                    $this->resourceParts[$partName],
+                    $part
+                );
+            }
+        }
+
+        return $resource;
+    }
 }

@@ -51,4 +51,12 @@ interface SecondaryBackendInterface
      * @return array[string] (array[slug] => parts)
      */
     public function fetchBySlugs(array $slugs, array $requestedParts);
+
+    /**
+     *
+     * @param array $requestedParts
+     *
+     * @return array
+     */
+    public function getNew(array $requestedParts);
 }

@@ -25,4 +25,9 @@ class OracleTestBackend implements PrimaryBackendInterface
     {
 
     }
+
+    public function getNew(array $requestedParts)
+    {
+
+    }
 }

@@ -2,7 +2,7 @@ NelmioApiDocBundle:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
     prefix:   /api/doc
 
-evispa_menu:
+evispa_pab:
     resource: "@EvispaProductApiBundle/Controller"
     type:     annotation
     prefix:   /

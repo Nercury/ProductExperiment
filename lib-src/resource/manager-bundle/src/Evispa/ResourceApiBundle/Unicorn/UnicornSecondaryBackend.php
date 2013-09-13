@@ -75,10 +75,10 @@ class UnicornSecondaryBackend
         foreach ($actions as $action) {
             $resultPart = $action->run($resultPart, $options);
         }
-        
+
         return $resultPart;
     }
-    
+
     /**
      * Fetch a single item from this backend.
      *
@@ -146,18 +146,54 @@ class UnicornSecondaryBackend
         if (null === $backendResults) {
             throw new ResourceRequestException('Backend "'.$this->id.'" has returned nothing, array expected.');
         }
-        
+
         foreach ($backendResults as &$backendResult) {
             foreach ($this->managedParts as $part => $info) {
                 $resultPart = isset($backendResult[$part]) ? $backendResult[$part] : null;
                 if (null === $resultPart) {
                     continue;
                 }
-                
+
                 $backendResult[$part] = $this->migrateIncommingObject($info, $resultPart, $options);
             }
         }
 
         return $backendResults;
+    }
+
+    public function getNew($options = array(), $requestedParts = null) {
+        if (null === $requestedParts) {
+
+            $requestedParts = array_keys($this->managedParts);
+
+        } else {
+
+            // Make sure all requested parts exist in managed parts, otherwise bad things can happen.
+
+            foreach ($requestedParts as $partName) {
+                if (!isset($this->managedParts[$partName])) {
+                    throw new ResourceRequestException(
+                        'Requested part "'.$partName.'" is not managed by "'.$this->id.'" backend.'
+                    );
+                }
+            }
+        }
+
+        $backendResult = $this->backend->getNew($requestedParts);
+
+        if (null === $backendResult) {
+            return null;
+        }
+
+        foreach ($this->managedParts as $part => $info) {
+            $resultPart = isset($backendResult[$part]) ? $backendResult[$part] : null;
+            if (null === $resultPart) {
+                continue;
+            }
+
+            $backendResult[$part] = $this->migrateIncommingObject($info, $resultPart, $options);
+        }
+
+        return $backendResult;
     }
 }
