@@ -72,10 +72,6 @@ class ProductEditController extends \Symfony\Bundle\FrameworkBundle\Controller\C
                 array('product.code', 'product.route', 'product.text')
             );
 
-            var_dump($saved);
-
-
-//
 //            $rm->saveOne($product);
 
         }

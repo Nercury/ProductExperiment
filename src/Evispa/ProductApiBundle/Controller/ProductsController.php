@@ -94,16 +94,18 @@ class ProductsController extends Controller
 
             $view->setFormat($expectedVersionAndFormat->getFormat());
 
-            foreach ($prm->migrationInfo->getOutputMigrationActions('Evispa\Api\Product\Model\ProductV1') as $action) {
-                $product = $action->run($product);
+            $outputClassName = $prm->migrationInfo->outputVersions[$expectedVersionAndFormat->getVersion()];
+
+            foreach ($prm->migrationInfo->getOutputMigrationActions($outputClassName) as $action) {
+                $product = $action->run($product, $options);
             }
+
+            var_dump($product); die;
 
             //new VersionConverter(new VersionReader(new AnnotationReader()), get_class(), );
 
 //            $vc = $this->getProductVersionConverter($prm);
 //            $product = $vc->migrateToVersion($product, $expectedVersionAndFormat->getVersion());
-
-            var_dump($product);
 
             $view->setData($product);
         }
