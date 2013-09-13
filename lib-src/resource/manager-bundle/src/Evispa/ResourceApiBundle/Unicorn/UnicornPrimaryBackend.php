@@ -46,7 +46,7 @@ class UnicornPrimaryBackend
      * @param string $slug Item identifier.
      * @param array|null $requestedParts Part array. If this is null, use all the parts.
      *
-     * @return \Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject
+     * @return \Evispa\ResourceApiBundle\Backend\PrimaryBackendObject
      */
     public function fetchOne($slug, $requestedParts = null) {
 
@@ -116,10 +116,10 @@ class UnicornPrimaryBackend
     /**
      * Throw an exception if a result item contains something bad.
      *
-     * @param \Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject $item Result item.
+     * @param \Evispa\ResourceApiBundle\Backend\PrimaryBackendObject $item Result item.
      * @param string[] $requestedParts Array of requested parts.
      */
-    private function validateResultItem(\Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject $item, $requestedParts) {
+    private function validateResultItem(\Evispa\ResourceApiBundle\Backend\PrimaryBackendObject $item, $requestedParts) {
         if (null === $item->getResourceSlug() || false === $item->getResourceSlug() || '' === $item->getResourceSlug()) {
             throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException(
                 'Backend "'.$this->id.'" should not return results with empty slug.'

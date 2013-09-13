@@ -30,7 +30,7 @@ namespace Evispa\ResourceApiBundle\Tests;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Evispa\ObjectMigration\VersionReader;
 use Evispa\ResourceApiBundle\Backend\FindParameters;
-use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject;
+use Evispa\ResourceApiBundle\Backend\PrimaryBackendObject;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultsObject;
 use Evispa\ResourceApiBundle\Unicorn\Unicorn;
 use Evispa\ResourceApiBundle\Unicorn\UnicornPrimaryBackend;
@@ -51,7 +51,7 @@ class ResourceManagerTest extends \PHPUnit_Framework_TestCase
         $class = new \ReflectionClass('Evispa\ResourceApiBundle\Tests\Mock\MockProduct');
 
         $mockBackend = new MockPrimaryProductBackend();
-        $mockBackend->findOneResult['a1'] = new PrimaryBackendResultObject('a1');
+        $mockBackend->findOneResult['a1'] = new PrimaryBackendObject('a1');
 
         $unicorn = new Unicorn(new UnicornPrimaryBackend('product.test', array(), $mockBackend));
 
@@ -71,7 +71,7 @@ class ResourceManagerTest extends \PHPUnit_Framework_TestCase
         $class = new \ReflectionClass('Evispa\ResourceApiBundle\Tests\Mock\MockProduct');
 
         $mockPrimaryBackend = new MockPrimaryProductBackend();
-        $mockPrimaryBackend->findOneResult['a1'] = new PrimaryBackendResultObject('a1');
+        $mockPrimaryBackend->findOneResult['a1'] = new PrimaryBackendObject('a1');
 
         $unicorn = new Unicorn(new UnicornPrimaryBackend('product.test', array(), $mockPrimaryBackend));
 
@@ -109,12 +109,12 @@ class ResourceManagerTest extends \PHPUnit_Framework_TestCase
         $mockBackend = new MockPrimaryProductBackend();
         $mockBackend->findResult = new PrimaryBackendResultsObject(6);
 
-        $mockBackend->findResult->addObject(new PrimaryBackendResultObject('a1'));
-        $mockBackend->findResult->addObject(new PrimaryBackendResultObject('a2'));
-        $mockBackend->findResult->addObject(new PrimaryBackendResultObject('a3'));
-        $mockBackend->findResult->addObject(new PrimaryBackendResultObject('a4'));
-        $mockBackend->findResult->addObject(new PrimaryBackendResultObject('a5'));
-        $mockBackend->findResult->addObject(new PrimaryBackendResultObject('a6'));
+        $mockBackend->findResult->addObject(new PrimaryBackendObject('a1'));
+        $mockBackend->findResult->addObject(new PrimaryBackendObject('a2'));
+        $mockBackend->findResult->addObject(new PrimaryBackendObject('a3'));
+        $mockBackend->findResult->addObject(new PrimaryBackendObject('a4'));
+        $mockBackend->findResult->addObject(new PrimaryBackendObject('a5'));
+        $mockBackend->findResult->addObject(new PrimaryBackendObject('a6'));
 
         $unicorn = new Unicorn(new UnicornPrimaryBackend('product.test', array(), $mockBackend));
 

@@ -6,7 +6,7 @@ use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Evispa\ApiBackend\MongoProductBackendBundle\Document\Product;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface;
 use Evispa\ResourceApiBundle\Backend\FindParameters;
-use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultObject;
+use Evispa\ResourceApiBundle\Backend\PrimaryBackendObject;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultsObject;
 use Pagerfanta\Adapter\DoctrineODMMongoDBAdapter;
 
@@ -35,11 +35,11 @@ class MongoBackend implements PrimaryBackendInterface
      * @param Product $product
      * @param array   $requestedParts
      *
-     * @return PrimaryBackendResultObject
+     * @return PrimaryBackendObject
      */
     private function createResult(Product $product, array $requestedParts)
     {
-        $result = new PrimaryBackendResultObject($product->getSlug());
+        $result = new PrimaryBackendObject($product->getSlug());
 
         if (in_array('product.code', $requestedParts)) {
             $code = new \Evispa\Api\Product\Model\Code\ProductCodeV1();
@@ -71,7 +71,7 @@ class MongoBackend implements PrimaryBackendInterface
      * @param string $slug
      * @param array  $requestedParts
      *
-     * @return PrimaryBackendResultObject|null
+     * @return PrimaryBackendObject|null
      */
     public function fetchOne($slug, array $requestedParts)
     {
@@ -89,7 +89,7 @@ class MongoBackend implements PrimaryBackendInterface
      * @param FindParameters $params
      * @param array          $requestedParts
      *
-     * @return PrimaryBackendResultObject[string]
+     * @return PrimaryBackendObject[string]
      */
     public function fetchAll(FindParameters $params, array $requestedParts)
     {
@@ -102,6 +102,129 @@ class MongoBackend implements PrimaryBackendInterface
 
         foreach ($products as $product) {
             $results->addObject($this->createResult($product, $requestedParts));
+        }
+
+        return $results;
+    }
+
+    /**
+     * @param PrimaryBackendObject $object
+     * @param array                $saveParts
+     *
+     * @return mixed|void
+     */
+    public function save(PrimaryBackendObject $object, array $saveParts)
+    {
+        $objects = $this->saveAll(array($object), $saveParts);
+
+        return end($objects);
+    }
+
+    /**
+     * @param string[] $slugs
+     *
+     * @return \Evispa\ApiBackend\MongoProductBackendBundle\Document\Product[]
+     */
+    private function fetchProducts(array $slugs)
+    {
+        $result = array();
+
+        /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
+        $qb = $this->mongodb->getManager()->createQueryBuilder('EvispaMongoProductBackendBundle:Product');
+        $qb->field('slug')->in($slugs);
+
+        /** @var Product[] $products */
+        $products = $qb->getQuery()->execute();
+
+        foreach ($products as $product) {
+            $result[$product->getSlug()] = $product;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param PrimaryBackendObject[] $objects
+     * @param array                  $parts
+     *
+     * @return mixed
+     */
+    public function saveAll(array $objects, array $parts)
+    {
+        /** @var MongoBackendCyclope[] $cyclopes */
+        $cyclopes = array();
+
+        $fetchProducts = array();
+
+        foreach ($objects as $object) {
+            if (null !== $object->getResourceSlug()) {
+                $fetchProducts[] = $object->getResourceSlug();
+            }
+        }
+
+        $fetchedProducts = array();
+
+        if (false === empty($fetchedProducts)) {
+            $fetchedProducts = $this->fetchProducts($fetchedProducts);
+        }
+
+        foreach ($objects as $object) {
+            $cyclope = new MongoBackendCyclope($object);
+
+            if ($object->getResourceSlug() !== null) {
+
+                if (isset($fetchedProducts[$object->getResourceSlug()])) {
+                    $cyclope->entity = $fetchedProducts[$object->getResourceSlug()];
+                } else {
+                    $cyclope->entity = new Product();
+                }
+
+            } else {
+                $cyclope->entity = new Product();
+            }
+
+            $cyclopes[] = $cyclope;
+        }
+
+        foreach ($cyclopes as $cyclope) {
+
+            if (in_array('product.code', $parts)) {
+                /** @var \Evispa\Api\Product\Model\Code\ProductCodeV1 $code */
+                $code = $cyclope->backendObject->getPart('product.code');
+
+                $cyclope->entity->setCode($code->code);
+            }
+
+            if (in_array('product.route', $parts)) {
+                /** @var \Evispa\Api\Product\Model\Route\RouteV1 $route */
+                $route = $cyclope->backendObject->getPart('product.route');
+
+                $cyclope->entity->setRouteSlug($route->slug);
+            }
+
+            if (in_array('product.text', $parts)) {
+                /** @var \Evispa\Api\Product\Model\Text\TextV1 $text */
+                $text = $cyclope->backendObject->getPart('product.text');
+
+                $cyclope->entity->setText($text->name);
+            }
+
+            if (false === $this->mongodb->getManager()->contains($cyclope->entity)) {
+                $this->mongodb->getManager()->persist($cyclope->entity);
+            }
+
+        }
+
+        $this->mongodb->getManager()->flush();
+
+        $results = array();
+
+        foreach ($cyclopes as $cyclope) {
+            if (null === $cyclope->backendObject->getResourceSlug()) {
+                $cyclope->backendObject->setResourceSlug($cyclope->entity->getSlug());
+            }
+
+            $results[] = $cyclope->backendObject;
         }
 
         return $results;

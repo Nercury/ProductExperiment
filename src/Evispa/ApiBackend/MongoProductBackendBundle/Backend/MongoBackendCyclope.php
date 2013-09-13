@@ -25,44 +25,22 @@
  * @author Darius Krištapavičius <darius@evispa.lt>
  */
 
-namespace Evispa\ResourceApiBundle\Backend;
+namespace Evispa\ApiBackend\MongoProductBackendBundle\Backend;
 
 
-class PrimaryBackendResultsObject
+use Evispa\ApiBackend\MongoProductBackendBundle\Document\Product;
+use Evispa\ResourceApiBundle\Backend\PrimaryBackendObject;
+
+class MongoBackendCyclope
 {
-    /**
-     * @var PrimaryBackendObject[]
-     */
-    private $objects = array();
+    /** @var PrimaryBackendObject */
+    public $backendObject;
 
-    /**
-     * @var Integer
-     */
-    private $totalFound;
+    /** @var Product */
+    public $entity;
 
-    public function __construct($totalFound)
+    function __construct(PrimaryBackendObject $backendObject)
     {
-        $this->totalFound = $totalFound;
-    }
-
-    public function addObject(PrimaryBackendObject $object)
-    {
-        $this->objects[$object->getResourceSlug()] = $object;
-    }
-
-    /**
-     * @return \Evispa\ResourceApiBundle\Backend\PrimaryBackendObject[]
-     */
-    public function getObjects()
-    {
-        return $this->objects;
-    }
-
-    /**
-     * @return int
-     */
-    public function getTotalFound()
-    {
-        return $this->totalFound;
+        $this->backendObject = $backendObject;
     }
 }

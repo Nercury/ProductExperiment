@@ -27,12 +27,14 @@
 
 namespace Evispa\ResourceApiBundle\Backend;
 
+use Evispa\ResourceApiBundle\Exception\ResourceRequestException;
+
 /**
  * Class PrimaryBackendResultObject
  *
  * @package Evispa\ResourceApiBundle\Backend
  */
-class PrimaryBackendResultObject
+class PrimaryBackendObject
 {
     /**
      * @var String
@@ -44,13 +46,20 @@ class PrimaryBackendResultObject
      */
     private $resourceParts = array();
 
+    public function __construct($resourceSlug = null)
+    {
+        $this->setResourceSlug($resourceSlug);
+    }
+
     /**
-     * @param $resourceSlug
+     * @param String $resourceSlug
+     *
+     * @throws \Evispa\ResourceApiBundle\Exception\ResourceRequestException
      */
-    public function __construct($resourceSlug)
+    public function setResourceSlug($resourceSlug)
     {
         if (strlen($resourceSlug) > 24) {
-            throw new \Evispa\ResourceApiBundle\Exception\ResourceRequestException('Resource slug length can not exceed 24 symbols.');
+            throw new ResourceRequestException('Resource slug length can not exceed 24 symbols.');
         }
 
         $this->resourceSlug = $resourceSlug;
@@ -80,7 +89,7 @@ class PrimaryBackendResultObject
      * Add a part to result object.
      *
      * @param string $partName Part name.
-     * @param mixed $part Part object.
+     * @param mixed  $part     Part object.
      */
     public function addPart($partName, $part)
     {
@@ -94,7 +103,8 @@ class PrimaryBackendResultObject
      *
      * @return mixed
      */
-    public function getPart($partName) {
+    public function getPart($partName)
+    {
         return isset($this->resourceParts[$partName])
             ? $this->resourceParts[$partName]
             : null;
@@ -107,7 +117,8 @@ class PrimaryBackendResultObject
      *
      * @return boolean
      */
-    public function hasPart($partName) {
+    public function hasPart($partName)
+    {
         return isset($this->resourceParts[$partName]);
     }
 }
