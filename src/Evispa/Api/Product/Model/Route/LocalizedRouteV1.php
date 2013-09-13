@@ -53,11 +53,13 @@ class LocalizedRouteV1
     /**
      * @Evispa\ObjectMigration\Annotations\Migration(from="Evispa\Api\Product\Model\Route\RouteV1", require={"locale"})
      *
-     * @param TextV1 $old Old version of text part.
+     * @param RouteV1 $other
+     * @param $options
      *
      * @return self
      */
-    public static function fromRouteV1(RouteV1 $other, $options) {
+    public static function fromRouteV1(RouteV1 $other, $options)
+    {
         $locale = $options['locale'];
 
         $new = new self();
@@ -70,9 +72,11 @@ class LocalizedRouteV1
     /**
      * @Evispa\ObjectMigration\Annotations\Migration(to="Evispa\Api\Product\Model\Route\RouteV1", require={"locale"})
      *
+     * @param $options
      * @return TextV1
      */
-    public function toRouteV1($options) {
+    public function toRouteV1($options)
+    {
         $locale = $options['locale'];
 
         if (isset($this->items[$locale])) {

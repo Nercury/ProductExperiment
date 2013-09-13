@@ -9,3 +9,5 @@
 /bin/
 /composer.phar
 /cache.properties
+
+*.orig

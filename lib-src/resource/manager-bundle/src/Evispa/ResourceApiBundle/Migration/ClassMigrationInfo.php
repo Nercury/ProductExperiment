@@ -3,48 +3,50 @@
 namespace Evispa\ResourceApiBundle\Migration;
 
 use Evispa\ObjectMigration\Action\ActionSerializer;
-use Evispa\ResourceApiBundle\Exception\ObjectMigrationException;
 
 /**
  * @author Nerijus
  */
-class ClassMigrationInfo {
-    
+class ClassMigrationInfo
+{
+
     public $inputVersions;
     public $inputMigrationPaths;
     public $outputVersions;
     public $outputMigrationPaths;
     public $classVersions;
-    
+
     /**
      * Actual actions to migrate object from specified version.
      *
      * @var array
      */
     private $inputMigrationActions = array();
-    
+
     /**
      * Actual actions to migrate object to specified version.
      *
      * @var array
      */
     private $outputMigrationActions = array();
-    
+
     function __construct(
-        $inputVersions = array(), 
-        $inputMigrationPaths = array(), 
-        $outputVersions = array(), 
-        $outputMigrationPaths = array(), 
+        $inputVersions = array(),
+        $inputMigrationPaths = array(),
+        $outputVersions = array(),
+        $outputMigrationPaths = array(),
         $classVersions = array()
-    ) {
+    )
+    {
         $this->inputVersions = $inputVersions;
         $this->inputMigrationPaths = $inputMigrationPaths;
         $this->outputVersions = $outputVersions;
         $this->outputMigrationPaths = $outputMigrationPaths;
         $this->classVersions = $classVersions;
     }
-    
-    public function getInputMigrationActions($className) {
+
+    public function getInputMigrationActions($className)
+    {
         if (isset($this->inputMigrationActions[$className])) {
             return $this->inputMigrationActions[$className];
         }
@@ -65,7 +67,8 @@ class ClassMigrationInfo {
         return $actions;
     }
 
-    public function getOutputMigrationActions($className) {
+    public function getOutputMigrationActions($className)
+    {
         if (isset($this->outputMigrationActions[$className])) {
             return $this->outputMigrationActions[$className];
         }
@@ -85,5 +88,5 @@ class ClassMigrationInfo {
         $this->outputMigrationActions[$className] = $actions;
         return $actions;
     }
-    
+
 }
