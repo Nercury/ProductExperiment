@@ -66,6 +66,14 @@ class UnicornSecondaryBackend
     }
 
     /**
+     * @return array
+     */
+    public function getManagedParts()
+    {
+        return $this->managedParts;
+    }
+
+    /**
      * @param ClassMigrationInfo $info
      * @param $resultPart
      * @param $options

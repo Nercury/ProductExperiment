@@ -55,25 +55,13 @@ class ProductEditController extends \Symfony\Bundle\FrameworkBundle\Controller\C
         if ($request->isMethod('POST')) {
             $form->submit($request);
 
-            /** @var \Evispa\Api\Product\Model\ProductV1 $product */
             $product = $simpleProduct;
 
-
-            foreach ($rm->migrationInfo->getInputMigrationActions('Evispa\Api\Product\Model\SimpleProductV1') as $action) {
+            foreach ($rm->migrationInfo->getInputMigrationActions(get_class($product)) as $action) {
                 $product = $action->run($product, $options);
             }
 
-            $primaryBackendProduct = new PrimaryBackendObject($product->getSlug());
-            $primaryBackendProduct->setPart('product.code', $simpleProduct->code);
-            $primaryBackendProduct->setPart('product.text', $simpleProduct->text);
-
-            $saved = $this->get('evispa_mongo_product_backend.product_backend')->save(
-                $primaryBackendProduct,
-                array('product.code', 'product.route', 'product.text')
-            );
-
-//            $rm->saveOne($product);
-
+            $rm->saveAll(array($product), $options);
         }
 
         return $this->render(

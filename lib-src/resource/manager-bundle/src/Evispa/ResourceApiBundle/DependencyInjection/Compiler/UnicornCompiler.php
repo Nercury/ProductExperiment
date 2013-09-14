@@ -76,7 +76,7 @@ class UnicornCompiler implements CompilerPassInterface
 
             $managedPartClasses[$partName] = $migrationInfoBaker->bakeServiceDefinition($partMigrationInfos[$partName]);
         }
-        
+
         return $managedPartClasses;
     }
 
