@@ -77,8 +77,11 @@ class ResourceManager
     private function checkOptions($options)
     {
         foreach ($this->requiredOptions as $optionName => $info) {
+
             if (!isset($options[$optionName])) {
-                throw new ResourceRequestException('Required option "' . $optionName . '" was not set. It is required to migrate from "' . $info['from'] . '" to "' . $info['to'] . '".');
+                throw new ResourceRequestException(
+                    'Required option "' . $optionName . '" was not set. It is required to migrate from "' . $info
+                );
             }
         }
     }

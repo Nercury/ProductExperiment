@@ -28,8 +28,11 @@
 namespace Evispa\ResourceApiBundle\Tests\Mock;
 
 
+use Evispa\ResourceApiBundle\Backend\FetchParameters;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface;
 use Evispa\ResourceApiBundle\Backend\FindParameters;
+use Evispa\ResourceApiBundle\Backend\PrimaryBackendObject;
+use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultsObject;
 
 class MockPrimaryProductBackend implements PrimaryBackendInterface
 {
@@ -46,8 +49,43 @@ class MockPrimaryProductBackend implements PrimaryBackendInterface
         return null;
     }
 
-    public function fetchAll(FindParameters $params, array $requestedParts)
+    public function fetchAll(FetchParameters $params, array $requestedParts)
     {
         return $this->findResult;
+    }
+
+    /**
+     *
+     * @param array $requestedParts
+     *
+     * @return PrimaryBackendResultsObject
+     */
+    public function getNew(array $requestedParts)
+    {
+        // TODO: Implement getNew() method.
+    }
+
+    /**
+     * Save primary backend object
+     *
+     * @param PrimaryBackendObject $object
+     * @param array                $saveParts
+     *
+     * @return mixed
+     */
+    public function save(PrimaryBackendObject $object, array $saveParts)
+    {
+        // TODO: Implement save() method.
+    }
+
+    /**
+     * @param PrimaryBackendObject[] $objects
+     * @param array                  $saveParts
+     *
+     * @return mixed
+     */
+    public function saveAll(array $objects, array $saveParts)
+    {
+        // TODO: Implement saveAll() method.
     }
 }
