@@ -6,11 +6,11 @@
 
     <!--
     <parameters>
-        <parameter key="evispa_product_resource.example.class">Evispa\Resource\ProductApiBundle\Example</parameter>
+        <parameter key="evispa_attribute_api.example.class">Evispa\AttributeApiBundle\Example</parameter>
     </parameters>
 
     <services>
-        <service id="evispa_product_resource.example" class="%evispa_product_resource.example.class%">
+        <service id="evispa_attribute_api.example" class="%evispa_attribute_api.example.class%">
             <argument type="service" id="service_id" />
             <argument>plain_value</argument>
             <argument>%parameter_name%</argument>

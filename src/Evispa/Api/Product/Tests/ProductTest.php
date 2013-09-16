@@ -37,21 +37,21 @@ use Evispa\ObjectMigration\VersionReader;
 
 class ProductTest extends \PHPUnit_Framework_TestCase
 {
-    public function testVersionAnnotations() {
+    public function testVersionAnnotations()
+    {
         $converter = new VersionConverter(
-                new VersionReader(new AnnotationReader()), 
-                'Evispa\Api\Product\Model\ProductV1',
-                array('locale' => 'en')
+            new VersionReader(new AnnotationReader()),
+            'Evispa\Api\Product\Model\ProductV1',
+            array('locale' => 'en')
         );
 
         // create object
 
         $pr = new SimpleProductV1();
         $pr->setSlug('ABC');
-        
-        $pr->code = new CodeV1();
-        $pr->code->code = "ABCCODE";
-        
+
+        $pr->code = "ABCCODE";
+
         $pr->text = new TextV1();
         $pr->text->name = "Prod.";
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Evispa\ProductApiBundle\DependencyInjection;
+namespace Evispa\AttributeApiBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\Loader;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class EvispaProductApiExtension extends Extension
+class EvispaAttributeApiExtension extends Extension
 {
     /**
      * {@inheritDoc}
@@ -23,6 +23,6 @@ class EvispaProductApiExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('api/product.xml');
+        $loader->load('services.xml');
     }
 }

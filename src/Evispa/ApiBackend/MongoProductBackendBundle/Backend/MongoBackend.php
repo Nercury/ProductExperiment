@@ -112,8 +112,6 @@ class MongoBackend implements PrimaryBackendInterface
 
     public function getNew(array $requestedParts)
     {
-        var_dump($requestedParts);
-
         $mongoProduct = new Product();
 
         return $this->createResult($mongoProduct, $requestedParts);

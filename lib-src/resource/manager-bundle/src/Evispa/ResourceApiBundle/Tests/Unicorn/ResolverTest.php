@@ -21,24 +21,24 @@ class ResolverTest extends \PHPUnit_Framework_TestCase
             'product.price' => 'price',
         ));
 
-        $backendConfigs = new ResourceBackendConfigRegistry();
-        $backendConfigs->registerBackendConfig(
-            ResourceBackendConfig::create(
-                'mock_backend',
-                'product',
-                array('product.text' => 'Evispa\ResourceApiBundle\Tests\Mock\MockProductText'),
-                new MockPrimaryProductBackend()
-            )
-        );
-
-        $appApiBackendMap = array(
-            
-        );
-
-        $resolver = new ApiUnicornResolver();
-        $unicorn = $resolver->makeUnicorn($apiConfig, $backendConfigs, $appApiBackendMap);
-
-        var_dump($unicorn);
+//        $backendConfigs = new ResourceBackendConfigRegistry();
+//        $backendConfigs->registerBackendConfig(
+//            ResourceBackendConfig::create(
+//                'mock_backend',
+//                'product',
+//                array('product.text' => 'Evispa\ResourceApiBundle\Tests\Mock\MockProductText'),
+//                new MockPrimaryProductBackend()
+//            )
+//        );
+//
+//        $appApiBackendMap = array(
+//
+//        );
+//
+//        $resolver = new ApiUnicornResolver();
+//        $unicorn = $resolver->getUnicornConfigurationInfo($apiConfig, $backendConfigs, $appApiBackendMap);
+//
+//        var_dump($unicorn);
 
     }
 }

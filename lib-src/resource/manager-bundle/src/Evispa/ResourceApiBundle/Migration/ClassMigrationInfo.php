@@ -45,6 +45,11 @@ class ClassMigrationInfo
         $this->classVersions = $classVersions;
     }
 
+    /**
+     * @param $className
+     *
+     * @return MigrationActionInterface[]|null
+     */
     public function getInputMigrationActions($className)
     {
         if (isset($this->inputMigrationActions[$className])) {
