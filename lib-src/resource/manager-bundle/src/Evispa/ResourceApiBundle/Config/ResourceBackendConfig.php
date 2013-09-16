@@ -1,6 +1,7 @@
 <?php
 
 namespace Evispa\ResourceApiBundle\Config;
+
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendInterface;
 use Evispa\ResourceApiBundle\Backend\SecondaryBackendInterface;
 
@@ -9,6 +10,7 @@ use Evispa\ResourceApiBundle\Backend\SecondaryBackendInterface;
  */
 class ResourceBackendConfig
 {
+
     private $backendId;
     private $resourceId;
     private $parts = array();
@@ -36,8 +38,7 @@ class ResourceBackendConfig
         $parts,
         PrimaryBackendInterface $primaryBackend = null,
         SecondaryBackendInterface $secondaryBackend = null
-    )
-    {
+    ) {
         $new = new self($backendId, $resourceId, $parts);
         $new->primaryBackend = $primaryBackend;
         $new->secondaryBackend = $secondaryBackend;
@@ -51,7 +52,7 @@ class ResourceBackendConfig
      * @param string $resourceId Managed resource.
      * @param string[] $parts
      */
-    function __construct($backendId, $resourceId, $parts)
+    public function __construct($backendId, $resourceId, $parts)
     {
         $this->backendId = $backendId;
         $this->resourceId = $resourceId;

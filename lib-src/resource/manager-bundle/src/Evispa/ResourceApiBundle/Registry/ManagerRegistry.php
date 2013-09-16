@@ -13,6 +13,7 @@ use Evispa\ResourceApiBundle\Unicorn\ApiUnicornResolver;
  */
 class ManagerRegistry
 {
+
     private $loadedManagers = array();
 
     /**
@@ -69,7 +70,12 @@ class ManagerRegistry
         );
 
         $manager = new ResourceManager(
-            $reader, $versionReader, $options, $config->getResourceClass(), $config->getParts(), $unicorn
+            $reader,
+            $versionReader,
+            $options,
+            $config->getResourceClass(),
+            $config->getParts(),
+            $unicorn
         );
 
         return $manager;

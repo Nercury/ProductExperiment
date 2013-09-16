@@ -7,6 +7,7 @@ namespace Evispa\ResourceApiBundle\Config;
  */
 class ResourceApiConfig
 {
+
     /**
      * Resource identifier, i.e. "product".
      *
@@ -20,7 +21,6 @@ class ResourceApiConfig
      * @var \ReflectionClass
      */
     private $resourceClass;
-
     private $parts;
 
     /**

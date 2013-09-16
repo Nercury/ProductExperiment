@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (c) 2013 Evispa Ltd.
  *
@@ -27,19 +28,19 @@
 
 namespace Evispa\ApiBackend\MongoProductBackendBundle\Backend;
 
-
 use Evispa\ApiBackend\MongoProductBackendBundle\Document\Product;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendObject;
 
 class MongoBackendCyclope
 {
+
     /** @var PrimaryBackendObject */
     public $backendObject;
 
     /** @var Product */
     public $entity;
 
-    function __construct(PrimaryBackendObject $backendObject)
+    public function __construct(PrimaryBackendObject $backendObject)
     {
         $this->backendObject = $backendObject;
     }

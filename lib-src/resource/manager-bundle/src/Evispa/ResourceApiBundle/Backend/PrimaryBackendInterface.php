@@ -7,6 +7,7 @@ namespace Evispa\ResourceApiBundle\Backend;
  */
 interface PrimaryBackendInterface
 {
+
     /**
      * Return PrimaryBackendResultObject or null if not found
      *
@@ -30,12 +31,12 @@ interface PrimaryBackendInterface
     /**
      *
      * @param array $requestedParts
-     * 
+     *
      * @return PrimaryBackendResultsObject
      */
     public function getNew(array $requestedParts);
-	
-	/**
+
+    /**
      * Save primary backend object
      *
      * @param PrimaryBackendObject $object

@@ -7,10 +7,11 @@ namespace Evispa\ResourceApiBundle\VersionParser;
  */
 class VersionAndFormat
 {
+
     private $version;
     private $format;
 
-    function __construct($version, $format)
+    public function __construct($version, $format)
     {
         $this->version = $version;
         $this->format = $format;

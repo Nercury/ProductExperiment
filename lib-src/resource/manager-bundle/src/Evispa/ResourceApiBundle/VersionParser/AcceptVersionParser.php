@@ -7,6 +7,7 @@ namespace Evispa\ResourceApiBundle\VersionParser;
  */
 class AcceptVersionParser
 {
+
     private $knownFormats = array(
         'html' => true,
         'xml' => true,

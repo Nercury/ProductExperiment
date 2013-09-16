@@ -63,7 +63,7 @@ class UnicornCompiler implements CompilerPassInterface
 
     private function getManagedPartClasses($backendConfigInfo, $backendConfigs, $partMigrationInfos) {
         $migrationInfoBaker = new ClassMigrationBaker();
-        
+
         $managedPartClasses = array();
         foreach ($backendConfigInfo->getManagedParts() as $partName) {
             $definedParts = $backendConfigs->getBackendConfig($backendConfigInfo->getId())->getParts();
@@ -77,20 +77,21 @@ class UnicornCompiler implements CompilerPassInterface
 
             $managedPartClasses[$partName] = $migrationInfoBaker->bakeServiceDefinition($partMigrationInfos[$partName]);
         }
-        
+
         return $managedPartClasses;
     }
 
     /**
      * @return UnicornConfigInfo
      */
-    private function resolveUnicornInfo(ContainerBuilder $container, $apiConfig, $backendConfigs) {
+    private function resolveUnicornInfo(ContainerBuilder $container, $apiConfig, $backendConfigs)
+    {
         $appApiBackendMap = $container->getParameter('evispa_resource_api_backend_map');
         $unicornResolver = new ApiUnicornResolver();
         $resolvedUnicornInfo = $unicornResolver->getUnicornConfigurationInfo($apiConfig, $backendConfigs, $appApiBackendMap);
         return $resolvedUnicornInfo;
     }
-    
+
     private function getUnicornDefinition(ContainerBuilder $container, $resolvedUnicornInfo, $partMigrationInfos, $backendServices, $backendConfigs) {
         $unicornDef = new Definition('Evispa\ResourceApiBundle\Unicorn\Unicorn');
 
@@ -99,7 +100,7 @@ class UnicornCompiler implements CompilerPassInterface
         $primaryBackendConfigInfo = $resolvedUnicornInfo->getPrimaryBackendConfigInfo();
 
         $managedPartClasses = $this->getManagedPartClasses($primaryBackendConfigInfo, $backendConfigs, $partMigrationInfos);
-        
+
         $unicornPrimaryBackendDef = new Definition('Evispa\ResourceApiBundle\Unicorn\UnicornPrimaryBackend');
         $unicornPrimaryBackendDef->addArgument($primaryBackendConfigInfo->getId());
         $unicornPrimaryBackendDef->addArgument($managedPartClasses);
@@ -124,14 +125,14 @@ class UnicornCompiler implements CompilerPassInterface
         }
 
         $unicornDef->addArgument($secondaryBackendArray);
-        
+
         return $unicornDef;
     }
 
     private function getResourcePartClasses($resourceClassName, $resourceParts, $annotationReader) {
         $class = new \ReflectionClass($resourceClassName);
         $partClasses = array();
-        
+
         foreach ($resourceParts as $partName => $propertyName) {
             $property = $annotationReader->getPropertyAnnotation(
                 $class->getProperty($propertyName),
@@ -148,29 +149,29 @@ class UnicornCompiler implements CompilerPassInterface
 
             $partClasses[$partName] = $property->name;
         }
-        
+
         return $partClasses;
     }
-    
+
     /**
-     * 
+     *
      * @param array $partClasses
      * @param \Doctrine\Common\Annotations\Reader $versionReader
      * @param VersionReader $versionReader
      */
     private function getPartMigrationInfos($partClasses, $versionReader) {
         $partMigrationInfo = array();
-        
+
         foreach ($partClasses as $partName => $className) {
             $migrationInfoBaker = new ClassMigrationBaker();
             $migrationInfo = $migrationInfoBaker->bakeMigrationInfo($versionReader, $className);
-            
+
             $partMigrationInfo[$partName] = $migrationInfo;
         }
-        
+
         return $partMigrationInfo;
     }
-    
+
     public function process(ContainerBuilder $container)
     {
         //$container->getDefinition('evispa_resource_api.api_config_registry');
@@ -179,32 +180,32 @@ class UnicornCompiler implements CompilerPassInterface
 
         $annotationReader = new AnnotationReader();
         $versionReader = new VersionReader($annotationReader);
-        
+
         foreach ($apiConfigs->getApiConfigs() as $apiConfig) {
             $resourceClassName = $apiConfig->getResourceClass()->getName();
 
             $resourceDef = new Definition('Evispa\ResourceApiBundle\Manager\ResourceManager');
             $resourceDef->addArgument($resourceClassName);
 
-            $resourceDef->addArgument($apiConfig->getParts());            
-            
+            $resourceDef->addArgument($apiConfig->getParts());
+
             $migrationInfoBaker = new ClassMigrationBaker();
             $migrationInfo = $migrationInfoBaker->bakeMigrationInfo($versionReader, $resourceClassName);
-            
+
             $resourceDef->addArgument($migrationInfoBaker->bakeServiceDefinition($migrationInfo));
 
             $unicornDriverId = 'resource_api.'.$apiConfig->getResourceId().'.unicorn';
-            
+
             $backendConfigs = $container->get('evispa_resource_api.backend_config_registry');
             $resolvedUnicornInfo = $this->resolveUnicornInfo($container, $apiConfig, $backendConfigs);
-            
+
             $partClasses = $this->getResourcePartClasses($resourceClassName, $apiConfig->getParts(), $annotationReader);
             $partMigrationInfos = $this->getPartMigrationInfos($partClasses, $versionReader);
-            
+
             $unicornDef = $this->getUnicornDefinition($container, $resolvedUnicornInfo, $partMigrationInfos, $backendServices, $backendConfigs);
             $unicornDef->setLazy(true);
             $container->addDefinitions(array($unicornDriverId => $unicornDef));
-            
+
             $requiredClassOptions = $versionReader->getRequiredClassOptions($resourceClassName);
             foreach ($partClasses as $partName => $partClassName) {
                 $requiredPartOptions = $versionReader->getRequiredClassOptions($partClassName);
@@ -212,9 +213,9 @@ class UnicornCompiler implements CompilerPassInterface
                     $requiredClassOptions[$optionName] = $info;
                 }
             }
-            
+
             $resourceDef->addArgument($requiredClassOptions);
-            
+
             $resourceDef->addArgument(new Reference($unicornDriverId));
 
             $container->addDefinitions(array('resource_api.'.$apiConfig->getResourceId() => $resourceDef));

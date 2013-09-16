@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (c) 2013 Evispa Ltd.
  *
@@ -34,6 +35,7 @@ namespace Evispa\ResourceApiBundle\Backend;
  */
 class FetchParameters
 {
+
     /**
      * @var int
      */

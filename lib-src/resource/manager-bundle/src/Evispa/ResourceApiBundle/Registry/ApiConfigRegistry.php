@@ -9,6 +9,7 @@ use Evispa\ResourceApiBundle\Config\ResourceApiConfig;
  */
 class ApiConfigRegistry
 {
+
     protected $apiConfigs = array();
 
     public function registerApiConfig(ResourceApiConfig $resourceApiConfig)

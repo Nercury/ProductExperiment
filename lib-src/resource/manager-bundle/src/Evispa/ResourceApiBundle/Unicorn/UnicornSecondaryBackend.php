@@ -87,7 +87,8 @@ class UnicornSecondaryBackend
      *
      * @return array
      */
-    public function fetchOne($slug, $options = array(), $requestedParts = null) {
+    public function fetchOne($slug, $options = array(), $requestedParts = null)
+    {
 
         if (null === $requestedParts) {
 

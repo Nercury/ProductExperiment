@@ -11,6 +11,7 @@ use Evispa\ResourceApiBundle\Registry\ResourceBackendConfigRegistry;
  */
 class ApiUnicornResolver
 {
+
     private function buildChoiceSuggestion($choices)
     {
         $choicesKeys = array_keys($choices);
@@ -47,8 +48,11 @@ class ApiUnicornResolver
      *
      * @return Config\UnicornConfigInfo
      */
-    public function getUnicornConfigurationInfo(ResourceApiConfig $apiConfig, ResourceBackendConfigRegistry $backendConfigs, array $appApiBackendMap)
-    {
+    public function getUnicornConfigurationInfo(
+        ResourceApiConfig $apiConfig,
+        ResourceBackendConfigRegistry $backendConfigs,
+        array $appApiBackendMap
+    ) {
 
         $resourceId = $apiConfig->getResourceId();
         $productBackendMap = isset($appApiBackendMap[$resourceId]) ? $appApiBackendMap[$resourceId] : null;
@@ -206,7 +210,6 @@ class ApiUnicornResolver
         // Figure out actual part backends.
 
         $partBackends = $prefefinedPartMap; // Initially it is equal to predefined map.
-
         // First, use predefined map, then assign everything else somehow.
 
         foreach ($resourceParts as $partName => $_) {

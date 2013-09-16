@@ -87,7 +87,12 @@ class ResourceManagerTest extends \PHPUnit_Framework_TestCase
         );
 
         $manager = new ResourceManager(
-            $reader, $versionsReader, array(), $class, array('product.text' => 'text'), $unicorn
+            $reader,
+            $versionsReader,
+            array(),
+            $class,
+            array('product.text' => 'text'),
+            $unicorn
         );
 
         /** @var MockProduct $product */

@@ -1,6 +1,7 @@
 <?php
 
 namespace Evispa\ApiBackend\MongoProductBackendBundle\Backend;
+
 use Evispa\Api\Product\Model\Text\TextV1;
 use Evispa\ResourceApiBundle\Backend\SecondaryBackendInterface;
 

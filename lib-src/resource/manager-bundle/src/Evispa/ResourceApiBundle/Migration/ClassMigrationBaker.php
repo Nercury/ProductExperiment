@@ -1,6 +1,7 @@
 <?php
 
 namespace Evispa\ResourceApiBundle\Migration;
+
 use Evispa\ObjectMigration\Action\ActionSerializer;
 use Evispa\ObjectMigration\VersionPath\VersionPathSearch;
 use Evispa\ObjectMigration\VersionReader;

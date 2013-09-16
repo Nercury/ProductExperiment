@@ -13,6 +13,7 @@ use Evispa\ResourceApiBundle\Exception\ResourceRequestException;
  */
 class UnicornPrimaryBackend
 {
+
     private $id;
 
     /**
@@ -77,7 +78,6 @@ class UnicornPrimaryBackend
         if (null === $requestedParts) {
 
             $requestedParts = array_keys($this->managedParts);
-
         } else {
 
             // Make sure all requested parts exist in managed parts, otherwise bad things can happen.
@@ -117,7 +117,6 @@ class UnicornPrimaryBackend
         if (null === $requestedParts) {
 
             $requestedParts = array_keys($this->managedParts);
-
         } else {
 
             // Make sure all requested parts exist in managed parts, otherwise bad things can happen.
@@ -161,7 +160,6 @@ class UnicornPrimaryBackend
         if (null === $requestedParts) {
 
             $requestedParts = array_keys($this->managedParts);
-
         } else {
 
             // Make sure all requested parts exist in managed parts, otherwise bad things can happen.

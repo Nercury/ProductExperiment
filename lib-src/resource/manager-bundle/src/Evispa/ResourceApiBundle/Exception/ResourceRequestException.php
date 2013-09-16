@@ -10,7 +10,7 @@ namespace Evispa\ResourceApiBundle\Exception;
  */
 class ResourceRequestException extends \LogicException
 {
-    function __construct($message, $code = null, $previous = null)
+    public function __construct($message, $code = null, $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }

@@ -9,9 +9,10 @@ namespace Evispa\ResourceApiBundle\Unicorn;
  */
 class Unicorn
 {
+
     /**
      * @var UnicornPrimaryBackend
-     **/
+     * */
     private $primaryBackend = null;
 
     /**

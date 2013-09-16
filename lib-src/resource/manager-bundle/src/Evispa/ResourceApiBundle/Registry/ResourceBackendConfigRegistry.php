@@ -11,6 +11,7 @@ use LogicException;
  */
 class ResourceBackendConfigRegistry
 {
+
     protected $backendConfigs = array();
 
     public function registerBackendConfig(ResourceBackendConfig $resourceBackendConfig) {
@@ -19,7 +20,7 @@ class ResourceBackendConfigRegistry
         if (isset($this->backendConfigs[$backendId])) {
             throw new LogicException('Backend with id "'.$backendId.'" is already defined.');
         }
-        
+
         foreach ($this->backendConfigs as $backendConfig) {
             if (null !== $backendConfig->getPrimaryBackend() && $backendConfig->getPrimaryBackend() === $resourceBackendConfig->getPrimaryBackend()) {
                 throw new BackendConfigurationException(
@@ -45,7 +46,7 @@ class ResourceBackendConfigRegistry
     {
         return $this->backendConfigs;
     }
-    
+
     public function getBackendConfig($id) {
         return isset($this->backendConfigs[$id]) ? $this->backendConfigs[$id] : null;
     }

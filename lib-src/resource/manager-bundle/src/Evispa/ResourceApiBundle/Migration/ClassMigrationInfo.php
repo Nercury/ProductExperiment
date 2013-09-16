@@ -31,14 +31,13 @@ class ClassMigrationInfo
      */
     private $outputMigrationActions = array();
 
-    function __construct(
+    public function __construct(
         $inputVersions = array(),
         $inputMigrationPaths = array(),
         $outputVersions = array(),
         $outputMigrationPaths = array(),
         $classVersions = array()
-    )
-    {
+    ) {
         $this->inputVersions = $inputVersions;
         $this->inputMigrationPaths = $inputMigrationPaths;
         $this->outputVersions = $outputVersions;
