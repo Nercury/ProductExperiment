@@ -22,15 +22,15 @@
  */
 
 /**
- * @author Tadas Gliaubicas <tadas@gmail.com>
+ * @author Tadas Gliaubicas <tadas@evispa.lt>
  */
 
 namespace Evispa\Api\Attribute\Name\Model;
 
-use Evispa\ObjectMigration\Annotations\Version;
+use Evispa\Api\Attribute\Name\Model\Title\LocalizedTitleV1;
 
 /**
- * @Version("vnd.evispa.simple-attribute-name.v1")
+ * @Evispa\ObjectMigration\Annotations\Version("vnd.evispa.simple-attribute-name.v1")
  */
 class SimpleAttributeNameV1
 {
@@ -51,12 +51,12 @@ class SimpleAttributeNameV1
      *
      * @var string
      */
-    public $code;
+    public $type;
 
     /**
-     * @JMS\Serializer\Annotation\Type("Evispa\Api\Product\Model\Text\TextV1")
+     * @JMS\Serializer\Annotation\Type("Evispa\Api\Attribute\Name\Model\Title\LocalizedTitleV1")
      *
-     * @var Text\TextV1
+     * @var LocalizedTitleV1
      */
-    public $text;
+    public $title;
 }

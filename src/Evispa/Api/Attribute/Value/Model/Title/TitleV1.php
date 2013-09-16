@@ -25,19 +25,37 @@
  * @author Tadas Gliaubicas <tadas@evispa.lt>
  */
 
-namespace Evispa\Api\Attribute\Name\Model\Title;
+namespace Evispa\Api\Attribute\Value\Model\Title;
 
 /**
- * @Evispa\ObjectMigration\Annotations\Version("vnd.evispa.attribute-name.title.v1")
+ * @Evispa\ObjectMigration\Annotations\Version("vnd.evispa.attribute-value.title.v1")
  */
 class TitleV1
 {
     /**
-     * Attribute name title.
+     * Attribute value title.
      *
      * @JMS\Serializer\Annotation\Type("string")
      *
      * @var string $title
      */
     public $title;
+
+    /**
+     * Attribute value short title.
+     *
+     * @JMS\Serializer\Annotation\Type("string")
+     *
+     * @var string $title
+     */
+    public $shortTitle;
+
+    /**
+     * Attribute value order nr.
+     *
+     * @JMS\Serializer\Annotation\Type("integer")
+     *
+     * @var integer $orderNr
+     */
+    public $orderNr;
 }
