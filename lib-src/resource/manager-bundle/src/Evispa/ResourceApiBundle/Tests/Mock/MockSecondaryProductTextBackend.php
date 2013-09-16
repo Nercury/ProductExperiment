@@ -66,4 +66,15 @@ class MockSecondaryProductTextBackend implements SecondaryBackendInterface
     {
         return $this->findResult;
     }
+
+    /**
+     *
+     * @param array $requestedParts
+     *
+     * @return array
+     */
+    public function getNew(array $requestedParts)
+    {
+        // TODO: Implement getNew() method.
+    }
 }

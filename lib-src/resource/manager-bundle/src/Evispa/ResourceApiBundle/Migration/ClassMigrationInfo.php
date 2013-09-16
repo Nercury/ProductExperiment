@@ -3,6 +3,7 @@
 namespace Evispa\ResourceApiBundle\Migration;
 
 use Evispa\ObjectMigration\Action\ActionSerializer;
+use Evispa\ObjectMigration\Action\MigrationActionInterface;
 
 /**
  * @author Nerijus
@@ -45,6 +46,11 @@ class ClassMigrationInfo
         $this->classVersions = $classVersions;
     }
 
+    /**
+     * @param $className
+     *
+     * @return MigrationActionInterface[]|null
+     */
     public function getInputMigrationActions($className)
     {
         if (isset($this->inputMigrationActions[$className])) {
@@ -67,6 +73,11 @@ class ClassMigrationInfo
         return $actions;
     }
 
+    /**
+     * @param $className
+     *
+     * @return MigrationActionInterface[]|null
+     */
     public function getOutputMigrationActions($className)
     {
         if (isset($this->outputMigrationActions[$className])) {

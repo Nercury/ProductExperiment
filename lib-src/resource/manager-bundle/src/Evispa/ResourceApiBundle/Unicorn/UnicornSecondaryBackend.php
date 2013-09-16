@@ -29,6 +29,7 @@ namespace Evispa\ResourceApiBundle\Unicorn;
 
 use Evispa\ResourceApiBundle\Backend\SecondaryBackendInterface;
 use Evispa\ResourceApiBundle\Exception\ResourceRequestException;
+use Evispa\ResourceApiBundle\Migration\ClassMigrationInfo;
 
 /**
  * Class UnicornSecondaryBackend
@@ -64,6 +65,22 @@ class UnicornSecondaryBackend
         return $this->backend;
     }
 
+    /**
+     * @return array
+     */
+    public function getManagedParts()
+    {
+        return $this->managedParts;
+    }
+
+    /**
+     * @param ClassMigrationInfo $info
+     * @param $resultPart
+     * @param $options
+     *
+     * @return mixed
+     * @throws \Evispa\ResourceApiBundle\Exception\ResourceRequestException
+     */
     private function migrateIncommingObject($info, $resultPart, $options) {
         $partClass = get_class($resultPart);
         $actions = $info->getInputMigrationActions($partClass);
@@ -114,9 +131,16 @@ class UnicornSecondaryBackend
             return null;
         }
 
-        // If it returns a result, it must contain all of the requested parts and correct objects.
+        foreach ($this->managedParts as $part => $info) {
+            $resultPart = isset($backendResult[$part]) ? $backendResult[$part] : null;
+            if (null === $resultPart) {
+                continue;
+            }
 
-        $this->validateResultItem($backendResult, $requestedParts);
+            $backendResult[$part] = $this->migrateIncommingObject($info, $resultPart, $options);
+        }
+
+        // If it returns a result, it must contain all of the requested parts and correct objects.
 
         return $backendResult;
     }

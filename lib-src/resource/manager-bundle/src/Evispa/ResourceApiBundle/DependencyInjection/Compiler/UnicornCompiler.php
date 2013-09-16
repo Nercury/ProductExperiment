@@ -3,7 +3,6 @@
 namespace Evispa\ResourceApiBundle\DependencyInjection\Compiler;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use Evispa\ObjectMigration\VersionPath\VersionPathSearch;
 use Evispa\ObjectMigration\VersionReader;
 use Evispa\ResourceApiBundle\Exception\BackendConfigurationException;
 use Evispa\ResourceApiBundle\Migration\ClassMigrationBaker;
@@ -77,7 +76,7 @@ class UnicornCompiler implements CompilerPassInterface
 
             $managedPartClasses[$partName] = $migrationInfoBaker->bakeServiceDefinition($partMigrationInfos[$partName]);
         }
-        
+
         return $managedPartClasses;
     }
 

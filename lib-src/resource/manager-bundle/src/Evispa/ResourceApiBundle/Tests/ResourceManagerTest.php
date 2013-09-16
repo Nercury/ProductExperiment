@@ -29,9 +29,11 @@ namespace Evispa\ResourceApiBundle\Tests;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Evispa\ObjectMigration\VersionReader;
+use Evispa\ResourceApiBundle\Backend\FetchParameters;
 use Evispa\ResourceApiBundle\Backend\FindParameters;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendObject;
 use Evispa\ResourceApiBundle\Backend\PrimaryBackendResultsObject;
+use Evispa\ResourceApiBundle\Migration\ClassMigrationInfo;
 use Evispa\ResourceApiBundle\Unicorn\Unicorn;
 use Evispa\ResourceApiBundle\Unicorn\UnicornPrimaryBackend;
 use Evispa\ResourceApiBundle\Unicorn\UnicornSecondaryBackend;
@@ -55,48 +57,20 @@ class ResourceManagerTest extends \PHPUnit_Framework_TestCase
 
         $unicorn = new Unicorn(new UnicornPrimaryBackend('product.test', array(), $mockBackend));
 
-        $manager = new ResourceManager($reader, $versionsReader, array(), $class, array(), $unicorn);
-
-        $product = $manager->fetchOne('a1');
-
-        $this->assertTrue($product instanceof MockProduct);
-        $this->assertEquals('a1', $product->getSlug());
-    }
-
-    public function testFindOneWithSecondaryBackends()
-    {
-        $reader = new AnnotationReader();
-        $versionsReader = new VersionReader($reader);
-
-        $class = new \ReflectionClass('Evispa\ResourceApiBundle\Tests\Mock\MockProduct');
-
-        $mockPrimaryBackend = new MockPrimaryProductBackend();
-        $mockPrimaryBackend->findOneResult['a1'] = new PrimaryBackendObject('a1');
-
-        $unicorn = new Unicorn(new UnicornPrimaryBackend('product.test', array(), $mockPrimaryBackend));
-
-        $mockSecondaryTextBackend = new MockSecondaryProductTextBackend();
-        $mockSecondaryTextBackend->findOneResult['a1'] = array('product.text' => new MockProductText('tekstas'));
-
-        $unicorn->addSecondaryBackend(
-            new UnicornSecondaryBackend(
-                'product.test2',
-                array('product.text' => 'Evispa\ResourceApiBundle\Tests\Mock\MockProductText'),
-                $mockSecondaryTextBackend
-            )
-        );
+        $migrationInfo = new ClassMigrationInfo();
 
         $manager = new ResourceManager(
-            $reader, $versionsReader, array(), $class, array('product.text' => 'text'), $unicorn
+            'Evispa\ResourceApiBundle\Tests\Mock\MockProduct',
+            $versionsReader,
+            $migrationInfo,
+            $class,
+            $unicorn
         );
 
-        /** @var MockProduct $product */
-        $product = $manager->fetchOne('a1');
+        $product = $manager->fetchOne('a1', array('name' => 'test'));
 
         $this->assertTrue($product instanceof MockProduct);
         $this->assertEquals('a1', $product->getSlug());
-        $this->assertTrue($product->text instanceof MockProductText);
-        $this->assertEquals('tekstas', $product->text->text);
     }
 
     public function testFind()
@@ -118,13 +92,13 @@ class ResourceManagerTest extends \PHPUnit_Framework_TestCase
 
         $unicorn = new Unicorn(new UnicornPrimaryBackend('product.test', array(), $mockBackend));
 
-        $manager = new ResourceManager($reader, $versionsReader, array(), $class, array(), $unicorn);
+        $manager = new ResourceManager('Evispa\ResourceApiBundle\Tests\Mock\MockProduct', array(), new ClassMigrationInfo(), $class, $unicorn);
 
-        $params = new FindParameters();
+        $params = new FetchParameters();
         $params->limit = 6;
         $params->offset = 0;
 
-        $products = $manager->fetchAll($params);
+        $products = $manager->fetchAll($params, array('name' => 'name'));
 
         $this->assertEquals(6, count($products->getResources()));
         $this->assertEquals(6, $products->getTotalFound());

@@ -7,6 +7,7 @@ namespace Evispa\ResourceApiBundle\Manager;
 
 use Evispa\Api\Resource\Model\ApiResourceInterface;
 use Evispa\ResourceApiBundle\Backend\FetchParameters;
+use Evispa\ResourceApiBundle\Backend\PrimaryBackendObject;
 use Evispa\ResourceApiBundle\Exception\ResourceRequestException;
 use Evispa\ResourceApiBundle\Migration\ClassMigrationInfo;
 use Evispa\ResourceApiBundle\Unicorn\Unicorn;
@@ -63,8 +64,7 @@ class ResourceManager
         ClassMigrationInfo $migrationInfo,
         $requiredOptions,
         Unicorn $unicorn
-    )
-    {
+    ) {
         $this->class = new \ReflectionClass($className);
         $this->resourceParts = $resourceParts;
         $this->migrationInfo = $migrationInfo;
@@ -78,8 +78,12 @@ class ResourceManager
     private function checkOptions($options)
     {
         foreach ($this->requiredOptions as $optionName => $info) {
+
             if (!isset($options[$optionName])) {
-                throw new ResourceRequestException('Required option "' . $optionName . '" was not set. It is required to migrate from "' . $info['from'] . '" to "' . $info['to'] . '".');
+                throw new ResourceRequestException(
+                    'Required option "' . $optionName . '" was not set. It is required to migrate from "' .
+                    $info['from']
+                );
             }
         }
     }
@@ -88,20 +92,67 @@ class ResourceManager
      * Find a single resource object.
      *
      * @param string $slug Resource identifier.
-     * @param array $options
+     * @param array  $options
      *
      * @return ApiResourceInterface|null
      */
     public function fetchOne($slug, $options = array())
     {
         $this->checkOptions($options);
+
+        $resultObject = $this->unicorn->getPrimaryBackend()->fetchOne($slug, $options);
+
+        if (null === $resultObject) {
+            return null;
+        }
+
+        // Create a new resource.
+
+        /** @var ApiResourceInterface $resource */
+        $resource = $this->class->newInstance();
+        $resource->setSlug($resultObject->getResourceSlug());
+
+        foreach ($resultObject->getResourceParts() as $partName => $part) {
+            if (null === $part) {
+                continue;
+            }
+
+            $this->propertyAccess->setValue(
+                $resource,
+                $this->resourceParts[$partName],
+                $part
+            );
+        }
+
+        // set parts form secondary backends
+        foreach ($this->unicorn->getSecondaryBackends() as $unicornBackend) {
+            $otherParts = $unicornBackend->fetchOne($slug, $options);
+
+            if (null !== $otherParts) {
+
+                foreach ($otherParts as $partName => $part) {
+                    if (null === $part) {
+                        continue;
+                    }
+
+                    $this->propertyAccess->setValue(
+                        $resource,
+                        $this->resourceParts[$partName],
+                        $part
+                    );
+                }
+
+            }
+        }
+
+        return $resource;
     }
 
     /**
      * Find batch of resources
      *
      * @param FetchParameters $params
-     * @param array $options
+     * @param array           $options
      *
      * @return FetchResult
      */
@@ -169,7 +220,8 @@ class ResourceManager
         return new FetchResult($params, $resources, $resultsObject->getTotalFound());
     }
 
-    public function getNew($options = array()) {
+    public function getNew($options = array())
+    {
         $this->checkOptions($options);
 
         /** @var ApiResourceInterface $resource */
@@ -206,5 +258,84 @@ class ResourceManager
         }
 
         return $resource;
+    }
+
+    /**
+     * @param ApiResourceInterface[] $resources
+     * @param array                  $options
+     */
+    public function saveAll(array $resources, array $options = array())
+    {
+        $this->checkOptions($options);
+
+        // convert resources to backend objects
+        $backendObjects = array();
+
+        foreach ($resources as $resource) {
+
+            if (get_class($resource) !== $this->class->name) {
+                throw new \LogicException(
+                    'Manager can only manage ' . $this->class->name . ' resources. Got: ' . get_class($resource)
+                );
+            }
+
+            $backendObject = new PrimaryBackendObject($resource->getSlug());
+
+            foreach ($this->unicorn->getPrimaryBackend()->getManagedParts() as $partName => $null) {
+                $part = $this->propertyAccess->getValue($resource, $this->resourceParts[$partName]);
+                $backendObject->setPart($partName, $part);
+            }
+
+            $backendObjects[] = $backendObject;
+        }
+
+        $backendObjects = $this->unicorn->getPrimaryBackend()->saveAll($backendObjects, $options);
+
+        // ensure numeric keys
+        $resources = array_values($resources);
+
+        if (count($resources) !== count($backendObjects)) {
+            throw new \LogicException('Failed to save some objects...');
+        }
+
+        foreach ($this->unicorn->getSecondaryBackends() as $unicornBackend) {
+            $i = 0;
+            foreach ($backendObjects as $backendObject) {
+                $resource = $resources[$i];
+
+                foreach ($unicornBackend->getManagedParts() as $partName => $null) {
+                    $part = $this->propertyAccess->getValue($resource, $this->resourceParts[$partName]);
+                    $backendObject->setPart($partName, $part);
+                }
+                $i++;
+            }
+            // TODO: implement secondary backend save all
+        }
+
+        // convert backend objects back to resources
+        $resources = array();
+
+        foreach ($backendObjects as $backendObject) {
+
+            /** @var ApiResourceInterface $resource */
+            $resource = $this->class->newInstance();
+            $resource->setSlug($backendObject->getResourceSlug());
+
+            foreach ($backendObject->getResourceParts() as $partName => $part) {
+                if (null === $part) {
+                    continue;
+                }
+
+                $this->propertyAccess->setValue(
+                    $resource,
+                    $this->resourceParts[$partName],
+                    $part
+                );
+            }
+
+            $resources[$resource->getSlug()] = $resource;
+        }
+
+        return $resources;
     }
 }
